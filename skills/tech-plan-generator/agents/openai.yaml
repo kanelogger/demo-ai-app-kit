@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tech Plan Generator"
+  short_description: "Generate a lean technical plan for a local AI web app."
+  default_prompt: "Generate a technical plan for this competition app."

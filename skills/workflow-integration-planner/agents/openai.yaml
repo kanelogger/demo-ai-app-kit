@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Integration Planner"
+  short_description: "Plan Star workflow contracts and fallback."
+  default_prompt: "Plan the workflow integration contract for this app."

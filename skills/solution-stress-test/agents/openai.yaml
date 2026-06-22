@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solution Stress Test"
+  short_description: "Check whether a competition solution is feasible and demo-ready."
+  default_prompt: "Stress test this solution for a 10-hour competition build."

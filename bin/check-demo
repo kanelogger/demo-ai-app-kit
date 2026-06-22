@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="${1:-.}"
+failures=0
+
+check_file() {
+  local path="$1"
+  local label="$2"
+  if [[ ! -f "$ROOT/$path" ]]; then
+    echo "FAIL: missing $label: $path"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+  fi
+}
+
+check_any_file() {
+  local label="$1"
+  shift
+  local found=0
+  for path in "$@"; do
+    if [[ -f "$ROOT/$path" ]]; then
+      found=1
+      break
+    fi
+  done
+  if [[ "$found" -eq 0 ]]; then
+    echo "FAIL: missing $label: $*"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+  fi
+}
+
+check_text() {
+  local path="$1"
+  local pattern="$2"
+  local label="$3"
+  if [[ ! -f "$ROOT/$path" ]]; then
+    echo "FAIL: cannot check $label; missing $path"
+    failures=$((failures + 1))
+    return
+  fi
+  if grep -Eiq "$pattern" "$ROOT/$path"; then
+    echo "PASS: $label"
+  else
+    echo "FAIL: $label"
+    failures=$((failures + 1))
+  fi
+}
+
+check_no_private_text() {
+  local label="no private event material references"
+  if grep -RInE "private-event|私有比赛|访问码|星辰平台操作手册" "$ROOT" \
+    --exclude-dir .git \
+    --exclude-dir node_modules \
+    --exclude-dir .venv \
+    --exclude check-demo \
+    --exclude TODO.md \
+    --exclude private-event-requirements.md >/tmp/demo_check_private_hits.$$ 2>/dev/null; then
+    echo "FAIL: $label"
+    cat /tmp/demo_check_private_hits.$$
+    rm -f /tmp/demo_check_private_hits.$$
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+    rm -f /tmp/demo_check_private_hits.$$
+  fi
+}
+
+check_file "README.md" "README"
+check_any_file "app entry" "app.py" "src/app.py" "server.py" "index.html" "templates/flask-adminlte-week-report/app.py"
+check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
+check_text "README.md" "127\\.0\\.0\\.1|localhost|http://" "README includes local URL"
+check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
+check_text "README.md" "workflow|工作流|agent|智能体|星辰" "README includes workflow integration notes"
+check_no_private_text
+
+if [[ "$failures" -gt 0 ]]; then
+  echo "Demo readiness: FAIL ($failures issue(s))"
+  exit 1
+fi
+
+echo "Demo readiness: PASS"

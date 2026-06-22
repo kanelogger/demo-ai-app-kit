@@ -1,0 +1,5 @@
+interface:
+  display_name: "Template Adapter"
+  short_description: "Adapt the bundled admin template."
+  default_prompt: "Adapt the bundled template to this app idea."
+

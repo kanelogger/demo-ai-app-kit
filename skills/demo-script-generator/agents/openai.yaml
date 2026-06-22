@@ -1,0 +1,4 @@
+interface:
+  display_name: "Demo Script Generator"
+  short_description: "Generate demo script and judge Q&A."
+  default_prompt: "Generate a demo script for this completed app."

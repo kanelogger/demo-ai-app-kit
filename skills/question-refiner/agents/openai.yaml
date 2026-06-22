@@ -1,0 +1,4 @@
+interface:
+  display_name: "Question Refiner"
+  short_description: "Turn competition prompts into scoped requirements."
+  default_prompt: "Refine this competition topic into concrete requirements."
