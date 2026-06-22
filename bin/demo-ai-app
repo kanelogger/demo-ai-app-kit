@@ -37,7 +37,6 @@ const coreSkills = [
   'webapp-testing',
   'debugging-and-error-recovery',
   'code-review-and-quality',
-  'demo-script-generator',
   'implement',
   'planning-and-task-breakdown',
 ];
@@ -130,7 +129,7 @@ Input a simple app requirement
 -> Adapt templates/ into the target app
 -> Integrate or mock the AI workflow
 -> Local verification and check-demo
--> Demo script and report materials
+-> Quality review
 \`\`\`
 
 ## Run locally
@@ -160,8 +159,7 @@ The project was generated with \`demo-ai-app ${projectName}\`; if you are readin
 │   ├── requirements.md
 │   ├── tech-plan.md
 │   ├── workflow-integration.md
-│   ├── test-report.md
-│   └── demo-script.md
+│   └── test-report.md
 ├── templates/                # Jinja2 / HTML templates
 └── static/                   # CSS, JS, images
 \`\`\`
@@ -209,7 +207,6 @@ The Agent fills these standard files during the product-quality workflow:
 | \`docs/tech-plan.md\` | Stack, pages, data model, API contract, SDD-lite, test plan, known limits. |
 | \`docs/workflow-integration.md\` | AI workflow adapter contract, request/response JSON, mock fallback, error handling. |
 | \`docs/test-report.md\` | Local run, unit/browser tests, mock fallback tests, issue log, sign-off. |
-| \`docs/demo-script.md\` | 10-minute demo script with business value, steps, fallback path, Q\u0026A. |
 
 Keep these files in sync with code and README.
 
@@ -221,7 +218,6 @@ Keep these files in sync with code and README.
 - [ ] Workflow adapter + mock fallback implemented
 - [ ] Local verification passed
 - [ ] README updated with exact run command and URL
-- [ ] Demo script prepared
 
 ## Known limits
 

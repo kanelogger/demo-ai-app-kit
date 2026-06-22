@@ -1,10 +1,10 @@
 # demo-ai-app-kit
 
-面向 AI Coding 场景的应用生成工具包，用于从一个简单业务需求生成可运行、可演示、可维护的 AI Web 应用。
+面向 AI Coding 场景的应用生成工具包，用于从一个简单业务需求生成可运行、可维护、可验收的 AI Web 应用。
 
 ## 项目定位
 
-`demo-ai-app-kit` 不是固定业务系统，也不是面向单次活动的临时脚手架。它是一条生成应用的生产线：给 Agent 一个需求，Agent 基于项目内模板、提示词、技能和验收脚本，产出可本地运行的应用、技术方案、测试结果和汇报材料。
+`demo-ai-app-kit` 不是固定业务系统，也不是面向单次活动的临时脚手架。它是一条生成应用的生产线：给 Agent 一个需求，Agent 基于项目内模板、提示词、技能和验收脚本，产出可本地运行、可维护、可验收的 AI Web 应用。
 
 目标流程：
 
@@ -18,10 +18,10 @@
 -> 输出需求文档 + 技术方案 + SDD-lite
 -> 按方案改模板生成代码
 -> 联调测试 + check-demo
--> 生成汇报材料
+-> 本地验收与质量审查
 ```
 
-项目可以服务演示、评测和交付验收场景，但核心目标是生成应用的质量：需求清楚、接口稳定、代码可读、能本地运行、有 mock fallback、有测试/验收、有轻量审查、有可讲清的汇报材料。
+项目可以服务演示、评测和交付验收场景，但核心目标是生成应用的质量：需求清楚、接口稳定、代码可读、能本地运行、有 mock fallback、有测试/验收、有轻量审查、有可验证的本地运行与质量审查。
 
 ## 当前状态
 
@@ -29,7 +29,7 @@
 
 - 自包含 `AGENTS.md`：不依赖用户本机全局配置，可复制进生成项目。
 - `prompts/opencode-entry.md`：OpenCode / Agent 的入口总控提示词。
-- 核心技能链路：需求追问、方案拷问、技术方案、模板改造、工作流集成、汇报生成。
+- 核心技能链路：需求追问、方案拷问、技术方案、模板改造、工作流集成。
 - SDD-lite：已合并到 `skills/tech-plan-generator`，不使用独立重型 SDD 流程。
 - `bin/check-demo`：基础 demo readiness 检查。
 - `docs/checklists/demo-readiness.md`：本地 demo 验收清单。
@@ -65,7 +65,6 @@
 -> webapp-testing
 -> debugging-and-error-recovery
 -> code-review-and-quality
--> demo-script-generator
 ```
 
 默认行为：
@@ -76,9 +75,9 @@
 4. API、workflow contract、mock fixture 和安全边界在实现前明确。
 5. 优先复用模板，不从空白项目开始。
 6. 行为逻辑、adapter 和 mock fixture 默认有测试；Web 应用完成后默认做浏览器验证。
-7. 交付前做轻量质量审查；汇报材料必须基于已测试和审查的应用行为生成。
+7. 交付前做轻量质量审查，确保交付物基于已测试和审查的应用行为。
 
-显式重型链路只在明确触发时使用：`ce-code-review`、`review`、`ce-debug`、`ce-dogfood-beta`、`mcp-builder`、`to-prd`、`to-issues`、`triage`、`handoff`、`guizang-ppt-skill`、`baoyu-diagram`、`architecture-diagram`、`theme-factory`。
+显式重型链路只在明确触发时使用：`ce-code-review`、`review`、`ce-debug`、`ce-dogfood-beta`、`mcp-builder`、`to-prd`、`to-issues`、`triage`、`handoff`。
 
 ## 核心资产
 
@@ -94,7 +93,6 @@
 - `skills/security-and-hardening/`：处理用户输入、登录、存储、文件、外部调用和边界验证。
 - `skills/template-adapter/`：要求优先改造现有后台模板，不从零搭应用。
 - `skills/workflow-integration-planner/`：设计智能体工作流入参、出参、错误处理和 mock fallback。
-- `skills/demo-script-generator/`：生成展示稿和评委问答。
 - `skills/tdd/`：为本地 API、工作流 adapter、字段映射和 mock fixture 提供行为测试思路。
 - `skills/webapp-testing/`：用 Playwright 验证本地 Web 应用。
 - `skills/debugging-and-error-recovery/`：构建、测试或运行失败时定位根因。
@@ -118,7 +116,7 @@ python3 app.py
 - 核心技能目录 `skills/`（默认产品质量链路所需）。
 - 验收脚本 `bin/check-demo`。
 - 项目 `README.md` 骨架。
-- 标准产物骨架 `docs/requirements.md`、`docs/tech-plan.md`、`docs/workflow-integration.md`、`docs/test-report.md`、`docs/demo-script.md`。
+- 标准产物骨架 `docs/requirements.md`、`docs/tech-plan.md`、`docs/workflow-integration.md`、`docs/test-report.md`。
 
 验收生成后的项目：
 
@@ -170,7 +168,7 @@ templates/                  可复用应用模板
 templates/flask-adminlte-week-report/  Flask + AdminLTE 后台模板
   app.py                    Flask 入口与页面路由
   workflow_adapter.py       AI workflow adapter：输入校验、超时、mock fallback、统一错误响应
-templates/docs/             生成项目的标准产物骨架（requirements.md、tech-plan.md、workflow-integration.md、test-report.md、demo-script.md）
+templates/docs/             生成项目的标准产物骨架（requirements.md、tech-plan.md、workflow-integration.md、test-report.md）
 ```
 
 ## 下一步

@@ -223,41 +223,6 @@ None.
 - Primary loop works: yes
 - \`bin/check-demo .\` passes: yes
 - README is accurate: yes
-`,
-    'docs/demo-script.md': `# Demo Script
-
-## Elevator Pitch
-A community assistant that lets residents report issues and receive AI-powered suggestions, with a mock fallback that keeps the demo runnable offline.
-
-## Business Value
-- Residents get faster response guidance.
-- Property managers see clear, pre-classified requests.
-- The adapter pattern makes platform integration replaceable.
-
-## Technical Highlights
-- Flask + AdminLTE template adaptation.
-- Replaceable AI workflow adapter.
-- Stable request/response JSON between mock and real workflow.
-
-## Demo Steps
-| Time | Step | Action | Expected Result |
-|------|------|--------|-----------------|
-| 0:00 | Open | \`python3 app.py\` | Server starts at http://127.0.0.1:5000 |
-| 0:30 | Login | Enter ADMIN001 / admin123 | Dashboard loads |
-| 1:00 | Submit | Type "楼道灯坏了" and submit | AI suggestion appears |
-| 2:00 | Fallback | Disable network / set mock mode | Same JSON shape returned |
-
-## Fallback Path
-If the AI workflow fails, the app automatically returns the mock response with the same shape.
-
-## Q\u0026A Preparation
-| Question | Answer |
-|----------|--------|
-| What if the platform is down? | Mock fallback keeps the demo runnable. |
-
-## Known Limits
-- Prototype scope.
-- In-memory storage.
 `
   };
   for (const [relPath, content] of Object.entries(docs)) {
@@ -275,7 +240,6 @@ try {
     'FAIL: docs/tech-plan.md has no obvious placeholders',
     'FAIL: docs/workflow-integration.md has no obvious placeholders',
     'FAIL: docs/test-report.md has no obvious placeholders',
-    'FAIL: docs/demo-script.md has no obvious placeholders',
   ]);
 
   // Phase 2: fill docs and expect PASS.

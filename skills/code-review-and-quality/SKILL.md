@@ -20,7 +20,6 @@ Review covers five axes: correctness, readability, architecture, security, and p
 
 ## When to Use
 
-- Before generating demo/report materials
 - Before handoff or submission
 - After completing a generated-app feature implementation
 - When another agent or model produced code you need to evaluate

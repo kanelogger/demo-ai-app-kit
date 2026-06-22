@@ -10,13 +10,13 @@
 
 ## 筛选目标
 
-`demo-ai-app-kit` 的目标是生成好用、可维护的 AI Web 应用。技能筛选服务于这个产品目标，而不是只服务一次比赛冲刺。
+`demo-ai-app-kit` 的目标是生成好用、可维护的 AI Web 应用。技能筛选服务于这个产品目标，而不是只服务一次冲刺。
 
 判断标准：
 
 - 是否提升生成应用质量：需求清晰、交互合理、接口稳定、代码可读、测试可跑。
 - 是否降低维护成本：边界清楚、契约可追踪、文档足够、错误可定位。
-- 是否能放进项目 workflow：从需求到代码、测试、汇报材料有明确位置。
+- 是否能放进项目 workflow：从需求到代码、测试、验收有明确位置。
 - 是否和其他技能重复抢触发：重复能力可以保留，但必须标注主入口、触发条件和合并方向。
 
 ## Product Workflow
@@ -36,7 +36,7 @@ flowchart TD
   K --> L["TDD and webapp testing"]
   L --> M["Debugging if needed"]
   M --> N["Code review and quality check"]
-  N --> O["Demo script and report materials"]
+  N --> O["Local verification and quality review"]
 ```
 
 Expected generated-app workflow:
@@ -49,11 +49,11 @@ Expected generated-app workflow:
 6. The Agent implements code according to the plan and template constraints.
 7. The Agent runs local tests and browser verification, reporting exact commands, URL, and failures.
 8. The Agent runs a lightweight quality review.
-9. The Agent generates report/demo materials from verified app behavior.
+9. The Agent runs `bin/check-demo` and verifies the project locally.
 
 ## Default Product-Quality Path
 
-默认链路就是产品质量基线。只要对生成好应用必需，就默认走；比赛速度只是约束参数，不主导技能选择。
+默认链路就是产品质量基线。只要对生成好应用必需，就默认走。
 
 ```text
 需求输入
@@ -70,7 +70,6 @@ Expected generated-app workflow:
 -> webapp-testing
 -> debugging-and-error-recovery
 -> code-review-and-quality
--> demo-script-generator
 ```
 
 Routing rules:
@@ -85,7 +84,6 @@ Routing rules:
 - 任何 Web 应用完成后：走 `webapp-testing`。
 - 出错时：走 `debugging-and-error-recovery`。
 - 交付前：走 `code-review-and-quality`。
-- 汇报材料必须在测试和审查之后生成。
 
 ## Explicit Heavy Path
 
@@ -98,9 +96,6 @@ Routing rules:
 - `mcp-builder`: 生成 MCP 集成时使用。
 - `to-prd` / `to-issues` / `triage`: 接入 issue tracker 产品流时使用。
 - `handoff`: 多 Agent 或多会话交接时使用。
-- `guizang-ppt-skill`: 用户明确需要网页 PPT 时使用。
-- `baoyu-diagram` / `architecture-diagram`: 用户或汇报材料明确需要图时使用。
-- `theme-factory`: 需要统一视觉主题时使用。
 
 ## Stage Routing
 
@@ -180,18 +175,17 @@ Removed or merged:
 - `diagnosing-bugs`: merged into `debugging-and-error-recovery` with tight feedback loop and falsifiable hypothesis workflow.
 - `ce-test-browser`: duplicate browser route; `webapp-testing` remains the browser test default.
 
-### 5. Demo, Diagram, And Report Materials
+### 5. Reporting / Diagram / Theme Package (Moved Out)
 
-Default product-quality skills:
+The following capabilities no longer ship with `demo-ai-app-kit`. They can be maintained in a separate reporting/PPT extension if needed, but they are not part of the default generated-app contract:
 
-- `demo-script-generator`: generates 10-minute demo script, judge Q&A, and product story from verified app behavior.
-
-Explicit heavy or optional skills:
-
+- `demo-script-generator`: demo scripts, judge Q&A, and product story.
 - `architecture-diagram`: architecture visuals.
 - `baoyu-diagram`: broader diagram and visualization generation.
-- `guizang-ppt-skill`: web PPT / presentation output; keep, but remove nested `.git`.
+- `guizang-ppt-skill`: web PPT / presentation output.
 - `theme-factory`: visual polish for docs, slides, and HTML artifacts.
+
+Reasoning: the kit's scope is "generate a runnable, maintainable, verifiable AI Web app". Report materials, slides, diagrams, and visual themes are valuable for competition demos, but they are separate deliverables with their own tooling and review cycle. Removing them from the default path keeps the kit focused, reduces copy-on-write size, and avoids bundling unused skills into every generated project.
 
 ### 6. Long-Term Product Quality
 
@@ -225,7 +219,6 @@ Default product-quality path:
 - `webapp-testing`
 - `debugging-and-error-recovery`
 - `code-review-and-quality`
-- `demo-script-generator`
 
 Explicit heavy path:
 
@@ -238,10 +231,6 @@ Explicit heavy path:
 - `to-issues`
 - `triage`
 - `handoff`
-- `guizang-ppt-skill`
-- `baoyu-diagram`
-- `architecture-diagram`
-- `theme-factory`
 
 Optional support / experimental:
 
@@ -282,15 +271,15 @@ Target flow:
 
 ```text
 Install -> demo-ai-app <project-name> -> start Agent -> input topic
--> questions -> requirements + tech plan -> code -> integration testing -> report materials
+-> questions -> requirements + tech plan -> code -> integration testing -> quality review
 ```
 
 Assessment:
 
 - Fit at prompt/workflow level: mostly yes. `AGENTS.md`, `prompts/opencode-entry.md`, and core skills describe the product-quality chain.
 - Fit at install/CLI level: yes. `package.json` and `bin/demo-ai-app <project-name>` are now in place; the generator copies the template, `AGENTS.md`, entry prompt, core skills, `bin/check-demo`, and a README skeleton into the generated project.
-- Fit at artifact level: yes. Fixed output paths are now specified: `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-report.md`, and `docs/demo-script.md`. The generator copies skeletons for each path into the generated project.
-- Fit at testing level: mostly yes. `bin/check-demo` verifies the generated project has README, run command, URL, mock fallback, workflow notes, and the standard docs, and detects unfilled placeholders in those docs. Content-quality checks for tests and report materials can be added later.
-- Fit at reporting level: yes. `docs/demo-script.md` is a standard generated-project artifact; `demo-script-generator` fills it after testing and review.
+- Fit at artifact level: yes. Fixed output paths are now specified: `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-report.md`. The generator copies skeletons for each path into the generated project.
+- Fit at testing level: mostly yes. `bin/check-demo` verifies the generated project has README, run command, URL, mock fallback, workflow notes, and the standard docs, and detects unfilled placeholders in those docs. Content-quality checks for tests can be added later.
+- Fit at quality-review level: yes. `code-review-and-quality` is the final default gate before handoff; it checks coherence, local run, tests, README accuracy, and known limits.
 
 Verdict: the workflow is now a generated-project contract with fixed paths and a check script. The next task is to run a full sample topic through the chain and refine content-quality checks.

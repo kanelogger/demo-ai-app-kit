@@ -9,4 +9,4 @@ Use this checklist before a competition simulation or final submission.
 - Workflow adapter has stable request and response JSON.
 - Error, timeout, empty, and mock states are visible or documented.
 - No private event notes, secrets, `.env`, or local credentials are included.
-- Demo script has sample input, click path, expected output, and fallback path.
+- Primary loop demo path is documented with sample input, click path, expected output, and fallback path.

@@ -35,7 +35,7 @@ Primary product goal:
 Install kit -> demo-ai-app <project-name> -> open generated project
 -> start an Agent such as OpenCode -> input a simple requirement
 -> clarify requirements -> generate requirements and technical plan
--> implement code -> run integration tests -> generate report/demo materials
+-> implement code -> run integration tests -> run local verification and quality review
 ```
 
 Competition use is the first validation scenario, but the product quality target is broader: generated apps should be runnable, understandable, testable, and maintainable.
@@ -54,7 +54,7 @@ Competition use is the first validation scenario, but the product quality target
 - Keep the bundled week-report template as a reusable admin shell: login, dashboard, menu, form, list, review/detail, charts, mock data.
 - Do not hard-bind generated apps to the week-report business domain unless the user explicitly asks.
 - Separate public reusable assets from private event notes. Do not copy local-only preparation details into generated public deliverables.
-- Optimize for generated-app quality: clear requirements, stable contracts, local run, visible URL, mock fallback, meaningful tests, readable code, useful README, and report materials grounded in the verified app.
+- Optimize for generated-app quality: clear requirements, stable contracts, local run, visible URL, mock fallback, meaningful tests, readable code, useful README, and local verification grounded in the verified app.
 - Do not add long theoretical materials unless they directly improve generated-app quality or maintainability.
 
 ## Default Product-Quality Workflow
@@ -76,7 +76,6 @@ Requirement input
 -> webapp-testing
 -> debugging-and-error-recovery
 -> code-review-and-quality
--> demo-script-generator
 ```
 
 Routing rules:
@@ -90,8 +89,8 @@ Routing rules:
 - Behavior logic, adapters, or mock fixtures: use `skills/tdd`.
 - Any completed Web app: use `skills/webapp-testing`.
 - Build, test, runtime, or browser failures: use `skills/debugging-and-error-recovery`.
-- Before handoff, submission, or report generation: use `skills/code-review-and-quality`.
-- Generate report/demo materials with `skills/demo-script-generator` only after testing and review.
+- Before handoff, submission, or final quality gate: use `skills/code-review-and-quality`.
+- Run `bin/check-demo` and a lightweight quality review after testing and before handoff.
 
 Explicit heavy workflow skills stay out of the default path unless the user or workflow clearly triggers them:
 
@@ -102,9 +101,6 @@ Explicit heavy workflow skills stay out of the default path unless the user or w
 - `skills/mcp-builder`: MCP integration generation.
 - `skills/to-prd`, `skills/to-issues`, `skills/triage`: issue tracker product flow.
 - `skills/handoff`: multi-agent or multi-session transfer.
-- `skills/guizang-ppt-skill`: explicit web PPT output.
-- `skills/baoyu-diagram`, `skills/architecture-diagram`: explicit diagram needs.
-- `skills/theme-factory`: explicit unified visual theme work.
 
 ## SDD-Lite Policy
 
@@ -153,6 +149,6 @@ Keep comments load-bearing:
 - At least one complete user loop is demoable.
 - AI workflow integration has a real adapter or a documented mock fallback with the same response shape.
 - README explains purpose, run command, core flow, workflow integration, known limits, and demo account if relevant.
-- Requirements, technical plan, tests/checks, and report/demo materials exist when the workflow calls for them.
+- Requirements, technical plan, tests/checks, and quality review exist when the workflow calls for them.
 - No secrets, private event notes, or local-only credentials are included in public deliverables.
 - `bin/check-demo` passes or reports concrete missing items.

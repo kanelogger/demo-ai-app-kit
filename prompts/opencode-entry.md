@@ -5,8 +5,8 @@ Copy this prompt as the first instruction after entering the generated project a
 ```xml
 <prompt>
   <intent_analysis>
-    <core_intent>Convert the user requirement into a locally runnable, maintainable AI web app by adapting the bundled demo-ai-app-kit template, integrating or mocking an AI workflow, verifying the product loop, and preparing report/demo materials.</core_intent>
-    <key_entities>demo-ai-app-kit, OpenCode, local web app, product-quality default path, bundled admin template, SDD-lite, workflow adapter, mock fallback, README, tests, demo script.</key_entities>
+    <core_intent>Convert the user requirement into a locally runnable, maintainable, and verifiable AI web app by adapting the bundled demo-ai-app-kit template, integrating or mocking an AI workflow, and verifying the product loop and code quality.</core_intent>
+    <key_entities>demo-ai-app-kit, OpenCode, local web app, product-quality default path, bundled admin template, SDD-lite, workflow adapter, mock fallback, README, tests.</key_entities>
     <context_given>The repository is an AI Coding application kit. The default goal is a useful, testable, maintainable product prototype. Competition speed is only a scenario constraint when explicitly supplied.</context_given>
     <missing_information>Ask only for information that blocks implementation. If a detail can be reasonably defaulted, choose the simplest demo-safe default and continue.</missing_information>
     <ambiguity_risks>Do not over-expand the app scope. Do not turn the output into a research report. Do not assume Star Agent platform details that are not present; use a replaceable adapter contract plus mock fallback.</ambiguity_risks>
@@ -40,7 +40,7 @@ Copy this prompt as the first instruction after entering the generated project a
     4. Generate a scoped requirements document and save it to `docs/requirements.md`.
     5. Classify requirement route: simple requirement -> question-refiner; vague, complex, or product-shape unclear -> ce-brainstorm.
     6. Use this skill routing table:
-       - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> template-adapter -> workflow-integration-planner -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality -> demo-script-generator.
+       - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> template-adapter -> workflow-integration-planner -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality.
        - Simple requirement: use question-refiner and skip full ce-brainstorm.
        - Important plan freeze: use bounded grilling before implementation.
        - More than 3 business terms or cross-layer field drift risk: use domain-modeling.
@@ -55,7 +55,7 @@ Copy this prompt as the first instruction after entering the generated project a
     9. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
     10. Write the workflow adapter contract, request/response JSON, mock fallback, and error handling to `docs/workflow-integration.md`.
     11. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md`.
-    12. Generate README updates and report/demo materials only after testing and review. Save the demo script to `docs/demo-script.md`.
+    12. Update README with run command, URL, core flow, adapter notes, known limits, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
   </task>
 
   <constraints>
@@ -66,7 +66,7 @@ Copy this prompt as the first instruction after entering the generated project a
     - Keep workflow input/output JSON stable between mock and real adapter.
     - Keep SDD-lite to one page. Treat it as a frozen pre-build contract, not a document to maintain throughout implementation.
     - Do not invoke explicit heavy skills unless their trigger condition is concrete.
-    - Keep explicit heavy skills out of the default path: ce-code-review, review, ce-debug, ce-dogfood-beta, mcp-builder, to-prd, to-issues, triage, handoff, guizang-ppt-skill, baoyu-diagram, architecture-diagram, theme-factory.
+    - Keep explicit heavy skills out of the default path: ce-code-review, review, ce-debug, ce-dogfood-beta, mcp-builder, to-prd, to-issues, triage, handoff.
     - Avoid secrets, private event notes, and hardcoded credentials beyond documented demo accounts.
     - Do not add unrelated refactors.
     - Keep comments load-bearing: module boundaries, complex business rules, external calls, and fallback logic only; remove explanatory fluff and commented-out code.
@@ -75,7 +75,7 @@ Copy this prompt as the first instruction after entering the generated project a
   <success_criteria>
     - A user can open the app locally and complete the primary loop.
     - The AI workflow call path is visible in code and demoable through mock fallback.
-    - `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-report.md`, and `docs/demo-script.md` are present and consistent with code.
+    - `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-report.md` are present and consistent with code.
     - Requirements, SDD-lite, API/workflow contracts, tests, and README tell the same story.
     - The README contains run command, URL, accounts if any, core flow, adapter notes, known limits, and the purpose of each docs/ artifact.
     - The project can be explained in 10 minutes with business value, technical structure, and live demo steps.
