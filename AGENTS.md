@@ -127,6 +127,17 @@ Explicit heavy workflow skills stay out of the default path unless the user or w
 - Match existing formatting and naming.
 - Add comments only when they clarify non-obvious behavior.
 
+### Comment Policy
+
+Keep comments load-bearing:
+
+- Keep module boundaries and adapter contracts (what this file replaces or talks to).
+- Keep complex business rules and non-obvious invariants.
+- Keep external calls, fallback logic, and error-handling rationale.
+- Delete explanatory fluff that merely restates the code (`# increment i`, `# loop over items`).
+- Delete commented-out code instead of leaving it as a note.
+- Prefer clear names and small functions over comments that explain them.
+
 ## Verification Rules
 
 - Run the narrowest meaningful verification after changes.

@@ -110,6 +110,21 @@ check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallb
 check_text "README.md" "workflow|工作流|agent|智能体|星辰" "README includes workflow integration notes"
 check_text "README.md" "docs/requirements\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
 
+# Workflow adapter and error-handling contract.
+check_any_file "workflow adapter" "workflow_adapter.py" "src/workflow_adapter.py" "templates/flask-adminlte-week-report/workflow_adapter.py"
+check_text "README.md" "workflow_adapter|Core modules|核心模块|模块说明" "README includes workflow adapter / module description"
+if ! is_kit_repo; then
+  check_text "docs/workflow-integration.md" "timeout|TIMEOUT|超时" "workflow doc covers timeout strategy"
+  check_text "docs/workflow-integration.md" "empty|EMPTY|空结果" "workflow doc covers empty result strategy"
+  check_text "docs/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input strategy"
+  check_text "docs/workflow-integration.md" "failure|platform error|FAILURE|失败" "workflow doc covers failure strategy"
+else
+  check_text "templates/docs/workflow-integration.md" "timeout|TIMEOUT|超时" "kit workflow doc covers timeout strategy"
+  check_text "templates/docs/workflow-integration.md" "empty|EMPTY|空结果" "kit workflow doc covers empty result strategy"
+  check_text "templates/docs/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "kit workflow doc covers invalid input strategy"
+  check_text "templates/docs/workflow-integration.md" "failure|platform error|FAILURE|失败" "kit workflow doc covers failure strategy"
+fi
+
 if ! is_kit_repo; then
   # Basic non-empty checks for standard docs.
   for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/demo-script.md; do

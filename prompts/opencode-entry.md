@@ -69,6 +69,7 @@ Copy this prompt as the first instruction after entering the generated project a
     - Keep explicit heavy skills out of the default path: ce-code-review, review, ce-debug, ce-dogfood-beta, mcp-builder, to-prd, to-issues, triage, handoff, guizang-ppt-skill, baoyu-diagram, architecture-diagram, theme-factory.
     - Avoid secrets, private event notes, and hardcoded credentials beyond documented demo accounts.
     - Do not add unrelated refactors.
+    - Keep comments load-bearing: module boundaries, complex business rules, external calls, and fallback logic only; remove explanatory fluff and commented-out code.
   </constraints>
 
   <success_criteria>

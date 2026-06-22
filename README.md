@@ -158,6 +158,8 @@ templates/flask-adminlte-week-report/login.html
 ```text
 AGENTS.md                   自包含 Agent 项目指令
 bin/                        CLI、生成脚本和验收脚本
+bin/demo-ai-app             生成新项目 CLI
+bin/check-demo              验收脚本：检查 README、入口、URL、workflow adapter、错误处理合同
 docs/                       参考资料、检查清单和 workflow 文档
 docs/original-requirements/ 周报系统原始需求参考
 docs/original-design/       周报系统原始设计参考
@@ -165,6 +167,9 @@ docs/original-demo-ref/     周报系统原型参考
 prompts/                    Agent / OpenCode 入口提示词
 skills/                     项目内技能库
 templates/                  可复用应用模板
+templates/flask-adminlte-week-report/  Flask + AdminLTE 后台模板
+  app.py                    Flask 入口与页面路由
+  workflow_adapter.py       AI workflow adapter：输入校验、超时、mock fallback、统一错误响应
 templates/docs/             生成项目的标准产物骨架（requirements.md、tech-plan.md、workflow-integration.md、test-report.md、demo-script.md）
 ```
 

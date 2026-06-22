@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 import os
 import json
 from datetime import datetime, timedelta
+import workflow_adapter
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
@@ -264,6 +265,19 @@ def api_department_stats():
         'should_fill': [28, 15, 22, 35, 10, 8, 12],
         'filled': [22, 10, 18, 28, 7, 5, 9]
     })
+
+@app.route('/api/workflow/demo', methods=['POST'])
+def api_workflow_demo():
+    """示例 AI workflow 调用入口，演示统一的错误处理与 mock fallback。"""
+    payload = request.get_json(silent=True) or {}
+    use_mock = os.environ.get('WORKFLOW_MOCK', 'true').lower() in ('1', 'true', 'yes')
+    result = workflow_adapter.call_workflow(payload, use_mock=use_mock)
+    return jsonify(result), (200 if result.get('ok') else 400)
+
+@app.route('/api/workflow/health')
+def api_workflow_health():
+    """AI workflow adapter 健康检查。"""
+    return jsonify(workflow_adapter.health())
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

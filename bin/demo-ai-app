@@ -136,6 +136,9 @@ Input a simple app requirement
 ## Run locally
 
 \`\`\`bash
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\\Scripts\\activate
+pip install -r requirements.txt
 python3 app.py
 \`\`\`
 
@@ -143,7 +146,58 @@ Open http://127.0.0.1:5000 in a browser.
 
 Default demo account: \`ADMIN001 / admin123\`.
 
-The project was generated with \`demo-ai-app ${projectName}\`; if you are reading this inside the project directory, run \`python3 app.py\` directly.
+The project was generated with \`demo-ai-app ${projectName}\`; if you are reading this inside the project directory, run \`python3 app.py\` directly after installing \`requirements.txt\`.
+
+## Project structure
+
+\`\`\`text
+.
+├── app.py                    # Flask entry point and routes
+├── workflow_adapter.py       # AI workflow adapter: validate, timeout, mock fallback, error envelope
+├── requirements.txt          # Python dependencies
+├── bin/check-demo            # Demo readiness check
+├── docs/                     # Product-quality workflow artifacts
+│   ├── requirements.md
+│   ├── tech-plan.md
+│   ├── workflow-integration.md
+│   ├── test-report.md
+│   └── demo-script.md
+├── templates/                # Jinja2 / HTML templates
+└── static/                   # CSS, JS, images
+\`\`\`
+
+## Core modules
+
+| File | Purpose |
+|------|---------|
+| \`app.py\` | Flask application entry point, page routes, and API endpoints. |
+| \`workflow_adapter.py\` | Replaceable adapter for the AI workflow: input validation, timeout, empty-result fallback, and a stable \`{ok, data, error, fallback}\` response envelope. |
+| \`bin/check-demo\` | Readiness script that checks required files, README contents, and workflow error-handling contract. |
+
+## AI workflow integration
+
+The app calls the AI workflow through \`workflow_adapter.py\`. When the platform is unavailable or \`WORKFLOW_MOCK=true\`, the adapter falls back to a mock response with the same JSON shape.
+
+Example request:
+
+\`\`\`bash
+curl -X POST http://127.0.0.1:5000/api/workflow/demo \\
+  -H "Content-Type: application/json" \\
+  -d '{"input": "hello workflow"}'
+\`\`\`
+
+Response envelope:
+
+\`\`\`json
+{
+  "ok": true,
+  "data": {"output": "mock processed: hello workflow", "confidence": 0.95, "processed_at": "..."},
+  "error": null,
+  "fallback": true
+}
+\`\`\`
+
+Error responses use the same shape with \`ok: false\` and a non-null \`error\` object.
 
 ## Project artifacts
 
@@ -158,16 +212,6 @@ The Agent fills these standard files during the product-quality workflow:
 | \`docs/demo-script.md\` | 10-minute demo script with business value, steps, fallback path, Q\u0026A. |
 
 Keep these files in sync with code and README.
-
-## Verify demo readiness
-
-\`\`\`bash
-./bin/check-demo .
-\`\`\`
-
-## AI workflow integration
-
-The app should call an AI workflow through a replaceable adapter. When network access to the AI platform is unavailable, the app falls back to a mock response with the same JSON shape.
 
 ## Current status
 

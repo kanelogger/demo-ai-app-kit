@@ -169,6 +169,7 @@ When the AI platform is unavailable, the app returns a mock response with the sa
 | Timeout | Return mock fallback and log warning |
 | Empty | Return 400 bad request |
 | Invalid | Return 500 with generic message |
+| Platform error | Return mock fallback with same shape and log error |
 
 ## Configuration
 | Name | Default | Purpose |
