@@ -34,7 +34,7 @@
 - `bin/check-demo`：基础 demo readiness 检查。
 - `docs/checklists/demo-readiness.md`：本地 demo 验收清单。
 - `docs/checklists/skill-pruning.md`：项目内技能筛选和 workflow。
-- `templates/docs/`：生成项目的标准文档骨架（`requirements.md`、`tech-plan.md`、`workflow-integration.md`、`test-report.md`、`demo-script.md`）。
+- `templates/docs/`：生成项目的标准文档骨架（`requirements.md`、`tech-plan.md`、`workflow-integration.md`、`test-report.md`）。
 - 第一批技能清理：已删除 `grill-me`、`decision-mapping`、`ce-test-browser`、`spec-driven-development`。
 - 第二批技能合并：`test-driven-development` 已合并进 `tdd`，`diagnosing-bugs` 已合并进 `debugging-and-error-recovery`。
 - 已删除不再使用的 `AGENTS-template.md`。

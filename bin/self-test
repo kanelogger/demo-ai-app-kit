@@ -87,7 +87,7 @@ Community residents need a simple way to report issues and get AI-generated sugg
 ## Stack
 - Backend: Python Flask
 - Frontend: AdminLTE HTML templates
-- AI workflow adapter: src/adapter.py
+- AI workflow adapter: workflow_adapter.py
 - Test runner: pytest
 
 ## Pages / Screens
@@ -104,7 +104,7 @@ Community residents need a simple way to report issues and get AI-generated sugg
 ## API / Interface Contract
 | Endpoint | Input | Output | Error |
 |----------|-------|--------|-------|
-| POST /api/suggest | { description } | { suggestion, confidence } | 400, 500 |
+| POST /api/workflow/demo | { input } | { ok, data, error, fallback } | 400, 500 |
 
 ## SDD-Lite Contract
 
@@ -117,12 +117,12 @@ User logs in, submits description, adapter returns suggestion, app renders resul
 ### Field Mapping
 | UI Field | API Field | Workflow Field | Mock Value |
 |----------|-----------|----------------|------------|
-| description | description | input | "楼道灯坏了" |
-| suggestion | suggestion | output | "已派单给物业，预计2小时修复。" |
+| description | input | input | "楼道灯坏了" |
+| suggestion | data.output | output | "mock processed: 楼道灯坏了" |
 
 ### Workflow Mock Contract
 \`\`\`json
-{ "request": { "input": "string" }, "response": { "output": "string", "confidence": 0.95 } }
+{ "request": { "input": "string" }, "response": { "ok": true, "data": { "output": "string", "confidence": 0.95 }, "error": null, "fallback": true } }
 \`\`\`
 
 ### Demo Acceptance Checks
@@ -144,7 +144,7 @@ User logs in, submits description, adapter returns suggestion, app renders resul
 The AI workflow classifies repair requests and returns a suggested action.
 
 ## Adapter Location
-\`src/adapter.py\`
+\`workflow_adapter.py\`
 
 ## Request Shape
 \`\`\`json
@@ -153,7 +153,7 @@ The AI workflow classifies repair requests and returns a suggested action.
 
 ## Response Shape
 \`\`\`json
-{ "output": "string", "confidence": 0.95 }
+{ "ok": true, "data": { "output": "string", "confidence": 0.95 }, "error": null, "fallback": true }
 \`\`\`
 
 ## Mock Fallback
@@ -161,14 +161,14 @@ When the AI platform is unavailable, the app returns a mock response with the sa
 
 | Input | Mock Output |
 |-------|-------------|
-| "楼道灯坏了" | { "output": "已派单给物业，预计2小时修复。", "confidence": 0.95 } |
+| "楼道灯坏了" | { "ok": true, "data": { "output": "mock processed: 楼道灯坏了", "confidence": 0.95 }, "error": null, "fallback": true } |
 
 ## Error Handling
 | Scenario | Behavior |
 |----------|----------|
+| Invalid input | Return 400 with error envelope and code INVALID_INPUT |
 | Timeout | Return mock fallback and log warning |
-| Empty | Return 400 bad request |
-| Invalid | Return 500 with generic message |
+| Empty result | Return success envelope with empty flag |
 | Platform error | Return mock fallback with same shape and log error |
 
 ## Configuration
@@ -177,9 +177,9 @@ When the AI platform is unavailable, the app returns a mock response with the sa
 | WORKFLOW_URL | "" | Real workflow endpoint |
 
 ## Switching to Real Workflow
-1. Set WORKFLOW_URL in environment.
-2. Replace mock call with HTTP POST.
-3. Keep same request/response shape.
+1. Set WORKFLOW_MOCK=false in environment or pass use_mock=False.
+2. Implement _call_real_workflow to POST to the real endpoint.
+3. Keep the same { ok, data, error, fallback } envelope.
 `,
     'docs/test-report.md': `# Test Report
 

@@ -49,7 +49,7 @@ Copy this prompt as the first instruction after entering the generated project a
        - Behavior logic, adapters, or mock fixtures: use tdd.
        - Any completed Web app: use webapp-testing.
        - Failures: use debugging-and-error-recovery.
-       - Before report or handoff: use code-review-and-quality.
+       - Before handoff or final quality gate: use code-review-and-quality.
     7. Generate a product-quality technical plan with an SDD-lite single-page contract: Primary Loop, Reference Template, Field Mapping, Workflow Mock Contract, and Demo Acceptance Checks. Save the plan to `docs/tech-plan.md`.
     8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then immediately adapt the bundled template instead of starting from a blank project.
     9. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
@@ -78,7 +78,7 @@ Copy this prompt as the first instruction after entering the generated project a
     - `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-report.md` are present and consistent with code.
     - Requirements, SDD-lite, API/workflow contracts, tests, and README tell the same story.
     - The README contains run command, URL, accounts if any, core flow, adapter notes, known limits, and the purpose of each docs/ artifact.
-    - The project can be explained in 10 minutes with business value, technical structure, and live demo steps.
+    - The README and docs support a concise technical walkthrough of business value, structure, and live demo steps.
   </success_criteria>
 
   <output_contract>
