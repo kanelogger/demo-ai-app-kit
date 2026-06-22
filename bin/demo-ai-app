@@ -161,8 +161,7 @@ The project was generated with \`demo-ai-app ${projectName}\`; if you are readin
 │   ├── workflow-integration.md
 │   └── test-report.md
 ├── templates/                # Jinja2 / HTML templates
-├── assets/                   # CSS, JS, images
-└── tests/                    # behavior tests and browser checks
+└── assets/                   # CSS, JS, images
 \`\`\`
 
 ## Core modules
