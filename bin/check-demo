@@ -90,6 +90,12 @@ check_no_placeholders() {
   fi
 }
 
+if is_kit_repo; then
+  echo "Mode: kit repo readiness"
+else
+  echo "Mode: generated app readiness"
+fi
+
 check_file "README.md" "README"
 check_any_file "app entry" "app.py" "src/app.py" "server.py" "index.html" "templates/flask-adminlte-week-report/app.py"
 

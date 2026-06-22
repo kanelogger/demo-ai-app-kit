@@ -118,6 +118,11 @@ Generated from demo-ai-app-kit.
 
 A locally runnable AI web app prototype built by adapting the bundled Flask + AdminLTE admin shell.
 
+This generated directory is an Agent workspace, not a finished app. The Flask
+template can run immediately, but \`bin/check-demo\` is expected to fail until
+the Agent replaces the placeholder docs, adapts the template to the target
+domain, verifies the app, and updates this README.
+
 ## Target workflow
 
 \`\`\`text
@@ -210,6 +215,9 @@ The Agent fills these standard files during the product-quality workflow:
 
 Keep these files in sync with code and README.
 
+Demo scripts, judge Q&A, and presentation notes are optional live-demo material.
+They are not standard artifacts and are not required by \`bin/check-demo\`.
+
 ## Current status
 
 - [ ] Requirement clarified
@@ -230,4 +238,5 @@ console.log(`Generated project at ${targetDir}`);
 console.log(`Next steps:`);
 console.log(`  cd ${projectName}`);
 console.log(`  python3 app.py`);
+console.log(`  # after Agent fills docs and adapts the app:`);
 console.log(`  ./bin/check-demo .`);
