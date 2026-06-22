@@ -1,6 +1,6 @@
 ---
 name: debugging-and-error-recovery
-description: Guides systematic root-cause debugging. Use when tests fail, builds break, behavior doesn't match expectations, or you encounter any unexpected error. Use when you need a systematic approach to finding and fixing the root cause rather than guessing.
+description: Project debugging workflow for demo-ai-app-kit generated apps. Use when tests fail, builds break, browser behavior differs from the plan, workflow/mock integration fails, performance regresses, or any bug/error/stack trace needs root-cause diagnosis, a tight feedback loop, and verified recovery.
 ---
 
 # Debugging and Error Recovery
@@ -25,7 +25,7 @@ When anything unexpected happens:
 ```
 1. STOP adding features or making changes
 2. PRESERVE evidence (error output, logs, repro steps)
-3. DIAGNOSE using the triage checklist
+3. BUILD a tight feedback loop and diagnose using the triage checklist
 4. FIX the root cause
 5. GUARD against recurrence
 6. RESUME only after verification passes
@@ -37,13 +37,36 @@ When anything unexpected happens:
 
 Work through these steps in order. Do not skip steps.
 
-### Step 1: Reproduce
+### Step 1: Build A Tight Feedback Loop
+
+Create one command or script that can catch this exact failure before you spend time reading code theories.
+
+Useful loops, in preferred order:
+
+- Failing test at the seam that reaches the bug.
+- `curl` or HTTP script against the local API.
+- CLI invocation with fixture input and expected output.
+- Playwright/Puppeteer script for UI failures.
+- Replayed request, event log, or workflow payload.
+- Throwaway harness that exercises the failing function or adapter.
+- Repeated/stress loop for intermittent failures.
+
+A usable loop must be:
+
+- Red-capable: asserts the user's exact symptom, not just "does not crash".
+- Deterministic: same verdict every run, or a deliberately raised reproduction rate for flakes.
+- Fast: seconds when possible.
+- Agent-runnable: one unattended command unless human input is unavoidable.
+
+If you cannot build a loop, state what you tried and ask for a captured artifact, reproducible environment, or permission for temporary instrumentation.
+
+### Step 2: Reproduce
 
 Make the failure happen reliably. If you can't reproduce it, you can't fix it with confidence.
 
 ```
 Can you reproduce the failure?
-├── YES → Proceed to Step 2
+├── YES → Proceed to Step 3
 └── NO
     ├── Gather more context (logs, environment details)
     ├── Try reproducing in a minimal environment
@@ -84,7 +107,7 @@ npm test -- --verbose
 npm test -- --testPathPattern="specific-file" --runInBand
 ```
 
-### Step 2: Localize
+### Step 3: Localize
 
 Narrow down WHERE the failure happens:
 
@@ -108,7 +131,7 @@ git bisect good <known-good-sha> # This commit worked
 git bisect run npm test -- --grep "failing test"
 ```
 
-### Step 3: Reduce
+### Step 4: Reduce
 
 Create the minimal failing case:
 
@@ -118,7 +141,20 @@ Create the minimal failing case:
 
 A minimal reproduction makes the root cause obvious and prevents fixing symptoms instead of causes.
 
-### Step 4: Fix the Root Cause
+### Step 5: Hypothesize And Probe
+
+Before changing production code, list 2-4 falsifiable hypotheses ranked by likelihood. Each hypothesis must predict what one probe would show.
+
+Use targeted probes:
+
+- Inspect the narrowest layer that distinguishes hypotheses.
+- Change one variable at a time.
+- Add temporary logs only with a unique prefix such as `[DEBUG-a4f2]`, then remove them before finishing.
+- For performance regressions, measure a baseline first, then change or bisect.
+
+Discard any hypothesis that cannot state a clear prediction.
+
+### Step 6: Fix the Root Cause
 
 Fix the underlying issue, not the symptom:
 
@@ -135,7 +171,7 @@ Root cause fix (good):
 
 Ask: "Why does this happen?" until you reach the actual cause, not just where it manifests.
 
-### Step 5: Guard Against Recurrence
+### Step 7: Guard Against Recurrence
 
 Write a test that catches this specific failure:
 
@@ -151,7 +187,7 @@ it('finds tasks with special characters in title', async () => {
 
 This test will prevent the same bug from recurring. It should fail without the fix and pass with it.
 
-### Step 6: Verify End-to-End
+### Step 8: Verify End-to-End
 
 After fixing, verify the complete scenario:
 

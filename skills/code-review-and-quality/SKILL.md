@@ -1,20 +1,28 @@
 ---
 name: code-review-and-quality
-description: Conducts multi-axis code review. Use before merging any change. Use when reviewing code written by yourself, another agent, or a human. Use when you need to assess code quality across multiple dimensions before it enters the main branch.
+description: Lightweight default quality review for demo-ai-app-kit generated apps. Use before report generation, handoff, or submission to check correctness, readability, architecture fit, security basics, performance risks, test evidence, README/run instructions, workflow mock fallback, and known limits. Use review or ce-code-review instead for explicit spec/diff or PR-level heavy review.
 ---
 
 # Code Review and Quality
 
 ## Overview
 
-Multi-dimensional code review with quality gates. Every change gets reviewed before merge — no exceptions. Review covers five axes: correctness, readability, architecture, security, and performance.
+Multi-dimensional quality review with practical gates. In `demo-ai-app-kit`, this is the default lightweight review before report generation, handoff, or submission. It checks whether the generated app is coherent, maintainable, locally runnable, and honestly verified.
+
+Use explicit heavy review skills instead when needed:
+
+- `review`: standards/spec review with a clear spec and diff base.
+- `ce-code-review`: important version, PR-level, or final heavy review.
+
+Review covers five axes: correctness, readability, architecture, security, and performance.
 
 **The approval standard:** Approve a change when it definitely improves overall code health, even if it isn't perfect. Perfect code doesn't exist — the goal is continuous improvement. Don't block a change because it isn't exactly how you would have written it. If it improves the codebase and follows the project's conventions, approve it.
 
 ## When to Use
 
-- Before merging any PR or change
-- After completing a feature implementation
+- Before generating demo/report materials
+- Before handoff or submission
+- After completing a generated-app feature implementation
 - When another agent or model produced code you need to evaluate
 - When refactoring existing code
 - After any bug fix (review both the fix and the regression test)

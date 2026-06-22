@@ -57,20 +57,54 @@ Competition use is the first validation scenario, but the product quality target
 - Optimize for generated-app quality: clear requirements, stable contracts, local run, visible URL, mock fallback, meaningful tests, readable code, useful README, and report materials grounded in the verified app.
 - Do not add long theoretical materials unless they directly improve generated-app quality or maintainability.
 
-## Default Product Workflow
+## Default Product-Quality Workflow
 
-1. Read the topic or requirement and ask only blocking questions.
-2. Use `skills/question-refiner` to turn the topic into scoped requirements.
-3. Use `skills/solution-stress-test` to reject vague, risky, or unbuildable plans.
-4. Use `skills/tech-plan-generator` to produce page list, data model, local APIs, workflow contract, SDD-lite contract, verification plan, and README checklist.
-5. Use `skills/template-adapter` to adapt the bundled template.
-6. Use `skills/workflow-integration-planner` to define Star Agent input/output, mock fallback, timeout, and error handling.
-7. Use testing/debugging/review skills as needed:
-   - `skills/tdd` for local API, workflow adapter, field mapping, and mock fixture behavior.
-   - `skills/webapp-testing` for browser verification.
-   - `skills/debugging-and-error-recovery` when builds, tests, or runtime behavior fail.
-   - `skills/code-review-and-quality` before handoff or submission.
-8. Use `skills/demo-script-generator` to produce report/demo materials only after the app behavior is known or verified.
+The default path is the product quality baseline. It should produce a clear, stable, testable, maintainable AI Web app, not only the quickest runnable demo.
+
+```text
+Requirement input
+-> ce-brainstorm or question-refiner
+-> grilling
+-> solution-stress-test
+-> domain-modeling
+-> tech-plan-generator / SDD-lite
+-> api-and-interface-design
+-> security-and-hardening
+-> template-adapter
+-> workflow-integration-planner
+-> tdd
+-> webapp-testing
+-> debugging-and-error-recovery
+-> code-review-and-quality
+-> demo-script-generator
+```
+
+Routing rules:
+
+- Simple requirement: use `skills/question-refiner`; skip full `skills/ce-brainstorm`.
+- Vague, complex, or product-shape-unclear requirement: use `skills/ce-brainstorm`.
+- Before freezing an important plan: use `skills/grilling`, but cap the question count and avoid endless interviews.
+- More than 3 business terms, or likely UI/API/workflow field drift: use `skills/domain-modeling`.
+- Frontend/backend APIs, workflow contracts, or mock fixtures: use `skills/api-and-interface-design`.
+- User input, authentication, storage, files, or external calls: use `skills/security-and-hardening`.
+- Behavior logic, adapters, or mock fixtures: use `skills/tdd`.
+- Any completed Web app: use `skills/webapp-testing`.
+- Build, test, runtime, or browser failures: use `skills/debugging-and-error-recovery`.
+- Before handoff, submission, or report generation: use `skills/code-review-and-quality`.
+- Generate report/demo materials with `skills/demo-script-generator` only after testing and review.
+
+Explicit heavy workflow skills stay out of the default path unless the user or workflow clearly triggers them:
+
+- `skills/ce-code-review`: important version, PR-level, or final heavy review.
+- `skills/review`: standards/spec review when there is a clear spec and diff base.
+- `skills/ce-debug`: escalation after normal debugging fails.
+- `skills/ce-dogfood-beta`: final end-to-end dogfood.
+- `skills/mcp-builder`: MCP integration generation.
+- `skills/to-prd`, `skills/to-issues`, `skills/triage`: issue tracker product flow.
+- `skills/handoff`: multi-agent or multi-session transfer.
+- `skills/guizang-ppt-skill`: explicit web PPT output.
+- `skills/baoyu-diagram`, `skills/architecture-diagram`: explicit diagram needs.
+- `skills/theme-factory`: explicit unified visual theme work.
 
 ## SDD-Lite Policy
 

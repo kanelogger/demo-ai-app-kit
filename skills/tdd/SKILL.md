@@ -1,9 +1,9 @@
 ---
 name: tdd
-description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
+description: "Project testing workflow for demo-ai-app-kit generated apps. Use when implementing or changing behavior that needs proof: local APIs, workflow adapters, field mapping, mock fixtures, regression fixes, edge cases, or any request for TDD, test-first, red-green-refactor, integration tests, or proving a bug fix."
 ---
 
-# Test-Driven Development
+# TDD For Generated Apps
 
 ## Philosophy
 
@@ -14,6 +14,19 @@ description: Test-driven development. Use when the user wants to build features 
 **Bad tests** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means (like querying a database directly instead of using the interface). The warning sign: your test breaks when you refactor, but behavior hasn't changed. If you rename an internal function and tests fail, those tests were testing implementation, not behavior.
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+
+## Generated-App Test Targets
+
+For `demo-ai-app-kit` generated apps, prioritize tests that protect the product contract:
+
+- Primary user loop: form/list/detail/review path, including empty and invalid input.
+- Local API behavior: request validation, response shape, error shape, and status codes.
+- Workflow adapter: real and mock adapters return the same stable response contract.
+- Field mapping: every SDD-lite field used by UI, API/workflow, and fixtures stays aligned.
+- Mock fixture behavior: canned data covers success, empty, timeout/error, and degraded fallback.
+- Regression fixes: every confirmed bug gets a red-capable reproduction test before the fix when a correct seam exists.
+
+Do not test every visual detail in unit tests. Use `webapp-testing` for browser-level verification after implementation.
 
 ## Anti-Pattern: Horizontal Slices
 
@@ -48,13 +61,11 @@ When exploring the codebase, read `CONTEXT.md` (if it exists) so that test names
 
 Before writing any code:
 
-- [ ] Confirm with user what interface changes are needed
-- [ ] Confirm with user which behaviors to test (prioritize)
-- [ ] Identify opportunities for deep modules (small interface, deep implementation) — run the `/codebase-design` skill for the vocabulary and the testability checks
-- [ ] List the behaviors to test (not implementation steps)
-- [ ] Get user approval on the plan
-
-Ask: "What should the public interface look like? Which behaviors are most important to test?"
+- [ ] Identify the public interface being changed: UI action, route, API, adapter, CLI, or fixture contract.
+- [ ] List the behaviors to test, not implementation steps.
+- [ ] Prioritize the primary loop, workflow contract, field mapping, and known edge cases.
+- [ ] Identify opportunities for deep modules (small interface, deep implementation). Use the local `codebase-design` skill only when module shape is the actual problem.
+- [ ] Proceed without a blocking question unless interface intent is genuinely ambiguous.
 
 **You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
 
@@ -96,6 +107,32 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 - [ ] Run tests after each refactor step
 
 **Never refactor while RED.** Get to GREEN first.
+
+## Prove-It Pattern For Bugs
+
+For a bug fix, prove the bug before changing code:
+
+1. Write or script a reproduction that fails on the current code and asserts the user's exact symptom.
+2. Confirm the failure is the intended bug, not a nearby unrelated failure.
+3. Apply the smallest root-cause fix.
+4. Watch the reproduction pass.
+5. Run the narrow relevant suite, then broader checks if the surface area is shared.
+
+If no correct test seam exists, document that as a design risk and still verify the original scenario end-to-end.
+
+## Test Size
+
+Use the smallest test that proves the behavior:
+
+| Size | Use for | Constraint |
+| --- | --- | --- |
+| Small | pure transforms, validators, field mapping | no I/O, no network, milliseconds |
+| Medium | local APIs, adapters, fixtures, persistence seams | localhost and controlled files/data only |
+| Large | complete browser user loops | run only for critical flows via `webapp-testing` |
+
+Prefer state-based assertions over interaction mocks. Use real implementations first, then fakes, then stubs. Use mocks only for slow, nondeterministic, external, or side-effect-heavy boundaries.
+
+Write tests in a DAMP style: descriptive and meaningful even if they repeat setup. A generated app must be maintainable by another agent, so each test should read like a small specification.
 
 ## Checklist Per Cycle
 
