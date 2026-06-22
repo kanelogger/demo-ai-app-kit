@@ -289,8 +289,8 @@ Assessment:
 
 - Fit at prompt/workflow level: mostly yes. `AGENTS.md`, `prompts/opencode-entry.md`, and core skills describe the product-quality chain.
 - Fit at install/CLI level: yes. `package.json` and `bin/demo-ai-app <project-name>` are now in place; the generator copies the template, `AGENTS.md`, entry prompt, core skills, `bin/check-demo`, and a README skeleton into the generated project.
-- Fit at artifact level: partial. The flow asks for requirements and technical plan, but fixed output paths such as `docs/requirements.md` and `docs/tech-plan.md` still need to be specified.
-- Fit at testing level: partial. `bin/check-demo`, `tdd`, and `webapp-testing` exist, but generated projects need a copied or generated test/check contract.
-- Fit at reporting level: partial. `demo-script-generator` exists, but `docs/demo-script.md` and generated-app report output conventions are still missing.
+- Fit at artifact level: yes. Fixed output paths are now specified: `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-report.md`, and `docs/demo-script.md`. The generator copies skeletons for each path into the generated project.
+- Fit at testing level: mostly yes. `bin/check-demo` verifies the generated project has README, run command, URL, mock fallback, workflow notes, and the standard docs, and detects unfilled placeholders in those docs. Content-quality checks for tests and report materials can be added later.
+- Fit at reporting level: yes. `docs/demo-script.md` is a standard generated-project artifact; `demo-script-generator` fills it after testing and review.
 
-Verdict: the workflow is reasonable and should be the product backbone. The next product task is to turn it from prompt-level guidance into a generated-project contract.
+Verdict: the workflow is now a generated-project contract with fixed paths and a check script. The next task is to run a full sample topic through the chain and refine content-quality checks.

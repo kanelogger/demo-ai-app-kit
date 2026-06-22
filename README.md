@@ -4,7 +4,7 @@
 
 ## 项目定位
 
-`demo-ai-app-kit` 不是固定业务系统，也不只是比赛脚手架。它是一条生成应用的生产线：给 Agent 一个需求，Agent 基于项目内模板、提示词、技能和验收脚本，产出可本地运行的应用、技术方案、测试结果和汇报材料。
+`demo-ai-app-kit` 不是固定业务系统，也不是面向单次活动的临时脚手架。它是一条生成应用的生产线：给 Agent 一个需求，Agent 基于项目内模板、提示词、技能和验收脚本，产出可本地运行的应用、技术方案、测试结果和汇报材料。
 
 目标流程：
 
@@ -21,7 +21,7 @@
 -> 生成汇报材料
 ```
 
-当前比赛场景是第一条验证线，但项目核心目标是生成应用的质量：需求清楚、接口稳定、代码可读、能本地运行、有 mock fallback、有测试/验收、有轻量审查、有可讲清的汇报材料。
+项目可以服务演示、评测和交付验收场景，但核心目标是生成应用的质量：需求清楚、接口稳定、代码可读、能本地运行、有 mock fallback、有测试/验收、有轻量审查、有可讲清的汇报材料。
 
 ## 当前状态
 
@@ -34,6 +34,7 @@
 - `bin/check-demo`：基础 demo readiness 检查。
 - `docs/checklists/demo-readiness.md`：本地 demo 验收清单。
 - `docs/checklists/skill-pruning.md`：项目内技能筛选和 workflow。
+- `templates/docs/`：生成项目的标准文档骨架（`requirements.md`、`tech-plan.md`、`workflow-integration.md`、`test-report.md`、`demo-script.md`）。
 - 第一批技能清理：已删除 `grill-me`、`decision-mapping`、`ce-test-browser`、`spec-driven-development`。
 - 第二批技能合并：`test-driven-development` 已合并进 `tdd`，`diagnosing-bugs` 已合并进 `debugging-and-error-recovery`。
 - 已删除不再使用的 `AGENTS-template.md`。
@@ -45,8 +46,7 @@
 
 未完成：
 
-- 还需要固定生成项目中的 `docs/requirements.md`、`docs/tech-plan.md`、`docs/demo-script.md` 等产物路径。
-- 还需要补 `docs/workflow-integration.md` 和 `docs/demo-script.md`。
+- 还需要发布 npm 包后，在其他设备上验证安装、生成项目、本地运行和验收脚本。
 
 ## Product Workflow
 
@@ -118,6 +118,7 @@ python3 app.py
 - 核心技能目录 `skills/`（默认产品质量链路所需）。
 - 验收脚本 `bin/check-demo`。
 - 项目 `README.md` 骨架。
+- 标准产物骨架 `docs/requirements.md`、`docs/tech-plan.md`、`docs/workflow-integration.md`、`docs/test-report.md`、`docs/demo-script.md`。
 
 验收生成后的项目：
 
@@ -164,13 +165,13 @@ docs/original-demo-ref/     周报系统原型参考
 prompts/                    Agent / OpenCode 入口提示词
 skills/                     项目内技能库
 templates/                  可复用应用模板
+templates/docs/             生成项目的标准产物骨架（requirements.md、tech-plan.md、workflow-integration.md、test-report.md、demo-script.md）
 ```
 
 ## 下一步
 
-CLI 生成骨架已完成。当前优先级最高的后续工作：
+生成项目产物路径、CLI 和验收脚本已落地。当前优先级最高的后续工作：
 
-1. 固定生成项目中的产物路径：\`docs/requirements.md\`、\`docs/tech-plan.md\`、\`docs/demo-script.md\`。
-2. 补 \`docs/workflow-integration.md\` 和 \`docs/demo-script.md\`，把需求、技术方案、实现、测试、汇报串成 Agent 可执行流程。
-3. 扩展 \`bin/check-demo\`，让它能检查生成项目中的需求文档、技术方案、测试记录和汇报材料。
-4. 用样题“AI+社会治理——社区智能助手”完整跑通一次：需求 -> 技术方案 -> 代码 -> 联调测试 -> 汇报材料。
+1. 发布 npm 包并在另一台设备上执行全局安装验证。
+2. 运行 `demo-ai-app <project-name>`，确认生成项目、启动命令和 `./bin/check-demo .` 在干净环境通过。
+3. 根据跨设备测试结果收敛包体范围、README 和默认技能链。

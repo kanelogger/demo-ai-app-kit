@@ -4,6 +4,13 @@ set -euo pipefail
 ROOT="${1:-.}"
 failures=0
 
+is_kit_repo() {
+  if [[ -f "$ROOT/package.json" ]] && grep -Eq '"name"\s*:\s*"demo-ai-app-kit"' "$ROOT/package.json"; then
+    return 0
+  fi
+  return 1
+}
+
 check_file() {
   local path="$1"
   local label="$2"
@@ -69,12 +76,57 @@ check_no_private_text() {
   fi
 }
 
+check_no_placeholders() {
+  local doc="$1"
+  local label="$doc has no obvious placeholders"
+  if [[ ! -f "$ROOT/$doc" ]]; then
+    return
+  fi
+  if grep -Eiq "Fill this in|^\s*- Primary user:\s*$|Do not build \.\.\.|^\s*\.\.\.\s*$|PASS / FAIL|# exact command|TODO|FIXME" "$ROOT/$doc"; then
+    echo "FAIL: $label"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+  fi
+}
+
 check_file "README.md" "README"
 check_any_file "app entry" "app.py" "src/app.py" "server.py" "index.html" "templates/flask-adminlte-week-report/app.py"
+
+# Standard generated project artifacts.
+if is_kit_repo; then
+  echo "SKIP: generated project artifact checks on kit repo"
+else
+  check_file "docs/requirements.md" "requirements document"
+  check_file "docs/tech-plan.md" "technical plan"
+  check_file "docs/workflow-integration.md" "workflow integration document"
+  check_file "docs/test-report.md" "test report"
+  check_file "docs/demo-script.md" "demo script"
+fi
+
 check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
-check_text "README.md" "127\\.0\\.0\\.1|localhost|http://" "README includes local URL"
+check_text "README.md" "127\.0\.0\.1|localhost|http://" "README includes local URL"
 check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
 check_text "README.md" "workflow|工作流|agent|智能体|星辰" "README includes workflow integration notes"
+check_text "README.md" "docs/requirements\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
+
+if ! is_kit_repo; then
+  # Basic non-empty checks for standard docs.
+  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/demo-script.md; do
+    if [[ -f "$ROOT/$doc" ]] && [[ ! -s "$ROOT/$doc" ]]; then
+      echo "FAIL: $doc is empty"
+      failures=$((failures + 1))
+    elif [[ -f "$ROOT/$doc" ]]; then
+      echo "PASS: $doc is not empty"
+    fi
+  done
+
+  # Content-quality guard: detect obvious unfilled placeholders.
+  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/demo-script.md; do
+    check_no_placeholders "$doc"
+  done
+fi
+
 check_no_private_text
 
 if [[ "$failures" -gt 0 ]]; then

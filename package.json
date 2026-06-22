@@ -15,7 +15,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "./bin/check-demo ."
+    "test": "node bin/self-test"
   },
   "engines": {
     "node": ">=16"

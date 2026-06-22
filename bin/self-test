@@ -1,0 +1,295 @@
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { execFileSync } = require('child_process');
+
+const kitRoot = path.resolve(__dirname, '..');
+const demoAiApp = path.join(kitRoot, 'bin', 'demo-ai-app');
+const checkDemo = path.join(kitRoot, 'bin', 'check-demo');
+const projectName = `kit-selftest-${Date.now()}`;
+const workDir = os.tmpdir();
+const projectDir = path.join(workDir, projectName);
+
+function runCheck(dir) {
+  return execFileSync(checkDemo, [dir], { encoding: 'utf8' });
+}
+
+function expectCheck(dir, shouldPass, expectedFailures) {
+  let output;
+  try {
+    output = runCheck(dir);
+  } catch (err) {
+    output = err.stdout || '';
+    if (shouldPass) {
+      console.error(output);
+      console.error(`Self-test: FAIL - expected check-demo to PASS for ${dir}`);
+      process.exit(1);
+    }
+    if (expectedFailures) {
+      for (const expected of expectedFailures) {
+        if (!output.includes(expected)) {
+          console.error(output);
+          console.error(`Self-test: FAIL - expected failure output to include: ${expected}`);
+          process.exit(1);
+        }
+      }
+    }
+    return output;
+  }
+  if (!shouldPass) {
+    console.error(output);
+    console.error(`Self-test: FAIL - expected check-demo to FAIL for ${dir}`);
+    process.exit(1);
+  }
+  return output;
+}
+
+function fillDocs(dir) {
+  const docs = {
+    'docs/requirements.md': `# Requirements
+
+## Problem / Opportunity
+Community residents need a simple way to report issues and get AI-generated suggestions.
+
+## Target Users
+- Primary user: community resident
+
+## Primary User Loop
+1. User logs in with demo account.
+2. User submits a repair request.
+3. App sends input to the AI workflow adapter.
+4. App displays the AI-generated response and a fallback mock result.
+5. User marks the issue as resolved.
+
+## Inputs
+| Name | Source | Format | Validation |
+|------|--------|--------|------------|
+| description | form | string | required, max 500 chars |
+
+## Outputs
+| Name | Format | Success criteria |
+|------|--------|------------------|
+| suggestion | string | actionable |
+
+## Acceptance Criteria
+- [ ] Primary loop works end-to-end locally.
+- [ ] AI workflow adapter has a mock fallback with the same response shape.
+- [ ] README documents run command, URL, and demo account if any.
+- [ ] \`bin/check-demo .\` passes.
+
+## Non-Goals
+- Do not build multi-tenant authentication.
+- Do not integrate a real payment gateway.
+`,
+    'docs/tech-plan.md': `# Technical Plan
+
+## Stack
+- Backend: Python Flask
+- Frontend: AdminLTE HTML templates
+- AI workflow adapter: src/adapter.py
+- Test runner: pytest
+
+## Pages / Screens
+| Page | Route | Purpose |
+|------|-------|---------|
+| Login | /login | Demo authentication |
+| Dashboard | / | Submit repair request |
+
+## Data Model
+| Entity | Fields | Notes |
+|--------|--------|-------|
+| Request | id, description, status | Stored in memory for demo |
+
+## API / Interface Contract
+| Endpoint | Input | Output | Error |
+|----------|-------|--------|-------|
+| POST /api/suggest | { description } | { suggestion, confidence } | 400, 500 |
+
+## SDD-Lite Contract
+
+### Primary Loop
+User logs in, submits description, adapter returns suggestion, app renders result.
+
+### Reference Template
+\`templates/flask-adminlte-week-report/\`
+
+### Field Mapping
+| UI Field | API Field | Workflow Field | Mock Value |
+|----------|-----------|----------------|------------|
+| description | description | input | "楼道灯坏了" |
+| suggestion | suggestion | output | "已派单给物业，预计2小时修复。" |
+
+### Workflow Mock Contract
+\`\`\`json
+{ "request": { "input": "string" }, "response": { "output": "string", "confidence": 0.95 } }
+\`\`\`
+
+### Demo Acceptance Checks
+- [ ] App starts locally.
+- [ ] Primary loop completes without live platform access.
+- [ ] Mock fallback returns stable JSON.
+- [ ] README, run command, and URL are correct.
+
+## Test Plan
+- Behavior tests for adapter and field mapping.
+- Browser check for login and primary loop.
+
+## Known Limits
+- Prototype only.
+`,
+    'docs/workflow-integration.md': `# Workflow Integration
+
+## Role
+The AI workflow classifies repair requests and returns a suggested action.
+
+## Adapter Location
+\`src/adapter.py\`
+
+## Request Shape
+\`\`\`json
+{ "input": "string" }
+\`\`\`
+
+## Response Shape
+\`\`\`json
+{ "output": "string", "confidence": 0.95 }
+\`\`\`
+
+## Mock Fallback
+When the AI platform is unavailable, the app returns a mock response with the same shape.
+
+| Input | Mock Output |
+|-------|-------------|
+| "楼道灯坏了" | { "output": "已派单给物业，预计2小时修复。", "confidence": 0.95 } |
+
+## Error Handling
+| Scenario | Behavior |
+|----------|----------|
+| Timeout | Return mock fallback and log warning |
+| Empty | Return 400 bad request |
+| Invalid | Return 500 with generic message |
+
+## Configuration
+| Name | Default | Purpose |
+|------|---------|---------|
+| WORKFLOW_URL | "" | Real workflow endpoint |
+
+## Switching to Real Workflow
+1. Set WORKFLOW_URL in environment.
+2. Replace mock call with HTTP POST.
+3. Keep same request/response shape.
+`,
+    'docs/test-report.md': `# Test Report
+
+## Test Scope
+Local run, adapter behavior test, browser primary loop, mock fallback, error state.
+
+## Local Run
+\`\`\`bash
+python3 app.py
+\`\`\`
+
+Result: PASS
+URL: http://127.0.0.1:5000
+
+## Unit / Behavior Tests
+| Test | Result |
+|------|--------|
+| adapter returns suggestion | PASS |
+| adapter fallback on timeout | PASS |
+
+## Web / Browser Tests
+| Scenario | Result |
+|----------|--------|
+| Login with demo account | PASS |
+| Submit repair request | PASS |
+
+## Mock Fallback Tests
+| Input | Expected | Actual | Result |
+|-------|----------|--------|--------|
+| "楼道灯坏了" | suggestion string | suggestion string | PASS |
+
+## Error State Tests
+| Scenario | Expected | Actual | Result |
+|----------|----------|--------|--------|
+| Empty description | 400 error | 400 error | PASS |
+
+## Issues Found
+None.
+
+## Sign-off
+- Primary loop works: yes
+- \`bin/check-demo .\` passes: yes
+- README is accurate: yes
+`,
+    'docs/demo-script.md': `# Demo Script
+
+## Elevator Pitch
+A community assistant that lets residents report issues and receive AI-powered suggestions, with a mock fallback that keeps the demo runnable offline.
+
+## Business Value
+- Residents get faster response guidance.
+- Property managers see clear, pre-classified requests.
+- The adapter pattern makes platform integration replaceable.
+
+## Technical Highlights
+- Flask + AdminLTE template adaptation.
+- Replaceable AI workflow adapter.
+- Stable request/response JSON between mock and real workflow.
+
+## Demo Steps
+| Time | Step | Action | Expected Result |
+|------|------|--------|-----------------|
+| 0:00 | Open | \`python3 app.py\` | Server starts at http://127.0.0.1:5000 |
+| 0:30 | Login | Enter ADMIN001 / admin123 | Dashboard loads |
+| 1:00 | Submit | Type "楼道灯坏了" and submit | AI suggestion appears |
+| 2:00 | Fallback | Disable network / set mock mode | Same JSON shape returned |
+
+## Fallback Path
+If the AI workflow fails, the app automatically returns the mock response with the same shape.
+
+## Q\u0026A Preparation
+| Question | Answer |
+|----------|--------|
+| What if the platform is down? | Mock fallback keeps the demo runnable. |
+
+## Known Limits
+- Prototype scope.
+- In-memory storage.
+`
+  };
+  for (const [relPath, content] of Object.entries(docs)) {
+    fs.writeFileSync(path.join(dir, relPath), content);
+  }
+}
+
+let exitCode = 0;
+try {
+  execFileSync(process.execPath, [demoAiApp, projectName], { stdio: 'inherit', cwd: workDir });
+
+  // Phase 1: skeleton project must FAIL because docs are unfilled placeholders.
+  expectCheck(projectDir, false, [
+    'FAIL: docs/requirements.md has no obvious placeholders',
+    'FAIL: docs/tech-plan.md has no obvious placeholders',
+    'FAIL: docs/workflow-integration.md has no obvious placeholders',
+    'FAIL: docs/test-report.md has no obvious placeholders',
+    'FAIL: docs/demo-script.md has no obvious placeholders',
+  ]);
+
+  // Phase 2: fill docs and expect PASS.
+  fillDocs(projectDir);
+  expectCheck(projectDir, true);
+
+  console.log('Self-test: PASS');
+} catch (err) {
+  console.error('Self-test: FAIL');
+  exitCode = 1;
+} finally {
+  try {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  } catch (e) {
+    // ignore cleanup failures
+  }
+}
+process.exit(exitCode);

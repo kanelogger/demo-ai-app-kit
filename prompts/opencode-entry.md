@@ -37,7 +37,7 @@ Copy this prompt as the first instruction after entering the generated project a
     1. Restate the app concept in 5 lines or less.
     2. Ask at most 3 blocking questions. If none are blocking, state assumptions and continue.
     3. Define one primary user loop and one optional secondary loop.
-    4. Generate a scoped requirements document.
+    4. Generate a scoped requirements document and save it to `docs/requirements.md`.
     5. Classify requirement route: simple requirement -> question-refiner; vague, complex, or product-shape unclear -> ce-brainstorm.
     6. Use this skill routing table:
        - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> template-adapter -> workflow-integration-planner -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality -> demo-script-generator.
@@ -50,11 +50,12 @@ Copy this prompt as the first instruction after entering the generated project a
        - Any completed Web app: use webapp-testing.
        - Failures: use debugging-and-error-recovery.
        - Before report or handoff: use code-review-and-quality.
-    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Primary Loop, Reference Template, Field Mapping, Workflow Mock Contract, and Demo Acceptance Checks.
+    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Primary Loop, Reference Template, Field Mapping, Workflow Mock Contract, and Demo Acceptance Checks. Save the plan to `docs/tech-plan.md`.
     8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then immediately adapt the bundled template instead of starting from a blank project.
     9. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
-    10. Verify the app locally with tests and browser checks; report exact commands and URL.
-    11. Generate README updates and report/demo materials only after testing and review.
+    10. Write the workflow adapter contract, request/response JSON, mock fallback, and error handling to `docs/workflow-integration.md`.
+    11. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md`.
+    12. Generate README updates and report/demo materials only after testing and review. Save the demo script to `docs/demo-script.md`.
   </task>
 
   <constraints>
@@ -73,8 +74,9 @@ Copy this prompt as the first instruction after entering the generated project a
   <success_criteria>
     - A user can open the app locally and complete the primary loop.
     - The AI workflow call path is visible in code and demoable through mock fallback.
+    - `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-report.md`, and `docs/demo-script.md` are present and consistent with code.
     - Requirements, SDD-lite, API/workflow contracts, tests, and README tell the same story.
-    - The README contains run command, URL, accounts if any, core flow, adapter notes, and known limits.
+    - The README contains run command, URL, accounts if any, core flow, adapter notes, known limits, and the purpose of each docs/ artifact.
     - The project can be explained in 10 minutes with business value, technical structure, and live demo steps.
   </success_criteria>
 

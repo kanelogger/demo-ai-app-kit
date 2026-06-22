@@ -46,6 +46,7 @@ const coreSkills = [
 // missing skill or template does not leave a half-generated project behind.
 const requiredSources = [
   ['template', path.join(kitRoot, 'templates', 'flask-adminlte-week-report')],
+  ['docs skeletons', path.join(kitRoot, 'templates', 'docs')],
   ['AGENTS.md', path.join(kitRoot, 'AGENTS.md')],
   ['entry prompt', path.join(kitRoot, 'prompts', 'opencode-entry.md')],
   ['check-demo script', path.join(kitRoot, 'bin', 'check-demo')],
@@ -86,13 +87,16 @@ function copyFile(src, dest) {
 // 1. Copy bundled template as the generated app skeleton.
 copyDir(path.join(kitRoot, 'templates', 'flask-adminlte-week-report'), targetDir);
 
-// 2. Copy project-level agent instructions.
+// 2. Copy standard project documentation skeletons.
+copyDir(path.join(kitRoot, 'templates', 'docs'), path.join(targetDir, 'docs'));
+
+// 3. Copy project-level agent instructions.
 copyFile(path.join(kitRoot, 'AGENTS.md'), path.join(targetDir, 'AGENTS.md'));
 
-// 3. Copy entry prompt.
+// 4. Copy entry prompt.
 copyFile(path.join(kitRoot, 'prompts', 'opencode-entry.md'), path.join(targetDir, 'prompts', 'opencode-entry.md'));
 
-// 4. Copy core skills; fail loud if a default-path skill is missing from the kit.
+// 5. Copy core skills; fail loud if a default-path skill is missing from the kit.
 for (const skill of coreSkills) {
   const src = path.join(kitRoot, 'skills', skill);
   if (!fs.existsSync(src)) {
@@ -102,11 +106,11 @@ for (const skill of coreSkills) {
   copyDir(src, path.join(targetDir, 'skills', skill));
 }
 
-// 5. Copy check-demo script.
+// 6. Copy check-demo script.
 copyFile(path.join(kitRoot, 'bin', 'check-demo'), path.join(targetDir, 'bin', 'check-demo'));
 fs.chmodSync(path.join(targetDir, 'bin', 'check-demo'), 0o755);
 
-// 6. Generate a project README skeleton.
+// 7. Generate a project README skeleton.
 const readme = `# ${projectName}
 
 Generated from demo-ai-app-kit.
@@ -140,6 +144,20 @@ Open http://127.0.0.1:5000 in a browser.
 Default demo account: \`ADMIN001 / admin123\`.
 
 The project was generated with \`demo-ai-app ${projectName}\`; if you are reading this inside the project directory, run \`python3 app.py\` directly.
+
+## Project artifacts
+
+The Agent fills these standard files during the product-quality workflow:
+
+| File | Purpose |
+|------|---------|
+| \`docs/requirements.md\` | Scoped requirements, users, primary loop, inputs/outputs, acceptance criteria. |
+| \`docs/tech-plan.md\` | Stack, pages, data model, API contract, SDD-lite, test plan, known limits. |
+| \`docs/workflow-integration.md\` | AI workflow adapter contract, request/response JSON, mock fallback, error handling. |
+| \`docs/test-report.md\` | Local run, unit/browser tests, mock fallback tests, issue log, sign-off. |
+| \`docs/demo-script.md\` | 10-minute demo script with business value, steps, fallback path, Q\u0026A. |
+
+Keep these files in sync with code and README.
 
 ## Verify demo readiness
 
