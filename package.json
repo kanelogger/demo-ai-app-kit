@@ -1,0 +1,32 @@
+{
+  "name": "demo-ai-app-kit",
+  "version": "0.1.0",
+  "description": "AI Coding application prototype kit: generate runnable, maintainable AI web apps from a simple requirement.",
+  "bin": {
+    "demo-ai-app": "bin/demo-ai-app"
+  },
+  "files": [
+    "bin/",
+    "templates/",
+    "AGENTS.md",
+    "prompts/",
+    "skills/",
+    "docs/",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "./bin/check-demo ."
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "ai-coding",
+    "agent",
+    "prototype",
+    "flask",
+    "adminlte",
+    "demo"
+  ],
+  "license": "MIT"
+}

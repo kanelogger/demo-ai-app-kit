@@ -288,7 +288,7 @@ Install -> demo-ai-app <project-name> -> start Agent -> input topic
 Assessment:
 
 - Fit at prompt/workflow level: mostly yes. `AGENTS.md`, `prompts/opencode-entry.md`, and core skills describe the product-quality chain.
-- Fit at install/CLI level: not yet. There is no `package.json` and no `demo-ai-app <project-name>` generator.
+- Fit at install/CLI level: yes. `package.json` and `bin/demo-ai-app <project-name>` are now in place; the generator copies the template, `AGENTS.md`, entry prompt, core skills, `bin/check-demo`, and a README skeleton into the generated project.
 - Fit at artifact level: partial. The flow asks for requirements and technical plan, but fixed output paths such as `docs/requirements.md` and `docs/tech-plan.md` still need to be specified.
 - Fit at testing level: partial. `bin/check-demo`, `tdd`, and `webapp-testing` exist, but generated projects need a copied or generated test/check contract.
 - Fit at reporting level: partial. `demo-script-generator` exists, but `docs/demo-script.md` and generated-app report output conventions are still missing.

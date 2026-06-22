@@ -1,0 +1,175 @@
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+
+const projectName = process.argv[2];
+
+if (!projectName) {
+  console.error('Usage: demo-ai-app <project-name>');
+  process.exit(1);
+}
+
+if (!/^[a-zA-Z0-9_-]+$/.test(projectName)) {
+  console.error('Error: project name must be alphanumeric with - or _ only.');
+  process.exit(1);
+}
+
+const kitRoot = path.resolve(__dirname, '..');
+const targetDir = path.resolve(process.cwd(), projectName);
+
+if (fs.existsSync(targetDir)) {
+  console.error(`Error: directory already exists: ${targetDir}`);
+  process.exit(1);
+}
+
+const coreSkills = [
+  'question-refiner',
+  'ce-brainstorm',
+  'grilling',
+  'solution-stress-test',
+  'domain-modeling',
+  'tech-plan-generator',
+  'api-and-interface-design',
+  'security-and-hardening',
+  'template-adapter',
+  'workflow-integration-planner',
+  'tdd',
+  'webapp-testing',
+  'debugging-and-error-recovery',
+  'code-review-and-quality',
+  'demo-script-generator',
+  'implement',
+  'planning-and-task-breakdown',
+];
+
+// Validate required source assets before creating the target directory so a
+// missing skill or template does not leave a half-generated project behind.
+const requiredSources = [
+  ['template', path.join(kitRoot, 'templates', 'flask-adminlte-week-report')],
+  ['AGENTS.md', path.join(kitRoot, 'AGENTS.md')],
+  ['entry prompt', path.join(kitRoot, 'prompts', 'opencode-entry.md')],
+  ['check-demo script', path.join(kitRoot, 'bin', 'check-demo')],
+  ...coreSkills.map((skill) => [`skill/${skill}`, path.join(kitRoot, 'skills', skill)]),
+];
+
+for (const [label, src] of requiredSources) {
+  if (!fs.existsSync(src)) {
+    console.error(`Error: required kit asset is missing: ${label} (${src})`);
+    process.exit(1);
+  }
+}
+
+fs.mkdirSync(targetDir, { recursive: true });
+
+const SKIP_DIRS = new Set(['node_modules', '.git', '__pycache__', '.venv', 'venv', 'env']);
+
+function copyDir(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      if (SKIP_DIRS.has(entry.name)) continue;
+      copyDir(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+function copyFile(src, dest) {
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+}
+
+
+// 1. Copy bundled template as the generated app skeleton.
+copyDir(path.join(kitRoot, 'templates', 'flask-adminlte-week-report'), targetDir);
+
+// 2. Copy project-level agent instructions.
+copyFile(path.join(kitRoot, 'AGENTS.md'), path.join(targetDir, 'AGENTS.md'));
+
+// 3. Copy entry prompt.
+copyFile(path.join(kitRoot, 'prompts', 'opencode-entry.md'), path.join(targetDir, 'prompts', 'opencode-entry.md'));
+
+// 4. Copy core skills; fail loud if a default-path skill is missing from the kit.
+for (const skill of coreSkills) {
+  const src = path.join(kitRoot, 'skills', skill);
+  if (!fs.existsSync(src)) {
+    console.error(`Error: required skill is missing from the kit: ${skill}`);
+    process.exit(1);
+  }
+  copyDir(src, path.join(targetDir, 'skills', skill));
+}
+
+// 5. Copy check-demo script.
+copyFile(path.join(kitRoot, 'bin', 'check-demo'), path.join(targetDir, 'bin', 'check-demo'));
+fs.chmodSync(path.join(targetDir, 'bin', 'check-demo'), 0o755);
+
+// 6. Generate a project README skeleton.
+const readme = `# ${projectName}
+
+Generated from demo-ai-app-kit.
+
+## Purpose
+
+A locally runnable AI web app prototype built by adapting the bundled Flask + AdminLTE admin shell.
+
+## Target workflow
+
+\`\`\`text
+Input a simple app requirement
+-> Agent reads prompts/opencode-entry.md and AGENTS.md
+-> Requirement clarification (question-refiner / ce-brainstorm)
+-> Solution stress test and domain modeling
+-> SDD-lite technical plan
+-> Adapt templates/ into the target app
+-> Integrate or mock the AI workflow
+-> Local verification and check-demo
+-> Demo script and report materials
+\`\`\`
+
+## Run locally
+
+\`\`\`bash
+python3 app.py
+\`\`\`
+
+Open http://127.0.0.1:5000 in a browser.
+
+Default demo account: \`ADMIN001 / admin123\`.
+
+The project was generated with \`demo-ai-app ${projectName}\`; if you are reading this inside the project directory, run \`python3 app.py\` directly.
+
+## Verify demo readiness
+
+\`\`\`bash
+./bin/check-demo .
+\`\`\`
+
+## AI workflow integration
+
+The app should call an AI workflow through a replaceable adapter. When network access to the AI platform is unavailable, the app falls back to a mock response with the same JSON shape.
+
+## Current status
+
+- [ ] Requirement clarified
+- [ ] SDD-lite contract written
+- [ ] Template adapted
+- [ ] Workflow adapter + mock fallback implemented
+- [ ] Local verification passed
+- [ ] README updated with exact run command and URL
+- [ ] Demo script prepared
+
+## Known limits
+
+- This is a prototype, not production code.
+- Review all TODO comments before demo day.
+`;
+fs.writeFileSync(path.join(targetDir, 'README.md'), readme);
+
+console.log(`Generated project at ${targetDir}`);
+console.log(`Next steps:`);
+console.log(`  cd ${projectName}`);
+console.log(`  python3 app.py`);
+console.log(`  ./bin/check-demo .`);

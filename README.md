@@ -38,10 +38,13 @@
 - 第二批技能合并：`test-driven-development` 已合并进 `tdd`，`diagnosing-bugs` 已合并进 `debugging-and-error-recovery`。
 - 已删除不再使用的 `AGENTS-template.md`。
 
+已完成（最近）：
+
+- 增加 `package.json`：定义 npm 包名 `demo-ai-app-kit`、bin 命令 `demo-ai-app`、发布文件范围。
+- 增加 `bin/demo-ai-app`：支持 `demo-ai-app <project-name>` 生成项目目录，自动复制 `AGENTS.md`、入口 prompt、核心技能、`bin/check-demo` 和模板代码，并生成项目 README 骨架。
+
 未完成：
 
-- 还没有 `package.json`。
-- 还没有真正的 `demo-ai-app <project-name>` 生成命令。
 - 还需要固定生成项目中的 `docs/requirements.md`、`docs/tech-plan.md`、`docs/demo-script.md` 等产物路径。
 - 还需要补 `docs/workflow-integration.md` 和 `docs/demo-script.md`。
 
@@ -98,6 +101,30 @@
 - `skills/code-review-and-quality/`：提交或交付前做轻量质量审查。
 - `bin/check-demo`：检查 README、运行入口、本地 URL、工作流说明和 mock fallback。
 
+## 生成新项目
+
+全局安装或本地安装本工具包后：
+
+```bash
+demo-ai-app my-project
+cd my-project
+python3 app.py
+```
+
+生成目录包含：
+
+- 基于 `templates/flask-adminlte-week-report/` 的可运行 Flask + AdminLTE 骨架。
+- 项目级 `AGENTS.md` 和 `prompts/opencode-entry.md`。
+- 核心技能目录 `skills/`（默认产品质量链路所需）。
+- 验收脚本 `bin/check-demo`。
+- 项目 `README.md` 骨架。
+
+验收生成后的项目：
+
+```bash
+./bin/check-demo .
+```
+
 ## 本地运行当前模板
 
 查看当前周报模板原型：
@@ -141,9 +168,9 @@ templates/                  可复用应用模板
 
 ## 下一步
 
-优先级最高的是把当前 prompt-level workflow 变成真实 CLI 生成闭环：
+CLI 生成骨架已完成。当前优先级最高的后续工作：
 
-1. 补 `package.json`。
-2. 实现 `demo-ai-app <project-name>`。
-3. 生成项目时带上自包含 `AGENTS.md`、入口 prompt、核心技能、模板代码、README 骨架和 `bin/check-demo`。
-4. 用样题完整跑通一次：需求 -> 技术方案 -> 代码 -> 联调测试 -> 汇报材料。
+1. 固定生成项目中的产物路径：\`docs/requirements.md\`、\`docs/tech-plan.md\`、\`docs/demo-script.md\`。
+2. 补 \`docs/workflow-integration.md\` 和 \`docs/demo-script.md\`，把需求、技术方案、实现、测试、汇报串成 Agent 可执行流程。
+3. 扩展 \`bin/check-demo\`，让它能检查生成项目中的需求文档、技术方案、测试记录和汇报材料。
+4. 用样题“AI+社会治理——社区智能助手”完整跑通一次：需求 -> 技术方案 -> 代码 -> 联调测试 -> 汇报材料。
