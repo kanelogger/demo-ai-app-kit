@@ -114,6 +114,26 @@ User logs in, submits description, adapter returns suggestion, app renders resul
 ### Reference Template
 \`templates/flask-adminlte-week-report/\`
 
+### Menu Plan
+| Menu | Route | Layer |
+|------|-------|-------|
+| 系统首页 | /dashboard | foundation |
+| 报修登记 | /repair/create | core |
+| 报修列表 | /repair/list | supporting |
+
+### Page Plan
+| Page | Route | Layer | Source Template | Keep Reason | Cut Plan |
+|------|-------|-------|-----------------|-------------|----------|
+| Dashboard | /dashboard | foundation | dashboard/index.html | Navigation hub | - |
+| Repair Create | /repair/create | core | reports/pending.html | Primary loop input | - |
+| Repair List | /repair/list | supporting | reports/view.html | Demo credibility | Remove route, template, menu, mock data |
+
+### Entity Mapping
+| Source Entity | Target Entity | Decision |
+|---------------|---------------|----------|
+| 周报 | 报修单 | rename |
+| 周报模板 | 报修模板 | optional-cut |
+
 ### Field Mapping
 | UI Field | API Field | Workflow Field | Mock Value |
 |----------|-----------|----------------|------------|

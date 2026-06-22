@@ -1,6 +1,5 @@
 ---
-name: tech-plan-generator
-description: Generate a lean technical plan for a demo-ai-app-kit competition app. Use after requirements are scoped and before implementation, especially when the app needs pages, data model, local API routes, Star Agent workflow contract, mock fallback, verification commands, and README structure.
+description: Generate a lean technical plan for a demo-ai-app-kit competition app. Use after requirements are scoped and before implementation, especially when the app needs pages, data model, local API routes, Star Agent workflow contract, mock fallback, verification commands, and README structure. The default reference template is the bundled Flask/AdminLTE generic PC admin shell derived from the week-report template.
 ---
 
 # Tech Plan Generator
@@ -9,7 +8,7 @@ description: Generate a lean technical plan for a demo-ai-app-kit competition ap
 
 1. Read the scoped requirements and repository instructions.
 2. Map the three-layer context: constraint layer, example layer, and visual layer.
-3. Map the primary loop to template pages and reusable UI pieces.
+3. Map the primary loop to template pages and reusable UI pieces, and classify each page as `core`, `supporting`, `foundation`, `optional-cut`, or `delete` with a cut plan.
 4. Define the smallest data model needed for demo and local storage.
 5. Define local backend routes or static mock modules.
 6. Produce an `SDD-Lite Contract` before implementation. Keep it to one page and use it as a frozen pre-build contract, not a long-lived SDD system.
@@ -20,15 +19,15 @@ description: Generate a lean technical plan for a demo-ai-app-kit competition ap
 ## Output Contract
 
 Return Markdown:
-
-- `Architecture Choice`: stack and why it is fastest.
-- `Three-Layer Context`: constraint layer, example layer, visual layer.
-- `Pages`: route, purpose, source template to adapt, key components.
+- `Pages`: route, purpose, source template to adapt, key components, layer (`core` / `supporting` / `foundation` / `optional-cut` / `delete`), and cut plan.
 - `Data Model`: entities, fields, sample records.
 - `SDD-Lite Contract`: one-page contract with exactly these blocks:
   - `Primary Loop`: user action, system action, AI/workflow action, visible result.
   - `Reference Template`: source page, source interaction, and source mock data to imitate.
-  - `Field Mapping`: frontend display/form field -> local API or workflow field -> mock fixture field.
+  - `Menu Plan`: system name, top-level menus, sub-menus, target routes, and layers.
+  - `Page Plan`: route, purpose, source template, layer, keep reason, and cut plan.
+  - `Entity Mapping`: source template entity -> target business entity with keep/rename/delete decisions.
+  - `Field Mapping`: frontend display/form field -> local API or workflow field -> mock fixture field, with required flags.
   - `Workflow Mock Contract`: request JSON, response JSON, timeout/error shape, and mock example.
   - `Demo Acceptance Checks`: manual checks that prove the primary loop works.
 - `Local APIs`: method, path, request, response, fallback behavior.
@@ -46,7 +45,7 @@ Return Markdown:
 - Do not create a second template when the bundled admin shell can be adapted.
 - Do not create a separate SDD file or SDD skill unless the user explicitly asks. The SDD-lite contract is part of this technical plan.
 - Treat SDD-lite as frozen after planning; during implementation, prefer a working demo and `bin/check-demo` over repeatedly maintaining the contract.
+- Page count is not a target metric. Pages must be business-relevant and classified by layer; `optional-cut` pages must list their cut scope, and `delete` pages must list their full deletion scope.
 - Every field in `Field Mapping` must appear in at least one frontend display/form surface and at least one local API/workflow or mock fixture. If a field appears in only one place, cut it or mark it as deferred.
 - In `Three-Layer Context`, use `AGENTS.md` and this skill as the constraint layer, `templates/flask-adminlte-week-report/` as the default example layer, and `docs/original-demo-ref/` or available screenshots/HTML prototypes as the visual layer.
-- Optional skill routing must stay small: use `api-and-interface-design` for complex contracts, `security-and-hardening` for auth/user input/external calls, `webapp-testing` for browser verification, `debugging-and-error-recovery` for failing builds/tests, and `code-review-and-quality` for final risk review.
 - Do not call optional support skills by default; list them with trigger conditions so the implementer can keep the main path light.

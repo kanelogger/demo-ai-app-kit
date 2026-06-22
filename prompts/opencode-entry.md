@@ -50,8 +50,8 @@ Copy this prompt as the first instruction after entering the generated project a
        - Any completed Web app: use webapp-testing.
        - Failures: use debugging-and-error-recovery.
        - Before handoff or final quality gate: use code-review-and-quality.
-    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Primary Loop, Reference Template, Field Mapping, Workflow Mock Contract, and Demo Acceptance Checks. Save the plan to `docs/tech-plan.md`.
-    8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then immediately adapt the bundled template instead of starting from a blank project.
+    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Primary Loop, Reference Template, Field Mapping, Workflow Mock Contract, and Demo Acceptance Checks. Inside `docs/tech-plan.md`, also write the Template Adaptation Contract: Menu Plan, Page Plan (with layer and cut plan for every page), Entity Mapping, Field Mapping, and Copy Rewrite Checklist. Save the plan to `docs/tech-plan.md`.
+    8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract and Template Adaptation Contract before implementation, then immediately adapt the bundled template instead of starting from scratch.
     9. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
     10. Write the workflow adapter contract, request/response JSON, mock fallback, and error handling to `docs/workflow-integration.md`.
     11. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md`.
@@ -61,6 +61,8 @@ Copy this prompt as the first instruction after entering the generated project a
   <constraints>
     - Treat time limits, competition setting, or machine constraints as scenario parameters, not as permission to skip product-quality basics.
     - Prefer Python Flask plus native HTML/CSS/JS unless the existing project clearly supports another faster path.
+    - Target PC browsers only; do not add mobile adaptation or responsive mobile-first layouts.
+    - Do not introduce a React/Vue/Java multi-template matrix; reuse and adapt the bundled admin shell.
     - Keep the first demo loop complete before adding secondary features.
     - Include mock workflow mode that works without external AI platform network access.
     - Keep workflow input/output JSON stable between mock and real adapter.

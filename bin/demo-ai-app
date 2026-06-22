@@ -177,6 +177,39 @@ The project was generated with \`demo-ai-app ${projectName}\`; if you are readin
 | \`workflow_adapter.py\` | Replaceable adapter for the AI workflow: input validation, timeout, empty-result fallback, and a stable \`{ok, data, error, fallback}\` response envelope. |
 | \`bin/check-demo\` | Readiness script that checks required files, README contents, and workflow error-handling contract. |
 
+## Template Adaptation Contract
+
+The bundled template is a generic PC admin shell derived from a week-report system. Before adapting it to a target business, the Agent must produce a written contract in \`docs/tech-plan.md\`:
+
+- \`Menu Plan\`: system name, top-level menus, sub-menus, target routes, and layer.
+- \`Page Plan\`: every page with route, purpose, source template, layer, keep reason, and cut plan.
+- \`Entity Mapping\`: each source template entity mapped to a target business entity.
+- \`Field Mapping\`: UI field -> local/API field -> workflow field -> mock fixture field.
+- \`Copy Rewrite Checklist\`: every visible text item that must be rewritten to the target domain.
+
+### Page layers
+
+| Layer | Meaning | Policy |
+|-------|---------|--------|
+| \`core\` | Required to complete the primary loop | Must implement and verify |
+| \`supporting\` | Relevant to the loop; improves demo credibility | Keep only with a written reason |
+| \`foundation\` | Login, dashboard, users, roles, dictionaries, menus | Keep as needed; do not overshadow the loop |
+| \`optional-cut\` | Business-relevant but not needed for the current demo | May keep; must record cut scope |
+| \`delete\` | Unrelated to the target business or week-report leftover | Delete or hide from menus and docs |
+
+Page count is not a target metric. Keep business-relevant pages and delete or weaken week-report-specific pages. Complete the primary loop before trimming \`optional-cut\` pages.
+
+### Cut plan scope
+
+For every \`optional-cut\` or \`delete\` page, record the scope needed to remove it later:
+
+- Flask route in \`app.py\`.
+- Jinja template or static HTML file.
+- Sidebar / menu entry.
+- Mock data in \`assets/mock-data.js\` or backend fixtures.
+- JS event or render entry.
+- References in README, docs, and test-report.
+
 ## AI workflow integration
 
 The app calls the AI workflow through \`workflow_adapter.py\`. When the platform is unavailable or \`WORKFLOW_MOCK=true\`, the adapter falls back to a mock response with the same JSON shape.

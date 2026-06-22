@@ -82,11 +82,45 @@ check_no_placeholders() {
   if [[ ! -f "$ROOT/$doc" ]]; then
     return
   fi
-  if grep -Eiq "Fill this in|^\s*- Primary user:\s*$|Do not build \.\.\.|^\s*\.\.\.\s*$|PASS / FAIL|# exact command|TODO|FIXME" "$ROOT/$doc"; then
+  if grep -Eiq "Fill this in|^\s*- Primary user:\s*$|Do not build \.\.|^\s*\.\.\.\s*$|PASS / FAIL|# exact command|TODO|FIXME" "$ROOT/$doc"; then
     echo "FAIL: $label"
     failures=$((failures + 1))
   else
     echo "PASS: $label"
+  fi
+}
+
+check_weekly_report_residue() {
+  local label="no unrelated weekly-report wording in generated app"
+  if is_kit_repo; then
+    echo "SKIP: $label (kit repo template may keep source wording)"
+    return
+  fi
+
+  # If the README or docs explicitly describe a weekly-report app, residue is expected.
+  local is_weekly_report=0
+  if [[ -f "$ROOT/README.md" ]] && grep -Eiq "周报|week[- ]?report" "$ROOT/README.md"; then
+    is_weekly_report=1
+  fi
+  if [[ -d "$ROOT/docs" ]] && grep -Rilq "周报\|week[- ]\?report" "$ROOT/docs" 2>/dev/null; then
+    is_weekly_report=1
+  fi
+
+  if [[ "$is_weekly_report" -eq 1 ]]; then
+    echo "SKIP: $label (app is described as a weekly-report system)"
+    return
+  fi
+
+  local hits_file="/tmp/demo_check_weekly_hits.$$"
+  if grep -RInE "周报" \
+    "$ROOT/templates" "$ROOT/assets" "$ROOT/README.md" "$ROOT/docs" 2>/dev/null >"$hits_file"; then
+    echo "FAIL: $label"
+    cat "$hits_file"
+    rm -f "$hits_file"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+    rm -f "$hits_file"
   fi
 }
 
@@ -111,9 +145,19 @@ fi
 
 check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
 check_text "README.md" "127\.0\.0\.1|localhost|http://" "README includes local URL"
+if ! is_kit_repo; then
+  check_text "README.md" "primary loop|主闭环|primary user loop|核心流程" "README includes primary loop"
+fi
 check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
 check_text "README.md" "workflow|工作流|agent|智能体" "README includes workflow integration notes"
 check_text "README.md" "docs/requirements\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
+
+if ! is_kit_repo; then
+  check_text "docs/tech-plan.md" "Menu Plan|菜单规划" "tech plan includes Menu Plan"
+  check_text "docs/tech-plan.md" "Page Plan|页面规划|页面分层" "tech plan includes Page Plan"
+  check_text "docs/tech-plan.md" "Field Mapping|字段映射" "tech plan includes Field Mapping"
+  check_text "docs/tech-plan.md" "Workflow Mock Contract|Workflow Mock|Mock Contract" "tech plan includes Workflow Mock Contract"
+fi
 
 # Workflow adapter and error-handling contract.
 check_any_file "workflow adapter" "workflow_adapter.py" "src/workflow_adapter.py" "templates/flask-adminlte-week-report/workflow_adapter.py"
@@ -148,6 +192,7 @@ if ! is_kit_repo; then
 fi
 
 check_no_private_text
+check_weekly_report_residue
 
 if [[ "$failures" -gt 0 ]]; then
   echo "Demo readiness: FAIL ($failures issue(s))"
