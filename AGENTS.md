@@ -50,9 +50,9 @@ Competition use is the first validation scenario, but the product quality target
 
 ## Operating Rules
 
-- Prefer adapting `templates/flask-adminlte-week-report/` over creating a new app from scratch.
-- Keep the bundled week-report template as a reusable admin shell: login, dashboard, menu, form, list, review/detail, charts, mock data.
-- Do not hard-bind generated apps to the week-report business domain unless the user explicitly asks.
+- Generated apps must start from `templates/flask-admin-shell/` plus `docs/template-patterns/`, not from the reference example.
+- `docs/reference/` and `examples/` are repository maintenance assets only; do not copy them into generated projects.
+- Do not hard-bind generated apps to the repository reference business domain unless the user explicitly asks for that exact domain.
 - Separate public reusable assets from private event notes. Do not copy local-only preparation details into generated public deliverables.
 - Optimize for generated-app quality: clear requirements, stable contracts, local run, visible URL, mock fallback, meaningful tests, readable code, useful README, and local verification grounded in the verified app.
 - Do not add long theoretical materials unless they directly improve generated-app quality or maintainability.
@@ -70,8 +70,7 @@ Requirement input
 -> tech-plan-generator / SDD-lite
 -> api-and-interface-design
 -> security-and-hardening
--> template-adapter
--> workflow-integration-planner
+-> shell-implementation
 -> tdd
 -> webapp-testing
 -> debugging-and-error-recovery
@@ -82,10 +81,11 @@ Routing rules:
 
 - Simple requirement: use `skills/question-refiner`; skip full `skills/ce-brainstorm`.
 - Vague, complex, or product-shape-unclear requirement: use `skills/ce-brainstorm`.
-- Before freezing an important plan: use `skills/grilling`, but cap the question count and avoid endless interviews.
+- Before freezing an important plan: use `skills/grilling`; it asks one Mom-Test-style blocking question at a time and classifies answers as behavior facts, constraints, rules, data facts, acceptance facts, attitudes, or unknown.
 - More than 3 business terms, or likely UI/API/workflow field drift: use `skills/domain-modeling`.
 - Frontend/backend APIs, workflow contracts, or mock fixtures: use `skills/api-and-interface-design`.
 - User input, authentication, storage, files, or external calls: use `skills/security-and-hardening`.
+- Implementing from the neutral shell and frozen docs: use `skills/shell-implementation`.
 - Behavior logic, adapters, or mock fixtures: use `skills/tdd`.
 - Any completed Web app: use `skills/webapp-testing`.
 - Build, test, runtime, or browser failures: use `skills/debugging-and-error-recovery`.
@@ -105,9 +105,10 @@ Explicit heavy workflow skills stay out of the default path unless the user or w
 ## SDD-Lite Policy
 
 - Use SDD-lite as a one-page pre-build contract inside the technical plan.
-- Required blocks: `Primary Loop`, `Reference Template`, `Field Mapping`, `Workflow Mock Contract`, `Demo Acceptance Checks`.
+- Required blocks: `Primary Loop`, `Reference Patterns`, `Generated Files Plan`, `Field Mapping`, `Workflow Mock Contract`, `Data Storage Decision`, `Demo Acceptance Checks`.
 - Do not create a separate SDD document or use a heavyweight SDD flow unless the user explicitly asks.
 - During implementation, prefer a working demo and `bin/check-demo` over repeatedly maintaining planning documents.
+- `bin/check-demo --skeleton .` is the structural gate for a fresh generated project; `bin/check-demo .` is the full app readiness gate after the Agent completes docs and implementation.
 
 ## Coding Rules
 
@@ -142,6 +143,13 @@ Keep comments load-bearing:
 - If a check could not be run, say so and explain why.
 - `bin/check-demo` is the baseline readiness check for this repository or a generated project.
 
+## Clarification Workflow
+
+- Prioritize behavior facts, concrete constraints, data shape, workflow rules, and acceptance evidence over opinions and attitudes.
+- Classify answers: Behavior Fact, Concrete Constraint, Workflow Rule, Data Fact, Acceptance Fact, Attitude / Wish, or Unknown.
+- Attitude answers become assumptions or risks unless converted to observable acceptance checks.
+- Do not freeze a requirements baseline while any required field is still an attitude or unknown.
+
 ## Definition Of Done
 
 - The app or generated project can run locally, or the remaining blocker is explicit.
@@ -149,6 +157,6 @@ Keep comments load-bearing:
 - At least one complete user loop is demoable.
 - AI workflow integration has a real adapter or a documented mock fallback with the same response shape.
 - README explains purpose, run command, core flow, workflow integration, known limits, and demo account if relevant.
-- Requirements, technical plan, tests/checks, and quality review exist when the workflow calls for them.
+- Requirements, technical plan, workflow integration, test cases, test report, and quality review exist when the workflow calls for them.
 - No secrets, private event notes, or local-only credentials are included in public deliverables.
 - `bin/check-demo` passes or reports concrete missing items.

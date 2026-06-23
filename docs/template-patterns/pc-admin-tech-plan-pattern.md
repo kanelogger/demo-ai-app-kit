@@ -101,13 +101,13 @@ business-requirement
 Forbidden `Source`:
 
 ```text
-<original-example>
-<legacy-template>
-copied-page
+source label for original example
+source label for legacy template
+source label for copied page
 ```
 
-`<original-example>` and `<legacy-template>` stand for any path or label that
-copies the original reference implementation instead of deriving from the
+These labels stand for any path or label that copies the original reference
+implementation instead of deriving from the
 neutral shell and patterns.
 
 ## Workflow Mock Contract

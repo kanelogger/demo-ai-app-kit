@@ -81,6 +81,12 @@ Phase 0: Baseline And Guardrails — Task 1 complete.
 - [x] Task 12: Update Self-Test For Skeleton Generation
   - [x] `npm test` passes.
   - [x] Self-test validates skeleton, placeholder failure, and full-mode pass.
+- [x] Task 12b: Close Out Reference Path Exposure In Generated Project
+  - [x] `AGENTS.md` uses generic `docs/reference/` and `examples/` instead of `docs/reference/week-report/` / `examples/week-report-app/`.
+  - [x] `prompts/opencode-entry.md` uses generic paths instead of specific week-report paths.
+  - [x] `bin/check-demo` path detector uses generic `examples/|docs/reference/`.
+  - [x] `bin/check-demo` kit-repo app entry fallback no longer references `examples/week-report-app/app.py`.
+  - [x] Decision: keep `flask-adminlte-week-report` / `template-adapter` in the forbidden-term detector only. They are legacy identifiers, not paths, and the detector is allowed to mention what it forbids.
 
 ### Phase 5: Public Docs And Final Validation
 
@@ -93,6 +99,9 @@ Phase 0: Baseline And Guardrails — Task 1 complete.
   - [x] `./bin/check-demo --skeleton` passes on fresh generated app.
   - [x] Full `check-demo` fails only on expected placeholders.
   - [x] `npm pack --dry-run` excludes reference/example/migration docs.
+- [x] Task 14b: Decide Forbidden-Keyword Example Policy
+  - [x] `docs/template-patterns/README.md` and `pc-admin-tech-plan-pattern.md` now use `<copied-page>` placeholder instead of bare `copied-page`.
+  - [x] Decision: rule-defining files (`prompts/opencode-entry.md`, `skills/tech-plan-generator/SKILL.md`) keep bare `copied-page` as an explicit forbidden value. Pattern docs use angle-bracket placeholders because they illustrate structure, not define the rule.
 - [ ] Task 15: Human-Review Three Document Generation Samples
   - [ ] Sample 1: 社区报修
   - [ ] Sample 2: 合同风险审核

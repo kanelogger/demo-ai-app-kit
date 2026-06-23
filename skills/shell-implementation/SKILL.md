@@ -1,58 +1,70 @@
 ---
-name: template-adapter
-description: Adapt the bundled Flask/AdminLTE admin shell (derived from the week-report template) into a target business app. Use when implementing a new app from a topic or plan and the agent must reuse existing login, dashboard, menu, forms, lists, detail/review pages, charts, mock data, and styles instead of starting from scratch.
+name: shell-implementation
+description: Implement a generated PC admin app from frozen docs and the neutral Flask admin shell. Use after requirements, tech plan, workflow integration, and test cases are written and frozen.
 ---
 
-Default source:
+# Shell Implementation
 
-`templates/flask-adminlte-week-report/`
+## Purpose
 
-This directory is a generic PC admin shell, not a fixed week-report business system. Reusable pieces:
+Turn the frozen planning documents and the neutral shell into a runnable,
+business-specific app. This skill does not rewrite requirements, tech plan,
+workflow contract, or test cases. It only produces code and minimal README
+updates.
 
-- `login.html` and `assets/login.js`: demo login flow.
-- `index.html`, `assets/app.js`, `assets/core.js`: static prototype shell.
-- `assets/mock-data.js`: browser mock data pattern.
-- `app.py` and `templates/`: Flask route and server-rendered page pattern.
-- `assets/styles.css`: existing visual conventions.
+## Inputs To Read
+
+Before writing code, read:
+
+1. `docs/requirements.md` — Requirements Baseline and Primary Loop.
+2. `docs/tech-plan.md` — Menu Plan, Page Plan, Entity Mapping, Field Mapping,
+   Generated Files Plan, Data Storage Decision.
+3. `docs/workflow-integration.md` — Business workflow endpoint, request/response
+   envelope, error cases.
+4. `docs/test-cases.md` — Scenarios to verify.
+5. `docs/template-patterns/README.md` — Pattern registry and read order.
+6. `templates/flask-admin-shell/` — The only allowed starting code.
 
 ## Workflow
 
-1. Identify the target app's primary loop and required pages.
-2. Output a `Menu Plan`: system name, top-level menus, sub-menus, target routes, and the layer (`core` / `supporting` / `foundation` / `optional-cut` / `delete`) for each menu.
-3. Output a `Page Plan`: route, purpose, source template file, layer, keep reason, and cut plan for every page.
-4. Output an `Entity Mapping`: map each source template entity (e.g., week-report, user, role, department, dictionary, menu, announcement) to a target business entity with keep / rename / delete decisions.
-5. Output a `Field Mapping`: UI field -> local/API field -> workflow field -> mock fixture field, with required flags.
-6. Output a `Copy Rewrite Checklist`: system name, login page, dashboard, menus, page titles, table columns, filters, form labels, buttons, badges, empty states, toasts/alerts/modals, mock data, and docs.
-7. Map each target page to the closest existing template page.
-8. Rename labels, menu items, mock entities, forms, tables, and charts to the new domain.
-9. Preserve navigation, demo accounts, local run path, and reset/mock data behavior unless the plan requires changing them.
-10. Add workflow adapter UI states: loading, success, empty, error, and mock fallback marker.
-11. Verify the app locally before claiming completion.
+1. Copy the neutral shell into the generated project if it is not already there.
+2. Create or modify files according to `Generated Files Plan`.
+3. Add Flask routes, templates, and static assets for business pages.
+4. Add the business workflow endpoint in `app.py` or a separate module.
+5. Keep mock data minimal and business-specific.
+6. Update the generated README with run command, URL, and demo account.
+7. Do not modify `docs/requirements.md`, `docs/tech-plan.md`,
+   `docs/workflow-integration.md`, or `docs/test-cases.md`.
+8. Run the app locally and verify at least one primary loop path.
+9. Run `./bin/check-demo .` and fix blocking issues.
 
 ## Output Contract
 
-When planning, return:
+When implementing, produce:
 
-- `Menu Plan`: system name, menus, routes, and layers.
-- `Page Plan`: route, purpose, source template, layer, keep reason, and cut plan.
-- `Entity Mapping`: source entity -> target entity with keep / rename / delete decisions.
-- `Field Mapping`: UI/API/workflow/mock field correspondence.
-- `Copy Rewrite Checklist`: all visible text items that must be rewritten.
-- `Template Mapping`: target page -> source file/pattern.
-- `Data Mapping`: old mock entity -> new mock entity.
-- `Edits`: ordered file changes.
-- `Risk`: anything that could break local demo.
+- Modified `app.py` with business routes and workflow endpoint.
+- New/modified templates under `templates/`.
+- New/modified static assets under `assets/` if needed.
+- Updated `README.md` run instructions.
+- Optional `data/` fixture files if the tech plan requires them.
 
+When reporting completion, return:
 
-When implementing, produce code changes and report the run command and URL.
+- Run command and local URL.
+- Demo account if any.
+- Which primary loop path was verified.
+- Any failing `bin/check-demo .` checks that are expected placeholders.
 
 ## Rules
 
-- Do not rebuild the UI from scratch.
-- Do not leave visible week-report wording in the adapted app unless it is still relevant.
-- Page count is not a target metric; keep business-relevant pages and delete or weaken week-report-specific pages.
-- Every `optional-cut` page must list its deletion scope: Flask route, template/menu entry, mock data, JS event or render entry, and README/docs/test-report references.
-- Every `delete` page must be removed or hidden from menus and docs.
-- Keep demo text concise and domain-specific.
-- Add only the minimum components needed for the primary loop.
-- Complete the primary loop before trimming `optional-cut` pages.
+- Start from `templates/flask-admin-shell/`, not from the reference example.
+- Do not copy files, mock data, UI copy, or business logic from
+  `docs/reference/` or `examples/`.
+- Every file in `Generated Files Plan` must match the planned `Action` and
+  `Source`.
+- Do not introduce pages or components not in the Page Plan.
+- Do not rewrite the Requirements Baseline, tech plan sections, or test cases.
+- Keep the workflow adapter contract unchanged; only change the business input
+  shape and how the result is rendered.
+- Prefer modifying existing shell files over creating new abstractions.
+- Ensure the app starts with `python3 app.py` after dependencies are installed.

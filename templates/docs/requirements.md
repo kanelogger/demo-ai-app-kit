@@ -1,53 +1,52 @@
 # Requirements
 
-> Generated from demo-ai-app-kit. Fill this in before implementation.
+> Generated from demo-ai-app-kit. Fill this in during clarification, before
+> implementation.
 
-## Problem / Opportunity
+## Clarifications
 
-One sentence describing the problem this app solves.
-
-## Target Users
-
-- Primary user:
-- Secondary user (optional):
-
-## Primary User Loop
-
-```text
-1. User arrives at ...
-2. User inputs ...
-3. App calls ...
-4. App shows ...
-5. User can complete ...
+```markdown
+| Question | Answer | Answer Type | Decision Impact |
+|----------|--------|-------------|-----------------|
 ```
 
-## Secondary Loop (Optional)
+## Assumptions
+
+```markdown
+| Assumption | Reason | Risk if Wrong |
+|------------|--------|---------------|
+```
+
+## Requirements Baseline
+
+- Primary user:
+- Primary loop:
+- Core entity:
+- Core states:
+- Workflow input:
+- Workflow output:
+- Acceptance check:
+- Out of scope:
+
+## Primary Loop
 
 ```text
 1. User ...
-2. ...
+2. App ...
+3. AI workflow / mock ...
+4. App renders ...
+5. User confirms / retries ...
 ```
 
-## Inputs
-
-| Name | Source | Format | Validation |
-|------|--------|--------|------------|
-|      |        |        |            |
-
-## Outputs
-
-| Name | Format | Success criteria |
-|------|--------|------------------|
-|      |        |                  |
-
-## Acceptance Criteria
+## Acceptance Checks
 
 - [ ] Primary loop works end-to-end locally.
 - [ ] AI workflow adapter has a mock fallback with the same response shape.
 - [ ] README documents run command, URL, and demo account if any.
 - [ ] `bin/check-demo .` passes.
 
-## Non-Goals
+## Out of Scope
 
-- Do not build ...
-- Do not integrate ...
+- Database persistence for V1.
+- External notification channels.
+- Admin configuration pages beyond the minimum needed for the primary loop.

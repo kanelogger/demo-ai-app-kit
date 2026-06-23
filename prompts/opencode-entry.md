@@ -6,7 +6,7 @@ Copy this prompt as the first instruction after entering the generated project a
 <prompt>
   <intent_analysis>
     <core_intent>Convert the user requirement into a locally runnable, maintainable, and verifiable AI web app by adapting the bundled demo-ai-app-kit template, integrating or mocking an AI workflow, and verifying the product loop and code quality.</core_intent>
-    <key_entities>demo-ai-app-kit, OpenCode, local web app, product-quality default path, bundled admin template, SDD-lite, workflow adapter, mock fallback, README, tests.</key_entities>
+    <key_entities>demo-ai-app-kit, OpenCode, local web app, product-quality default path, neutral admin shell, template patterns, SDD-lite, workflow adapter, mock fallback, README, tests.</key_entities>
     <context_given>The repository is an AI Coding application kit. The default goal is a useful, testable, maintainable product prototype. Competition speed is only a scenario constraint when explicitly supplied.</context_given>
     <missing_information>Ask only for information that blocks implementation. If a detail can be reasonably defaulted, choose the simplest demo-safe default and continue.</missing_information>
     <ambiguity_risks>Do not over-expand the app scope. Do not turn the output into a research report. Do not assume Star Agent platform details that are not present; use a replaceable adapter contract plus mock fallback.</ambiguity_risks>
@@ -40,21 +40,24 @@ Copy this prompt as the first instruction after entering the generated project a
     4. Generate a scoped requirements document and save it to `docs/requirements.md`.
     5. Classify requirement route: simple requirement -> question-refiner; vague, complex, or product-shape unclear -> ce-brainstorm.
     6. Use this skill routing table:
-       - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> template-adapter -> workflow-integration-planner -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality.
-       - Simple requirement: use question-refiner and skip full ce-brainstorm.
-       - Important plan freeze: use bounded grilling before implementation.
+       - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> shell-implementation -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality.
+       - Simple requirement: use question-refiner and hand off to grilling; skip full ce-brainstorm.
+       - Vague, complex, or product-shape unclear: use ce-brainstorm and hand off to grilling with the next best blocking question.
+       - Important plan freeze: use bounded grilling; it asks one Mom-Test-style blocking question at a time.
        - More than 3 business terms or cross-layer field drift risk: use domain-modeling.
        - API, workflow contract, or mock fixture: use api-and-interface-design.
        - User input, login, storage, files, or external calls: use security-and-hardening.
+       - Implementing from the neutral shell and frozen docs: use shell-implementation.
        - Behavior logic, adapters, or mock fixtures: use tdd.
        - Any completed Web app: use webapp-testing.
        - Failures: use debugging-and-error-recovery.
        - Before handoff or final quality gate: use code-review-and-quality.
-    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Primary Loop, Reference Template, Field Mapping, Workflow Mock Contract, and Demo Acceptance Checks. Inside `docs/tech-plan.md`, also write the Template Adaptation Contract: Menu Plan, Page Plan (with layer and cut plan for every page), Entity Mapping, Field Mapping, and Copy Rewrite Checklist. Save the plan to `docs/tech-plan.md`.
-    8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract and Template Adaptation Contract before implementation, then immediately adapt the bundled template instead of starting from scratch.
+    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Requirements Baseline Reference, Reference Patterns, Menu Plan, Page Plan, Entity Mapping, Field Mapping, Generated Files Plan, Workflow Mock Contract, Data Storage Decision, and Changed Decisions. Save the plan to `docs/tech-plan.md`. The Generated Files Plan must use Source `shell`, `pattern:<pattern-name>`, or `business-requirement`; never use a source label that means original example, legacy template, copied page, or reference implementation.
+    8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `docs/template-patterns/` instead of copying the reference example.
     9. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
-    10. Write the workflow adapter contract, request/response JSON, mock fallback, and error handling to `docs/workflow-integration.md`.
-    11. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md`.
+    10. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/workflow-integration.md`.
+    11. Write test cases to `docs/test-cases.md` covering primary loop, workflow fallback, invalid input, browser path, and readiness check.
+    12. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md`.
     12. Update README with run command, URL, core flow, adapter notes, known limits, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
   </task>
 
@@ -62,7 +65,8 @@ Copy this prompt as the first instruction after entering the generated project a
     - Treat time limits, competition setting, or machine constraints as scenario parameters, not as permission to skip product-quality basics.
     - Prefer Python Flask plus native HTML/CSS/JS unless the existing project clearly supports another faster path.
     - Target PC browsers only; do not add mobile adaptation or responsive mobile-first layouts.
-    - Do not introduce a React/Vue/Java multi-template matrix; reuse and adapt the bundled admin shell.
+    - Do not introduce a React/Vue/Java multi-template matrix; reuse and adapt the neutral admin shell.
+    - Do not copy files, mock data, UI copy, or business logic from `docs/reference/` or `examples/`.
     - Keep the first demo loop complete before adding secondary features.
     - Include mock workflow mode that works without external AI platform network access.
     - Keep workflow input/output JSON stable between mock and real adapter.
@@ -77,7 +81,7 @@ Copy this prompt as the first instruction after entering the generated project a
   <success_criteria>
     - A user can open the app locally and complete the primary loop.
     - The AI workflow call path is visible in code and demoable through mock fallback.
-    - `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-report.md` are present and consistent with code.
+    - `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-cases.md`, and `docs/test-report.md` are present and consistent with code.
     - Requirements, SDD-lite, API/workflow contracts, tests, and README tell the same story.
     - The README contains run command, URL, accounts if any, core flow, adapter notes, known limits, and the purpose of each docs/ artifact.
     - The README and docs support a concise technical walkthrough of business value, structure, and live demo steps.

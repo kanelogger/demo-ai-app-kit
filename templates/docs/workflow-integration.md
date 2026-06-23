@@ -6,6 +6,23 @@
 
 Describe what the AI workflow does in this app (e.g., classification, generation, recommendation).
 
+## Business Workflow Endpoint
+
+Each implementation must add a business-specific endpoint, for example:
+
+```text
+POST /api/repairs/triage
+POST /api/contracts/risk-scan
+POST /api/inspections/assign
+```
+
+This endpoint validates input, calls `workflow_adapter.call_workflow(payload)`,
+and renders or stores the result. It is the only workflow endpoint that the
+primary loop depends on.
+
+The shell keeps `POST /api/workflow/demo` as a diagnostic smoke test. Do not
+route the primary loop through `/api/workflow/demo`.
+
 ## Adapter Location
 
 File / module that calls the workflow or mock:

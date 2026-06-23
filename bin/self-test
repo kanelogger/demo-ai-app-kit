@@ -11,19 +11,19 @@ const projectName = `kit-selftest-${Date.now()}`;
 const workDir = os.tmpdir();
 const projectDir = path.join(workDir, projectName);
 
-function runCheck(dir) {
-  return execFileSync(checkDemo, [dir], { encoding: 'utf8' });
+function runCheck(args) {
+  return execFileSync(checkDemo, args, { encoding: 'utf8', cwd: projectDir });
 }
 
-function expectCheck(dir, shouldPass, expectedFailures) {
+function expectCheck(args, shouldPass, expectedFailures) {
   let output;
   try {
-    output = runCheck(dir);
+    output = runCheck(args);
   } catch (err) {
     output = err.stdout || '';
     if (shouldPass) {
       console.error(output);
-      console.error(`Self-test: FAIL - expected check-demo to PASS for ${dir}`);
+      console.error(`Self-test: FAIL - expected check-demo to PASS for ${projectDir}`);
       process.exit(1);
     }
     if (expectedFailures) {
@@ -39,7 +39,7 @@ function expectCheck(dir, shouldPass, expectedFailures) {
   }
   if (!shouldPass) {
     console.error(output);
-    console.error(`Self-test: FAIL - expected check-demo to FAIL for ${dir}`);
+    console.error(`Self-test: FAIL - expected check-demo to FAIL for ${projectDir}`);
     process.exit(1);
   }
   return output;
@@ -49,119 +49,148 @@ function fillDocs(dir) {
   const docs = {
     'docs/requirements.md': `# Requirements
 
-## Problem / Opportunity
-Community residents need a simple way to report issues and get AI-generated suggestions.
+## Clarifications
 
-## Target Users
+| Question | Answer | Answer Type | Decision Impact |
+|----------|--------|-------------|-----------------|
+| Who submits the request? | Community resident | Behavior Fact | Primary user |
+| What is the core entity? | Repair request | Data Fact | Entity mapping |
+
+## Assumptions
+
+| Assumption | Reason | Risk if Wrong |
+|------------|--------|---------------|
+| Single demo account is enough | Local prototype | Add login flow later |
+
+## Requirements Baseline
+
 - Primary user: community resident
+- Primary loop: resident submits a repair request and receives an AI-generated triage suggestion
+- Core entity: repair request
+- Core states: pending, assigned, closed
+- Workflow input: request description
+- Workflow output: triage category and suggested handler
+- Acceptance check: a resident can submit a request and see a suggestion
+- Out of scope: real notification channels, multi-tenant auth
 
-## Primary User Loop
-1. User logs in with demo account.
-2. User submits a repair request.
-3. App sends input to the AI workflow adapter.
-4. App displays the AI-generated response and a fallback mock result.
-5. User marks the issue as resolved.
+## Primary Loop
 
-## Inputs
-| Name | Source | Format | Validation |
-|------|--------|--------|------------|
-| description | form | string | required, max 500 chars |
+1. Resident logs in.
+2. Resident opens the repair create page.
+3. Resident enters a description and submits.
+4. App calls the AI workflow adapter.
+5. App displays the triage suggestion.
 
-## Outputs
-| Name | Format | Success criteria |
-|------|--------|------------------|
-| suggestion | string | actionable |
+## Acceptance Checks
 
-## Acceptance Criteria
 - [ ] Primary loop works end-to-end locally.
 - [ ] AI workflow adapter has a mock fallback with the same response shape.
 - [ ] README documents run command, URL, and demo account if any.
 - [ ] \`bin/check-demo .\` passes.
 
-## Non-Goals
-- Do not build multi-tenant authentication.
-- Do not integrate a real payment gateway.
+## Out of Scope
+
+- Multi-tenant authentication.
+- External notification channels.
 `,
     'docs/tech-plan.md': `# Technical Plan
 
+## Requirements Baseline Reference
+
+- Primary user: community resident
+- Primary loop: resident submits a repair request and receives an AI-generated triage suggestion
+- Core entity: repair request
+- Core states: pending, assigned, closed
+- Workflow input: request description
+- Workflow output: triage category and suggested handler
+- Acceptance check: a resident can submit a request and see a suggestion
+- Out of scope: real notification channels, multi-tenant auth
+
+## Reference Patterns
+
+| Pattern | Source File | Why Used |
+|---------|-------------|----------|
+| pc-admin-tech-plan-pattern | docs/template-patterns/pc-admin-tech-plan-pattern.md | Derive plan from baseline |
+| workflow-integration-pattern | docs/template-patterns/workflow-integration-pattern.md | Workflow contract |
+
 ## Stack
-- Backend: Python Flask
-- Frontend: AdminLTE HTML templates
-- AI workflow adapter: workflow_adapter.py
-- Test runner: pytest
 
-## Pages / Screens
-| Page | Route | Purpose |
-|------|-------|---------|
-| Login | /login | Demo authentication |
-| Dashboard | / | Submit repair request |
+- Backend: Flask (from shell)
+- Frontend: Tailwind CSS + native HTML/JS (from shell)
+- AI workflow adapter: workflow_adapter.py (from shell)
+- Test runner: bin/check-demo .
 
-## Data Model
-| Entity | Fields | Notes |
-|--------|--------|-------|
-| Request | id, description, status | Stored in memory for demo |
+## Menu Plan
 
-## API / Interface Contract
-| Endpoint | Input | Output | Error |
-|----------|-------|--------|-------|
-| POST /api/workflow/demo | { input } | { ok, data, error, fallback } | 400, 500 |
+| Top Menu | Sub Menu | Route | Layer |
+|----------|----------|-------|-------|
+| Dashboard | - | /dashboard | foundation |
+| Repairs | New request | /repair/create | core |
+| Repairs | List | /repair/list | supporting |
 
-## SDD-Lite Contract
+## Page Plan
 
-### Primary Loop
-User logs in, submits description, adapter returns suggestion, app renders result.
+| Page | Route | Layer | Source | Keep Reason | Cut Plan |
+|------|-------|-------|--------|-------------|----------|
+| Dashboard | /dashboard | foundation | shell | Navigation hub | keep |
+| Repair Create | /repair/create | core | shell + pattern | Primary loop input | create |
+| Repair List | /repair/list | supporting | shell + pattern | Demo credibility | create |
 
-### Reference Template
-\`templates/flask-adminlte-week-report/\`
+## Entity Mapping
 
-### Menu Plan
-| Menu | Route | Layer |
-|------|-------|-------|
-| 系统首页 | /dashboard | foundation |
-| 报修登记 | /repair/create | core |
-| 报修列表 | /repair/list | supporting |
+| Entity | Fields | Storage | Notes |
+|--------|--------|---------|-------|
+| Repair request | id, description, category, handler, status | in-memory dict | seeded on startup |
 
-### Page Plan
-| Page | Route | Layer | Source Template | Keep Reason | Cut Plan |
-|------|-------|-------|-----------------|-------------|----------|
-| Dashboard | /dashboard | foundation | dashboard/index.html | Navigation hub | - |
-| Repair Create | /repair/create | core | reports/pending.html | Primary loop input | - |
-| Repair List | /repair/list | supporting | reports/view.html | Demo credibility | Remove route, template, menu, mock data |
+## Field Mapping
 
-### Entity Mapping
-| Source Entity | Target Entity | Decision |
-|---------------|---------------|----------|
-| 周报 | 报修单 | rename |
-| 周报模板 | 报修模板 | optional-cut |
+| UI Field | Data Field | Type | Required | Validation |
+|----------|------------|------|----------|------------|
+| description | description | string | yes | max 500 chars |
+| category | category | string | no | from workflow output |
+| handler | handler | string | no | from workflow output |
 
-### Field Mapping
-| UI Field | API Field | Workflow Field | Mock Value |
-|----------|-----------|----------------|------------|
-| description | input | input | "楼道灯坏了" |
-| suggestion | data.output | output | "mock processed: 楼道灯坏了" |
+## Generated Files Plan
 
-### Workflow Mock Contract
+| File | Action | Source | Purpose |
+|------|--------|--------|---------|
+| app.py | modify | shell | add repair routes and workflow endpoint |
+| templates/repair/create.html | create | business-requirement | primary loop input form |
+| templates/repair/list.html | create | business-requirement | list submitted requests |
+
+## Workflow Mock Contract
+
 \`\`\`json
-{ "request": { "input": "string" }, "response": { "ok": true, "data": { "output": "string", "confidence": 0.95 }, "error": null, "fallback": true } }
+{
+  "request": { "input": "string" },
+  "response": { "ok": true, "data": { "category": "string", "handler": "string" }, "error": null, "fallback": true }
+}
 \`\`\`
 
-### Demo Acceptance Checks
-- [ ] App starts locally.
-- [ ] Primary loop completes without live platform access.
-- [ ] Mock fallback returns stable JSON.
-- [ ] README, run command, and URL are correct.
+## Data Storage Decision
 
-## Test Plan
-- Behavior tests for adapter and field mapping.
-- Browser check for login and primary loop.
+| Store | Why Enough For V1 | Reset / Seed Strategy | Upgrade Path |
+|-------|-------------------|-----------------------|--------------|
+| in-memory dict | Local demo only | seed in app.py | SQLite or JSON file |
+
+## Changed Decisions
+
+| Decision | Original Plan | Changed To | Reason |
+|----------|---------------|------------|--------|
+| - | - | - | - |
 
 ## Known Limits
+
 - Prototype only.
 `,
     'docs/workflow-integration.md': `# Workflow Integration
 
 ## Role
 The AI workflow classifies repair requests and returns a suggested action.
+
+## Business Workflow Endpoint
+
+\`POST /api/repairs/triage\`
 
 ## Adapter Location
 \`workflow_adapter.py\`
@@ -173,15 +202,11 @@ The AI workflow classifies repair requests and returns a suggested action.
 
 ## Response Shape
 \`\`\`json
-{ "ok": true, "data": { "output": "string", "confidence": 0.95 }, "error": null, "fallback": true }
+{ "ok": true, "data": { "category": "string", "handler": "string" }, "error": null, "fallback": true }
 \`\`\`
 
 ## Mock Fallback
 When the AI platform is unavailable, the app returns a mock response with the same shape.
-
-| Input | Mock Output |
-|-------|-------------|
-| "楼道灯坏了" | { "ok": true, "data": { "output": "mock processed: 楼道灯坏了", "confidence": 0.95 }, "error": null, "fallback": true } |
 
 ## Error Handling
 | Scenario | Behavior |
@@ -194,12 +219,16 @@ When the AI platform is unavailable, the app returns a mock response with the sa
 ## Configuration
 | Name | Default | Purpose |
 |------|---------|---------|
-| WORKFLOW_URL | "" | Real workflow endpoint |
+| WORKFLOW_MOCK | true | Use mock response |
+| WORKFLOW_TIMEOUT | 10 | Real call timeout |
 
 ## Switching to Real Workflow
-1. Set WORKFLOW_MOCK=false in environment or pass use_mock=False.
-2. Implement _call_real_workflow to POST to the real endpoint.
-3. Keep the same { ok, data, error, fallback } envelope.
+Set WORKFLOW_MOCK=false and implement _call_real_workflow.
+
+## Test Examples
+\`\`\`bash
+curl -X POST http://127.0.0.1:5000/api/repairs/triage -H "Content-Type: application/json" -d '{"input":"楼道灯坏了"}'
+\`\`\`
 `,
     'docs/test-report.md': `# Test Report
 
@@ -229,7 +258,7 @@ URL: http://127.0.0.1:5000
 ## Mock Fallback Tests
 | Input | Expected | Actual | Result |
 |-------|----------|--------|--------|
-| "楼道灯坏了" | suggestion string | suggestion string | PASS |
+| "楼道灯坏了" | suggestion object | suggestion object | PASS |
 
 ## Error State Tests
 | Scenario | Expected | Actual | Result |
@@ -243,6 +272,38 @@ None.
 - Primary loop works: yes
 - \`bin/check-demo .\` passes: yes
 - README is accurate: yes
+`,
+    'docs/test-cases.md': `# Test Cases
+
+## Primary Loop Test
+
+| Test ID | Scenario | Source | Steps | Expected Result |
+|---------|----------|--------|-------|-----------------|
+| PL-001 | Happy path | requirements.md | Submit a repair description | See triage suggestion |
+
+## Workflow Fallback Test
+
+| Test ID | Scenario | Source | Steps | Expected Result |
+|---------|----------|--------|-------|-----------------|
+| WF-001 | Mock fallback | workflow-integration.md | Call /api/repairs/triage | Stable envelope returned |
+
+## Invalid Input Test
+
+| Test ID | Scenario | Source | Steps | Expected Result |
+|---------|----------|--------|-------|-----------------|
+| II-001 | Missing description | workflow-integration.md | POST {} | 400 INVALID_INPUT |
+
+## Browser Test
+
+| Test ID | Scenario | Source | Steps | Expected Result |
+|---------|----------|--------|-------|-----------------|
+| BR-001 | Login | shell | Open /login and submit | Dashboard loads |
+
+## Readiness Check
+
+| Test ID | Scenario | Source | Steps | Expected Result |
+|---------|----------|--------|-------|-----------------|
+| RC-001 | check-demo | tech-plan.md | Run ./bin/check-demo . | PASS |
 `
   };
   for (const [relPath, content] of Object.entries(docs)) {
@@ -254,41 +315,26 @@ let exitCode = 0;
 try {
   execFileSync(process.execPath, [demoAiApp, projectName], { stdio: 'inherit', cwd: workDir });
 
-  // Phase 1: skeleton project must FAIL because docs are unfilled placeholders.
-  expectCheck(projectDir, false, [
+  // Phase 1: skeleton project must pass skeleton mode.
+  expectCheck(['--skeleton', '.'], true);
+
+  // Phase 2: full mode must FAIL because docs are unfilled placeholders.
+  expectCheck(['.'], false, [
     'FAIL: docs/requirements.md has no obvious placeholders',
     'FAIL: docs/tech-plan.md has no obvious placeholders',
     'FAIL: docs/workflow-integration.md has no obvious placeholders',
     'FAIL: docs/test-report.md has no obvious placeholders',
   ]);
 
-  // Phase 2: fill docs and expect PASS.
+  // Phase 3: fill docs and expect full PASS.
   fillDocs(projectDir);
-  expectCheck(projectDir, true);
+  expectCheck(['.'], true);
 
-  // Phase 3: non-week-report app with weekly-report wording in an adapted surface must FAIL residue check.
-  // We first remove the bundled week-report-specific templates and assets that are not part
-  // of the "community repair" app so the probe becomes the only residue.
+  // Phase 4: forbidden source terms detector must FAIL on week-report wording.
   const templatesDir = path.join(projectDir, 'templates');
-  const assetsDir = path.join(projectDir, 'assets');
-  [ 'reports', 'settings', 'system', 'templates' ].forEach((d) => {
-    const full = path.join(templatesDir, d);
-    if (fs.existsSync(full)) fs.rmSync(full, { recursive: true, force: true });
-  });
-  fs.writeFileSync(path.join(templatesDir, 'dashboard', 'index.html'), '<h1>Dashboard</h1>');
-  // Clear bundled JS assets that contain week-report wording; the probe will be the only residue.
-  fs.writeFileSync(path.join(assetsDir, 'app.js'), '');
-  fs.writeFileSync(path.join(assetsDir, 'mock-data.js'), '(function () { window.demoStore = { getState: function () { return {}; } }; })();');
-  fs.writeFileSync(path.join(assetsDir, 'login.js'), '');
-  fs.writeFileSync(path.join(assetsDir, 'core.js'), '');
-
-  const readmePath = path.join(projectDir, 'README.md');
-  let readme = fs.readFileSync(readmePath, 'utf8');
-  readme = readme.replace(/\\[Fill in target business, e\.g\. 社区报修 \/ community repair\\]/, '社区报修 / community repair');
-  fs.writeFileSync(readmePath, readme);
-  fs.writeFileSync(path.join(templatesDir, 'residue_probe.html'), '<div>周报</div>\\n');
-  expectCheck(projectDir, false, [
-    'FAIL: no unrelated weekly-report wording in generated app',
+  fs.writeFileSync(path.join(templatesDir, 'residue_probe.html'), '<div>周报</div>\n');
+  expectCheck(['--skeleton', '.'], false, [
+    'FAIL: no forbidden source terms in generated app surfaces',
   ]);
 
   console.log('Self-test: PASS');

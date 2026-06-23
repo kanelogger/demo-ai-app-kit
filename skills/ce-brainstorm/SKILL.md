@@ -29,6 +29,13 @@ This skill does not implement code. It explores, clarifies, and documents decisi
 
 These rules apply to every brainstorm, including the universal (non-software) flow routed to `references/universal-brainstorming.md`.
 
+**Clarification handoff.** When the brainstorm surfaces an app idea that needs a
+frozen requirements baseline, do not end with a batch of open questions. Either
+answer the next best blocking question yourself or hand off to
+`skills/grilling/SKILL.md` with that single question. Prioritize behavior facts,
+concrete constraints, data shape, workflow rules, and acceptance evidence over
+opinions and attitudes.
+
 1. **Ask one question at a time** - One question per turn, even when sub-questions feel related. Stacking several questions in a single message produces diluted answers; pick the single most useful one and ask it.
 2. **Prefer single-select multiple choice** - Use single-select when choosing one direction, one priority, or one next step.
 3. **Use multi-select rarely and intentionally** - Use it only for compatible sets such as goals, constraints, non-goals, or success criteria that can all coexist. If prioritization matters, follow up by asking which selected item is primary.

@@ -14,9 +14,9 @@
 -> 进入生成项目
 -> 启动 Agent / OpenCode
 -> 输入简单需求
--> 追问关键问题
--> 输出需求文档 + 技术方案 + SDD-lite
--> 按方案改模板生成代码
+-> 一问一答澄清关键问题
+-> 输出需求文档 + 技术方案 + 工作流集成 + 测试用例
+-> 按方案从 shell 实现代码
 -> 联调测试 + check-demo
 -> 本地验收与质量审查
 ```
@@ -59,8 +59,7 @@
 -> tech-plan-generator / SDD-lite
 -> api-and-interface-design
 -> security-and-hardening
--> template-adapter
--> workflow-integration-planner
+-> shell-implementation
 -> tdd
 -> webapp-testing
 -> debugging-and-error-recovery
@@ -91,7 +90,7 @@
 - `skills/tech-plan-generator/`：生成页面、数据模型、接口、工作流契约、SDD-lite 和验证计划。
 - `skills/api-and-interface-design/`：明确本地 API、模块接口、workflow contract 和 mock fixture。
 - `skills/security-and-hardening/`：处理用户输入、登录、存储、文件、外部调用和边界验证。
-- `skills/template-adapter/`：要求优先改造现有后台模板，不从零搭应用。
+- `skills/shell-implementation/`：从 neutral shell 和冻结文档实现业务应用。
 - `skills/workflow-integration-planner/`：设计智能体工作流入参、出参、错误处理和 mock fallback。
 - `skills/tdd/`：为本地 API、工作流 adapter、字段映射和 mock fixture 提供行为测试思路。
 - `skills/webapp-testing/`：用 Playwright 验证本地 Web 应用。
@@ -113,12 +112,13 @@ python3 app.py
 
 生成目录包含：
 
-- 基于 `templates/flask-adminlte-week-report/` 的可运行 Flask + AdminLTE 骨架。
+- 基于 `templates/flask-admin-shell/` 的可运行 Flask 骨架。
+- 模式库 `docs/template-patterns/` 供实现阶段参考。
 - 项目级 `AGENTS.md` 和 `prompts/opencode-entry.md`。
 - 核心技能目录 `skills/`（默认产品质量链路所需）。
 - 验收脚本 `bin/check-demo`。
 - 项目 `README.md` 骨架。
-- 标准产物骨架 `docs/requirements.md`、`docs/tech-plan.md`、`docs/workflow-integration.md`、`docs/test-report.md`。讲稿、展示稿和评委追问材料不属于 `check-demo` 的标准产物。
+- 标准产物骨架 `docs/requirements.md`、`docs/tech-plan.md`、`docs/workflow-integration.md`、`docs/test-cases.md`、`docs/test-report.md`。讲稿、展示稿和评委追问材料不属于 `check-demo` 的标准产物。
 
 Agent 完成后的验收：
 
@@ -128,15 +128,15 @@ Agent 完成后的验收：
 
 `bin/check-demo` 有两个模式：
 
-- kit 仓库：检查生成器、模板、公共 README、workflow adapter 和模板文档骨架是否完整。
-- generated app：检查 Agent 是否已经替换占位内容，并完成需求文档、技术方案、workflow 集成文档、测试报告和 README 的本地运行说明。
+- `./bin/check-demo --skeleton .`：检查 fresh generated project 的结构、禁止的源拷贝和可运行的 shell。
+- `./bin/check-demo .`：检查 Agent 完成后的完整应用：需求文档、技术方案、workflow 集成、测试报告和 README。
 
 ## 本地运行当前模板
 
-查看当前周报模板原型：
+查看中性应用骨架：
 
 ```bash
-cd templates/flask-adminlte-week-report
+cd templates/flask-admin-shell
 python3 app.py
 ```
 
@@ -146,10 +146,11 @@ python3 app.py
 http://127.0.0.1:5000
 ```
 
-静态原型也可以直接打开：
+参考实现（周报示例，仅用于仓库维护）：
 
-```text
-templates/flask-adminlte-week-report/login.html
+```bash
+cd examples/week-report-app
+python3 app.py
 ```
 
 验收当前仓库或 Agent 完成后的 generated app：
@@ -164,18 +165,18 @@ templates/flask-adminlte-week-report/login.html
 AGENTS.md                   自包含 Agent 项目指令
 bin/                        CLI、生成脚本和验收脚本
 bin/demo-ai-app             生成新项目 CLI
-bin/check-demo              两阶段验收脚本：kit 检查公共生成底座，generated app 检查 Agent 完成后的标准产物
+bin/check-demo              两阶段验收脚本：--skeleton 检查结构，full 检查完整应用
 docs/                       参考资料、检查清单和 workflow 文档
-docs/original-requirements/ 周报系统原始需求参考
-docs/original-design/       周报系统原始设计参考
-docs/original-demo-ref/     周报系统原型参考
+docs/reference/week-report/ 周报系统原始参考材料（仅维护用，不进入生成项目）
+docs/template-patterns/     中性 PC 后台模式库
+examples/                   参考实现（仅维护用，不进入生成项目）
 prompts/                    Agent / OpenCode 入口提示词
 skills/                     项目内技能库
 templates/                  可复用应用模板
-templates/flask-adminlte-week-report/  Flask + AdminLTE 后台模板
+templates/flask-admin-shell/  中性 Flask 后台应用骨架
   app.py                    Flask 入口与页面路由
   workflow_adapter.py       AI workflow adapter：输入校验、超时、mock fallback、统一错误响应
-templates/docs/             生成项目的标准产物骨架（requirements.md、tech-plan.md、workflow-integration.md、test-report.md）
+templates/docs/             生成项目的标准产物骨架（requirements.md、tech-plan.md、workflow-integration.md、test-cases.md、test-report.md）
 ```
 
 ## 下一步

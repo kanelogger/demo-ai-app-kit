@@ -1,5 +1,4 @@
 interface:
-  display_name: "Template Adapter"
-  short_description: "Adapt the bundled admin template."
-  default_prompt: "Adapt the bundled template to this app idea."
-
+  display_name: "Shell Implementation"
+  short_description: "Implement the app from the neutral shell and frozen docs."
+  default_prompt: "Implement this app from templates/flask-admin-shell/ and the docs in docs/."

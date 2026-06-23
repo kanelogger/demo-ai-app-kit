@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="${1:-.}"
+ROOT="."
+SKELETON_MODE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --skeleton)
+      SKELETON_MODE=1
+      shift
+      ;;
+    *)
+      ROOT="$1"
+      shift
+      ;;
+  esac
+done
+
 failures=0
 
 is_kit_repo() {
@@ -15,6 +30,17 @@ check_file() {
   local path="$1"
   local label="$2"
   if [[ ! -f "$ROOT/$path" ]]; then
+    echo "FAIL: missing $label: $path"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+  fi
+}
+
+check_dir() {
+  local path="$1"
+  local label="$2"
+  if [[ ! -d "$ROOT/$path" ]]; then
     echo "FAIL: missing $label: $path"
     failures=$((failures + 1))
   else
@@ -82,7 +108,7 @@ check_no_placeholders() {
   if [[ ! -f "$ROOT/$doc" ]]; then
     return
   fi
-  if grep -Eiq "Fill this in|^\s*- Primary user:\s*$|Do not build \.\.|^\s*\.\.\.\s*$|PASS / FAIL|# exact command|TODO|FIXME" "$ROOT/$doc"; then
+  if grep -Eiq "Fill this in|^\s*- Primary user:\s*$|Do not build \.|^\s*\.\.\.\s*$|PASS / FAIL|# exact command|TODO|FIXME|\[Fill in" "$ROOT/$doc"; then
     echo "FAIL: $label"
     failures=$((failures + 1))
   else
@@ -90,34 +116,84 @@ check_no_placeholders() {
   fi
 }
 
-check_weekly_report_residue() {
-  local label="no unrelated weekly-report wording in generated app"
+check_forbidden_source_terms() {
+  local label="no forbidden source terms in generated app surfaces"
+  local zh_report="周""报"
+  local zh_pending="待我""填报"
+  local zh_mine="我填报的""周""报"
+  local zh_review="待我""审核"
+  local zh_view="周""报""查看"
+  local zh_template="周""报""模板"
+  local en_wr="week""-""report"
+  local en_weekly="weekly ""report"
+  local en_template="report ""template"
+  local old_shell="flask-adminlte""-week""-report"
+  local old_skill="template""-adapter"
+  local pattern="${zh_report}|${en_wr}|${en_weekly}|${en_template}|${zh_pending}|${zh_mine}|${zh_review}|${zh_view}|${zh_template}|${old_shell}|${old_skill}"
+  local hits_file="/tmp/demo_check_forbidden_hits.$$"
+
   if is_kit_repo; then
-    echo "SKIP: $label (kit repo template may keep source wording)"
+    echo "SKIP: $label (kit repo may keep source wording)"
     return
   fi
 
-  # Only run when the app explicitly declares itself as a non-week-report business.
-  # The declaration must be a line matching: Business type: <non-week-report-name>
-  # or: 业务类型：社区报修 / Target business: community repair
-  local is_non_weekly_report=0
-  if [[ -f "$ROOT/README.md" ]] && grep -Ein "(业务类型|Business type|Target business)([[:space:]]|\\*\\*)*[:：]" "$ROOT/README.md" | grep -Eivq "周报|week[- ]?report"; then
-    is_non_weekly_report=1
-  fi
+  # Search app surfaces only. Kit instructions (AGENTS.md, prompts/, skills/,
+  # bin/check-demo) are allowed to mention forbidden labels in rules.
+  local search_paths=()
+  for scope in \
+    "app.py" "workflow_adapter.py" "README.md" \
+    "templates" "assets" \
+    "docs/requirements.md" "docs/tech-plan.md" "docs/workflow-integration.md" \
+    "docs/test-cases.md" "docs/test-report.md"; do
+    if [[ -e "$ROOT/$scope" ]]; then
+      search_paths+=("$ROOT/$scope")
+    fi
+  done
 
-  if [[ "$is_non_weekly_report" -eq 0 ]]; then
-    echo "SKIP: $label (no explicit non-week-report business declaration in README)"
+  if [[ ${#search_paths[@]} -eq 0 ]]; then
+    echo "PASS: $label (no generated-facing scopes to check)"
     return
   fi
 
-  # Check adapted surfaces only: templates/ and assets/. The bundled template
-  # is expected to contain week-report source wording; the Agent must rewrite
-  # the visible UI surfaces (templates, JS/CSS, mock data) when the target
-  # business is not weekly-report. README and docs are allowed to reference
-  # the template provenance.
-  local hits_file="/tmp/demo_check_weekly_hits.$$"
-  if grep -RInE "周报" \
-    "$ROOT/templates" "$ROOT/assets" 2>/dev/null >"$hits_file"; then
+  if grep -RInE "$pattern" "${search_paths[@]}" 2>/dev/null >"$hits_file"; then
+    echo "FAIL: $label"
+    cat "$hits_file"
+    rm -f "$hits_file"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+    rm -f "$hits_file"
+  fi
+}
+
+check_no_copied_reference_paths() {
+  local label="no copied reference/example paths in generated app surfaces"
+  local pattern='examples/|docs/reference/'
+  local hits_file="/tmp/demo_check_paths_hits.$$"
+
+  if is_kit_repo; then
+    echo "SKIP: $label (kit repo contains reference paths)"
+    return
+  fi
+
+  # Search app surfaces only. Kit instructions are allowed to reference paths in rules.
+  local search_paths=()
+  for scope in \
+    "app.py" "workflow_adapter.py" "README.md" \
+    "templates" "assets" \
+    "docs/requirements.md" "docs/tech-plan.md" "docs/workflow-integration.md" \
+    "docs/test-cases.md" "docs/test-report.md"; do
+    if [[ -e "$ROOT/$scope" ]]; then
+      search_paths+=("$ROOT/$scope")
+    fi
+  done
+
+  if [[ ${#search_paths[@]} -eq 0 ]]; then
+    echo "PASS: $label (no generated-facing scopes to check)"
+    return
+  fi
+
+  if grep -RInE "$pattern" "${search_paths[@]}" 2>/dev/null >"$hits_file"; then
     echo "FAIL: $label"
     cat "$hits_file"
     rm -f "$hits_file"
@@ -130,57 +206,64 @@ check_weekly_report_residue() {
 
 if is_kit_repo; then
   echo "Mode: kit repo readiness"
+elif [[ "$SKELETON_MODE" -eq 1 ]]; then
+  echo "Mode: skeleton readiness"
 else
   echo "Mode: generated app readiness"
 fi
 
 check_file "README.md" "README"
-check_any_file "app entry" "app.py" "src/app.py" "server.py" "index.html" "templates/flask-adminlte-week-report/app.py"
-
-# Standard generated project artifacts.
 if is_kit_repo; then
-  echo "SKIP: generated project artifact checks on kit repo"
+  check_any_file "app entry" "templates/flask-admin-shell/app.py"
 else
+  check_any_file "app entry" "app.py" "src/app.py" "server.py"
+fi
+
+# Skeleton checks: always run for generated projects, regardless of mode.
+if ! is_kit_repo; then
+  check_file "app.py" "app entry"
+  check_file "workflow_adapter.py" "workflow adapter"
+  check_file "bin/check-demo" "check-demo script"
+  check_dir "docs/template-patterns" "pattern registry"
+  check_file "docs/test-cases.md" "test cases document"
+  check_dir "skills/shell-implementation" "shell-implementation skill"
+  check_file "templates/base.html" "base template"
+  check_file "templates/layout.html" "layout template"
+  check_file "templates/auth/login.html" "login template"
+  check_file "templates/dashboard/index.html" "dashboard template"
+  check_file "assets/styles.css" "styles"
+  check_file "assets/app.js" "app script"
+  check_forbidden_source_terms
+  check_no_copied_reference_paths
+fi
+
+# Full-mode checks for completed apps.
+if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
   check_file "docs/requirements.md" "requirements document"
   check_file "docs/tech-plan.md" "technical plan"
   check_file "docs/workflow-integration.md" "workflow integration document"
   check_file "docs/test-report.md" "test report"
-fi
 
-check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
-check_text "README.md" "127\.0\.0\.1|localhost|http://" "README includes local URL"
-if ! is_kit_repo; then
+  check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
+  check_text "README.md" "127\.0\.0\.1|localhost|http://" "README includes local URL"
   check_text "README.md" "primary loop|主闭环|primary user loop|核心流程" "README includes primary loop"
-fi
-check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
-check_text "README.md" "workflow|工作流|agent|智能体" "README includes workflow integration notes"
-check_text "README.md" "docs/requirements\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
+  check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
+  check_text "README.md" "workflow|工作流|agent|智能体" "README includes workflow integration notes"
+  check_text "README.md" "docs/requirements\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
 
-if ! is_kit_repo; then
   check_text "docs/tech-plan.md" "Menu Plan|菜单规划" "tech plan includes Menu Plan"
   check_text "docs/tech-plan.md" "Page Plan|页面规划|页面分层" "tech plan includes Page Plan"
   check_text "docs/tech-plan.md" "Field Mapping|字段映射" "tech plan includes Field Mapping"
   check_text "docs/tech-plan.md" "Workflow Mock Contract|Workflow Mock|Mock Contract" "tech plan includes Workflow Mock Contract"
-fi
 
-# Workflow adapter and error-handling contract.
-check_any_file "workflow adapter" "workflow_adapter.py" "src/workflow_adapter.py" "templates/flask-adminlte-week-report/workflow_adapter.py"
-check_text "README.md" "workflow_adapter|Core modules|核心模块|模块说明" "README includes workflow adapter / module description"
-if ! is_kit_repo; then
+  check_text "README.md" "workflow_adapter|Core modules|核心模块|模块说明" "README includes workflow adapter / module description"
   check_text "docs/workflow-integration.md" "timeout|TIMEOUT|超时" "workflow doc covers timeout strategy"
   check_text "docs/workflow-integration.md" "empty|EMPTY|空结果" "workflow doc covers empty result strategy"
   check_text "docs/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input strategy"
   check_text "docs/workflow-integration.md" "failure|platform error|FAILURE|失败" "workflow doc covers failure strategy"
-else
-  check_text "templates/docs/workflow-integration.md" "timeout|TIMEOUT|超时" "kit workflow doc covers timeout strategy"
-  check_text "templates/docs/workflow-integration.md" "empty|EMPTY|空结果" "kit workflow doc covers empty result strategy"
-  check_text "templates/docs/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "kit workflow doc covers invalid input strategy"
-  check_text "templates/docs/workflow-integration.md" "failure|platform error|FAILURE|失败" "kit workflow doc covers failure strategy"
-fi
 
-if ! is_kit_repo; then
   # Basic non-empty checks for standard docs.
-  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md; do
+  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/test-cases.md; do
     if [[ -f "$ROOT/$doc" ]] && [[ ! -s "$ROOT/$doc" ]]; then
       echo "FAIL: $doc is empty"
       failures=$((failures + 1))
@@ -196,7 +279,6 @@ if ! is_kit_repo; then
 fi
 
 check_no_private_text
-check_weekly_report_residue
 
 if [[ "$failures" -gt 0 ]]; then
   echo "Demo readiness: FAIL ($failures issue(s))"

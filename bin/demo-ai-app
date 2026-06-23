@@ -31,8 +31,7 @@ const coreSkills = [
   'tech-plan-generator',
   'api-and-interface-design',
   'security-and-hardening',
-  'template-adapter',
-  'workflow-integration-planner',
+  'shell-implementation',
   'tdd',
   'webapp-testing',
   'debugging-and-error-recovery',
@@ -44,8 +43,9 @@ const coreSkills = [
 // Validate required source assets before creating the target directory so a
 // missing skill or template does not leave a half-generated project behind.
 const requiredSources = [
-  ['template', path.join(kitRoot, 'templates', 'flask-adminlte-week-report')],
+  ['shell', path.join(kitRoot, 'templates', 'flask-admin-shell')],
   ['docs skeletons', path.join(kitRoot, 'templates', 'docs')],
+  ['pattern registry', path.join(kitRoot, 'docs', 'template-patterns')],
   ['AGENTS.md', path.join(kitRoot, 'AGENTS.md')],
   ['entry prompt', path.join(kitRoot, 'prompts', 'opencode-entry.md')],
   ['check-demo script', path.join(kitRoot, 'bin', 'check-demo')],
@@ -82,20 +82,22 @@ function copyFile(src, dest) {
   fs.copyFileSync(src, dest);
 }
 
-
-// 1. Copy bundled template as the generated app skeleton.
-copyDir(path.join(kitRoot, 'templates', 'flask-adminlte-week-report'), targetDir);
+// 1. Copy neutral admin shell as the generated app skeleton.
+copyDir(path.join(kitRoot, 'templates', 'flask-admin-shell'), targetDir);
 
 // 2. Copy standard project documentation skeletons.
 copyDir(path.join(kitRoot, 'templates', 'docs'), path.join(targetDir, 'docs'));
 
-// 3. Copy project-level agent instructions.
+// 3. Copy pattern registry for implementation reference.
+copyDir(path.join(kitRoot, 'docs', 'template-patterns'), path.join(targetDir, 'docs', 'template-patterns'));
+
+// 4. Copy project-level agent instructions.
 copyFile(path.join(kitRoot, 'AGENTS.md'), path.join(targetDir, 'AGENTS.md'));
 
-// 4. Copy entry prompt.
+// 5. Copy entry prompt.
 copyFile(path.join(kitRoot, 'prompts', 'opencode-entry.md'), path.join(targetDir, 'prompts', 'opencode-entry.md'));
 
-// 5. Copy core skills; fail loud if a default-path skill is missing from the kit.
+// 6. Copy core skills; fail loud if a default-path skill is missing from the kit.
 for (const skill of coreSkills) {
   const src = path.join(kitRoot, 'skills', skill);
   if (!fs.existsSync(src)) {
@@ -105,39 +107,47 @@ for (const skill of coreSkills) {
   copyDir(src, path.join(targetDir, 'skills', skill));
 }
 
-// 6. Copy check-demo script.
+// 7. Copy check-demo script.
 copyFile(path.join(kitRoot, 'bin', 'check-demo'), path.join(targetDir, 'bin', 'check-demo'));
 fs.chmodSync(path.join(targetDir, 'bin', 'check-demo'), 0o755);
 
-// 7. Generate a project README skeleton.
+// 8. Generate a project README skeleton.
 const readme = `# ${projectName}
 
 Generated from demo-ai-app-kit.
 
 ## Purpose
 
-A locally runnable AI web app prototype built by adapting the bundled Flask + AdminLTE admin shell.
+A locally runnable AI web app prototype built from a neutral Flask admin shell
+and pattern-driven documents.
 
 **业务类型 / Business type**: [Fill in target business, e.g. 社区报修 / community repair]
 
-This generated directory is an Agent workspace, not a finished app. The Flask
-template can run immediately, but \`bin/check-demo\` is expected to fail until
-the Agent replaces the placeholder docs, adapts the template to the target
-domain, verifies the app, and updates this README.
+This generated directory is an Agent workspace, not a finished app. The shell can
+run immediately, but \`bin/check-demo\` is expected to fail on placeholders until
+the Agent fills the docs and adapts the app.
 
-## Target workflow
+## PDCA workflow
 
 \`\`\`text
 Input a simple app requirement
--> Agent reads prompts/opencode-entry.md and AGENTS.md
--> Requirement clarification (question-refiner / ce-brainstorm)
--> Solution stress test and domain modeling
--> SDD-lite technical plan
--> Adapt templates/ into the target app
--> Integrate or mock the AI workflow
--> Local verification and check-demo
--> Quality review
+-> Clarification (question-refiner / ce-brainstorm -> grilling)
+-> docs/requirements.md
+-> docs/tech-plan.md
+-> docs/workflow-integration.md
+-> docs/test-cases.md
+-> Implementation from shell + patterns (shell-implementation)
+-> Local verification (tdd, webapp-testing)
+-> Quality review (code-review-and-quality)
+-> ./bin/check-demo .
 \`\`\`
+
+## Skeleton vs full readiness
+
+- \`./bin/check-demo --skeleton .\` checks that the generated project has the
+  correct files, no copied reference material, and a runnable shell.
+- \`./bin/check-demo .\` checks full app readiness after the Agent has filled
+  the docs and implemented the primary loop.
 
 ## Run locally
 
@@ -150,25 +160,31 @@ python3 app.py
 
 Open http://127.0.0.1:5000 in a browser.
 
-Default demo account: \`ADMIN001 / admin123\`.
+Default demo account: \`admin / admin\`.
 
-The project was generated with \`demo-ai-app ${projectName}\`; if you are reading this inside the project directory, run \`python3 app.py\` directly after installing \`requirements.txt\`.
+If port 5000 is already in use, start with another port:
+
+\`\`\`bash
+PORT=5001 python3 app.py
+\`\`\`
 
 ## Project structure
 
 \`\`\`text
 .
 ├── app.py                    # Flask entry point and routes
-├── workflow_adapter.py       # AI workflow adapter: validate, timeout, mock fallback, error envelope
+├── workflow_adapter.py       # AI workflow adapter with stable envelope
 ├── requirements.txt          # Python dependencies
 ├── bin/check-demo            # Demo readiness check
 ├── docs/                     # Product-quality workflow artifacts
 │   ├── requirements.md
 │   ├── tech-plan.md
 │   ├── workflow-integration.md
+│   ├── test-cases.md
 │   └── test-report.md
+├── docs/template-patterns/   # Neutral PC admin patterns
 ├── templates/                # Jinja2 / HTML templates
-└── assets/                   # CSS, JS, images
+└── assets/                   # CSS, JS
 \`\`\`
 
 ## Core modules
@@ -177,52 +193,24 @@ The project was generated with \`demo-ai-app ${projectName}\`; if you are readin
 |------|---------|
 | \`app.py\` | Flask application entry point, page routes, and API endpoints. |
 | \`workflow_adapter.py\` | Replaceable adapter for the AI workflow: input validation, timeout, empty-result fallback, and a stable \`{ok, data, error, fallback}\` response envelope. |
-| \`bin/check-demo\` | Readiness script that checks required files, README contents, and workflow error-handling contract. |
-
-## Template Adaptation Contract
-
-The bundled template is a generic PC admin shell derived from a week-report system. Before adapting it to a target business, the Agent must produce a written contract in \`docs/tech-plan.md\`:
-
-- \`Menu Plan\`: system name, top-level menus, sub-menus, target routes, and layer.
-- \`Page Plan\`: every page with route, purpose, source template, layer, keep reason, and cut plan.
-- \`Entity Mapping\`: each source template entity mapped to a target business entity.
-- \`Field Mapping\`: UI field -> local/API field -> workflow field -> mock fixture field.
-- \`Copy Rewrite Checklist\`: every visible text item that must be rewritten to the target domain.
-
-### Page layers
-
-| Layer | Meaning | Policy |
-|-------|---------|--------|
-| \`core\` | Required to complete the primary loop | Must implement and verify |
-| \`supporting\` | Relevant to the loop; improves demo credibility | Keep only with a written reason |
-| \`foundation\` | Login, dashboard, users, roles, dictionaries, menus | Keep as needed; do not overshadow the loop |
-| \`optional-cut\` | Business-relevant but not needed for the current demo | May keep; must record cut scope |
-| \`delete\` | Unrelated to the target business or week-report leftover | Delete or hide from menus and docs |
-
-Page count is not a target metric. Keep business-relevant pages and delete or weaken week-report-specific pages. Complete the primary loop before trimming \`optional-cut\` pages.
-
-### Cut plan scope
-
-For every \`optional-cut\` or \`delete\` page, record the scope needed to remove it later:
-
-- Flask route in \`app.py\`.
-- Jinja template or static HTML file.
-- Sidebar / menu entry.
-- Mock data in \`assets/mock-data.js\` or backend fixtures.
-- JS event or render entry.
-- References in README, docs, and test-report.
+| \`bin/check-demo\` | Readiness script with \`--skeleton\` and full modes. |
 
 ## AI workflow integration
 
-The app calls the AI workflow through \`workflow_adapter.py\`. When the platform is unavailable or \`WORKFLOW_MOCK=true\`, the adapter falls back to a mock response with the same JSON shape.
+The app calls the AI workflow through \`workflow_adapter.py\`. When the platform
+is unavailable or \`WORKFLOW_MOCK=true\`, the adapter falls back to a mock
+response with the same JSON shape.
 
-Example request:
+The shell provides a diagnostic endpoint:
 
 \`\`\`bash
 curl -X POST http://127.0.0.1:5000/api/workflow/demo \\
   -H "Content-Type: application/json" \\
   -d '{"input": "hello workflow"}'
 \`\`\`
+
+The primary loop must use a business-specific endpoint, for example
+\`/api/repairs/triage\`.
 
 Response envelope:
 
@@ -235,28 +223,26 @@ Response envelope:
 }
 \`\`\`
 
-Error responses use the same shape with \`ok: false\` and a non-null \`error\` object.
-
 ## Project artifacts
 
 The Agent fills these standard files during the product-quality workflow:
 
 | File | Purpose |
 |------|---------|
-| \`docs/requirements.md\` | Scoped requirements, users, primary loop, inputs/outputs, acceptance criteria. |
-| \`docs/tech-plan.md\` | Stack, pages, data model, API contract, SDD-lite, test plan, known limits. |
-| \`docs/workflow-integration.md\` | AI workflow adapter contract, request/response JSON, mock fallback, error handling. |
-| \`docs/test-report.md\` | Local run, unit/browser tests, mock fallback tests, issue log, sign-off. |
+| \`docs/requirements.md\` | Clarifications, assumptions, baseline, primary loop, acceptance checks, out of scope. |
+| \`docs/tech-plan.md\` | Reference patterns, menu/page plan, entity/field mapping, generated files plan, storage decision. |
+| \`docs/workflow-integration.md\` | Business endpoint, request/response JSON, mock fallback, error cases. |
+| \`docs/test-cases.md\` | Primary loop, fallback, invalid input, browser, readiness checks. |
+| \`docs/test-report.md\` | Local run result, fixes, sign-off. |
 
 Keep these files in sync with code and README.
-
-Demo scripts, judge Q&A, and presentation notes are optional live-demo material.
-They are not standard artifacts and are not required by \`bin/check-demo\`.
 
 ## Current status
 
 - [ ] Requirement clarified
-- [ ] SDD-lite contract written
+- [ ] Tech plan written
+- [ ] Workflow integration documented
+- [ ] Test cases written
 - [ ] Template adapted
 - [ ] Workflow adapter + mock fallback implemented
 - [ ] Local verification passed
@@ -273,5 +259,7 @@ console.log(`Generated project at ${targetDir}`);
 console.log(`Next steps:`);
 console.log(`  cd ${projectName}`);
 console.log(`  python3 app.py`);
+console.log(`  # verify skeleton structure:`);
+console.log(`  ./bin/check-demo --skeleton .`);
 console.log(`  # after Agent fills docs and adapts the app:`);
 console.log(`  ./bin/check-demo .`);

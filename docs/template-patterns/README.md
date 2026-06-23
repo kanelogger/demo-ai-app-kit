@@ -38,8 +38,8 @@ In any generated app, the following are hard failures:
 
 - Copying files or paths from `docs/reference/`
 - Copying files or paths from `examples/`
-- Using forbidden source labels such as `Source=<original-example>`,
-  `Source=<legacy-template>`, or `Source=copied-page` in `Generated Files Plan`
+- Using source labels that mean original example, legacy template, copied page,
+  or copied reference implementation in `Generated Files Plan`
 - Leaving original reference business wording in neutral shell files
 
 If the target business explicitly uses wording that overlaps with the original
