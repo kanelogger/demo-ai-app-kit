@@ -36,6 +36,7 @@ const coreSkills = [
   'webapp-testing',
   'debugging-and-error-recovery',
   'code-review-and-quality',
+  'release-readiness',
   'implement',
   'planning-and-task-breakdown',
 ];

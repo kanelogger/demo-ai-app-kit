@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Readiness"
+  short_description: "Validate package, install, skeleton, and publish gate"
+  default_prompt: "Use $release-readiness to verify this kit is safe to package and publish."

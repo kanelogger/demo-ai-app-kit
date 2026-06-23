@@ -1,6 +1,6 @@
 {
   "name": "demo-ai-app-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI Coding application prototype kit: generate runnable, maintainable AI web apps from a simple requirement.",
   "bin": {
     "demo-ai-app": "bin/demo-ai-app"

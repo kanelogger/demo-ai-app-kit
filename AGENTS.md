@@ -75,6 +75,7 @@ Requirement input
 -> webapp-testing
 -> debugging-and-error-recovery
 -> code-review-and-quality
+-> release-readiness
 ```
 
 Routing rules:
@@ -90,6 +91,7 @@ Routing rules:
 - Any completed Web app: use `skills/webapp-testing`.
 - Build, test, runtime, or browser failures: use `skills/debugging-and-error-recovery`.
 - Before handoff, submission, or final quality gate: use `skills/code-review-and-quality`.
+- Before npm publish, version tagging, release handoff, or after package/generator/template boundary changes: use `skills/release-readiness`.
 - Run `bin/check-demo` and a lightweight quality review after testing and before handoff.
 
 Explicit heavy workflow skills stay out of the default path unless the user or workflow clearly triggers them:
