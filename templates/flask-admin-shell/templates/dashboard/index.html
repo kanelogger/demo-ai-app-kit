@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}系统首页 - 业务后台管理系统{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="mb-6">
+    <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-gray-800">系统首页</h1>
+    <p class="text-gray-500 mt-1">欢迎回来，{{ session.name or '管理员' }}！当前是应用骨架，业务页面由实现阶段生成。</p>
+</div>
+
+<!-- 骨架状态卡片 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    <div class="card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">应用状态</p>
+                <h3 class="text-2xl font-bold text-success mt-1">骨架运行中</h3>
+                <p class="text-xs text-gray-500 mt-2">Flask + Tailwind 壳已就绪</p>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center text-success">
+                <i class="fas fa-check-circle text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">工作流适配器</p>
+                <h3 class="text-2xl font-bold text-primary mt-1">已接入</h3>
+                <p class="text-xs text-gray-500 mt-2">/api/workflow/health 可自检</p>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <i class="fas fa-robot text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">下一步</p>
+                <h3 class="text-2xl font-bold text-warning mt-1">实现业务</h3>
+                <p class="text-xs text-gray-500 mt-2">按 tech-plan 添加页面与接口</p>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-warning/10 flex items-center justify-center text-warning">
+                <i class="fas fa-clipboard-list text-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 占位提示 -->
+<div class="card">
+    <div class="flex items-start space-x-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800">这是中性应用骨架</h3>
+            <p class="text-sm text-gray-600 mt-1">
+                本页面在实现阶段会被替换为业务仪表盘。当前仅用于验证登录、布局、
+                菜单、工作流适配器等基础设施是否可运行。
+            </p>
+            <div class="mt-4 flex space-x-3">
+                <a href="{{ url_for('api_workflow_health') }}" target="_blank" class="btn-primary text-sm py-1.5 px-3">
+                    检查工作流适配器
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

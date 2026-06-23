@@ -266,6 +266,31 @@ try {
   fillDocs(projectDir);
   expectCheck(projectDir, true);
 
+  // Phase 3: non-week-report app with weekly-report wording in an adapted surface must FAIL residue check.
+  // We first remove the bundled week-report-specific templates and assets that are not part
+  // of the "community repair" app so the probe becomes the only residue.
+  const templatesDir = path.join(projectDir, 'templates');
+  const assetsDir = path.join(projectDir, 'assets');
+  [ 'reports', 'settings', 'system', 'templates' ].forEach((d) => {
+    const full = path.join(templatesDir, d);
+    if (fs.existsSync(full)) fs.rmSync(full, { recursive: true, force: true });
+  });
+  fs.writeFileSync(path.join(templatesDir, 'dashboard', 'index.html'), '<h1>Dashboard</h1>');
+  // Clear bundled JS assets that contain week-report wording; the probe will be the only residue.
+  fs.writeFileSync(path.join(assetsDir, 'app.js'), '');
+  fs.writeFileSync(path.join(assetsDir, 'mock-data.js'), '(function () { window.demoStore = { getState: function () { return {}; } }; })();');
+  fs.writeFileSync(path.join(assetsDir, 'login.js'), '');
+  fs.writeFileSync(path.join(assetsDir, 'core.js'), '');
+
+  const readmePath = path.join(projectDir, 'README.md');
+  let readme = fs.readFileSync(readmePath, 'utf8');
+  readme = readme.replace(/\\[Fill in target business, e\.g\. 社区报修 \/ community repair\\]/, '社区报修 / community repair');
+  fs.writeFileSync(readmePath, readme);
+  fs.writeFileSync(path.join(templatesDir, 'residue_probe.html'), '<div>周报</div>\\n');
+  expectCheck(projectDir, false, [
+    'FAIL: no unrelated weekly-report wording in generated app',
+  ]);
+
   console.log('Self-test: PASS');
 } catch (err) {
   console.error('Self-test: FAIL');

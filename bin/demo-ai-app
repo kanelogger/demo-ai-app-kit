@@ -118,6 +118,8 @@ Generated from demo-ai-app-kit.
 
 A locally runnable AI web app prototype built by adapting the bundled Flask + AdminLTE admin shell.
 
+**业务类型 / Business type**: [Fill in target business, e.g. 社区报修 / community repair]
+
 This generated directory is an Agent workspace, not a finished app. The Flask
 template can run immediately, but \`bin/check-demo\` is expected to fail until
 the Agent replaces the placeholder docs, adapts the template to the target

@@ -97,23 +97,27 @@ check_weekly_report_residue() {
     return
   fi
 
-  # If the README or docs explicitly describe a weekly-report app, residue is expected.
-  local is_weekly_report=0
-  if [[ -f "$ROOT/README.md" ]] && grep -Eiq "周报|week[- ]?report" "$ROOT/README.md"; then
-    is_weekly_report=1
-  fi
-  if [[ -d "$ROOT/docs" ]] && grep -Rilq "周报\|week[- ]\?report" "$ROOT/docs" 2>/dev/null; then
-    is_weekly_report=1
+  # Only run when the app explicitly declares itself as a non-week-report business.
+  # The declaration must be a line matching: Business type: <non-week-report-name>
+  # or: 业务类型：社区报修 / Target business: community repair
+  local is_non_weekly_report=0
+  if [[ -f "$ROOT/README.md" ]] && grep -Ein "(业务类型|Business type|Target business)([[:space:]]|\\*\\*)*[:：]" "$ROOT/README.md" | grep -Eivq "周报|week[- ]?report"; then
+    is_non_weekly_report=1
   fi
 
-  if [[ "$is_weekly_report" -eq 1 ]]; then
-    echo "SKIP: $label (app is described as a weekly-report system)"
+  if [[ "$is_non_weekly_report" -eq 0 ]]; then
+    echo "SKIP: $label (no explicit non-week-report business declaration in README)"
     return
   fi
 
+  # Check adapted surfaces only: templates/ and assets/. The bundled template
+  # is expected to contain week-report source wording; the Agent must rewrite
+  # the visible UI surfaces (templates, JS/CSS, mock data) when the target
+  # business is not weekly-report. README and docs are allowed to reference
+  # the template provenance.
   local hits_file="/tmp/demo_check_weekly_hits.$$"
   if grep -RInE "周报" \
-    "$ROOT/templates" "$ROOT/assets" "$ROOT/README.md" "$ROOT/docs" 2>/dev/null >"$hits_file"; then
+    "$ROOT/templates" "$ROOT/assets" 2>/dev/null >"$hits_file"; then
     echo "FAIL: $label"
     cat "$hits_file"
     rm -f "$hits_file"

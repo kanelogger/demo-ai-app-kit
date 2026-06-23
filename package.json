@@ -7,12 +7,14 @@
   },
   "files": [
     "bin/",
-    "templates/",
+    "templates/flask-admin-shell/",
+    "templates/docs/",
+    "docs/template-patterns/",
     "AGENTS.md",
     "prompts/",
     "skills/",
-    "docs/",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "test": "node bin/self-test"
