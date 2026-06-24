@@ -50,6 +50,7 @@ const requiredSources = [
   ['AGENTS.md', path.join(kitRoot, 'AGENTS.md')],
   ['entry prompt', path.join(kitRoot, 'prompts', 'opencode-entry.md')],
   ['check-demo script', path.join(kitRoot, 'bin', 'check-demo')],
+  ['check-docs script', path.join(kitRoot, 'bin', 'check-docs')],
   ...coreSkills.map((skill) => [`skill/${skill}`, path.join(kitRoot, 'skills', skill)]),
 ];
 
@@ -108,9 +109,11 @@ for (const skill of coreSkills) {
   copyDir(src, path.join(targetDir, 'skills', skill));
 }
 
-// 7. Copy check-demo script.
+// 7. Copy local verification scripts.
 copyFile(path.join(kitRoot, 'bin', 'check-demo'), path.join(targetDir, 'bin', 'check-demo'));
 fs.chmodSync(path.join(targetDir, 'bin', 'check-demo'), 0o755);
+copyFile(path.join(kitRoot, 'bin', 'check-docs'), path.join(targetDir, 'bin', 'check-docs'));
+fs.chmodSync(path.join(targetDir, 'bin', 'check-docs'), 0o755);
 
 // 8. Generate a project README skeleton.
 const readme = `# ${projectName}
@@ -152,6 +155,9 @@ Input a simple app requirement
 
 - \`./bin/check-demo --skeleton .\` checks that the generated project has the
   correct files, no copied reference material, and a runnable shell.
+- \`./bin/check-docs .\` checks the pre-implementation document package:
+  \`docs/requirements.md\`, \`docs/tech-plan.md\`,
+  \`docs/workflow-integration.md\`, and \`docs/test-cases.md\`.
 - \`./bin/check-demo .\` checks full app readiness after the Agent has filled
   the docs, recorded the selected solution, implemented the primary loop, and
   updated \`docs/skill-trace.md\`.
@@ -183,6 +189,7 @@ PORT=5001 python3 app.py
 ├── workflow_adapter.py       # AI workflow adapter with stable envelope
 ├── requirements.txt          # Python dependencies
 ├── bin/check-demo            # Demo readiness check
+├── bin/check-docs            # Pre-implementation document quality check
 ├── docs/                     # Product-quality workflow artifacts
 │   ├── requirements.md
 │   ├── solution-options.md

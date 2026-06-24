@@ -328,6 +328,7 @@ if ! is_kit_repo; then
   check_file "app.py" "app entry"
   check_file "workflow_adapter.py" "workflow adapter"
   check_file "bin/check-demo" "check-demo script"
+  check_file "bin/check-docs" "check-docs script"
   check_dir "docs/template-patterns" "pattern registry"
   check_file "docs/solution-options.md" "solution options document"
   check_file "docs/test-cases.md" "test cases document"

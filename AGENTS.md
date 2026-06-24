@@ -109,6 +109,7 @@ Routing rules:
 - Before handoff, submission, or final quality gate: use `skills/code-review-and-quality`.
 - Before npm publish, version tagging, release handoff, or after package/generator/template boundary changes: use `skills/release-readiness`.
 - Run `bin/check-demo` and a lightweight quality review after testing and before handoff.
+- Run `bin/check-docs .` after the implementation-ready documents are filled and before code implementation when the task is validating document quality or freezing the plan.
 
 Skill trace rule:
 
@@ -139,6 +140,7 @@ Explicit heavy workflow skills stay out of the default path unless the user or w
 - Required blocks: `Primary Loop`, `Selected Solution Reference`, `Reference Patterns`, `Generated Files Plan`, `Field Mapping`, `Workflow Mock Contract`, `Data Storage Decision`, `Demo Acceptance Checks`.
 - Do not create a separate SDD document or use a heavyweight SDD flow unless the user explicitly asks.
 - During implementation, prefer a working demo and `bin/check-demo` over repeatedly maintaining planning documents.
+- `bin/check-docs .` is the pre-implementation document-quality gate for `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-cases.md`. It intentionally does not start the app, probe pages, or verify code behavior.
 - `bin/check-demo --skeleton .` is the structural gate for a fresh generated project; `bin/check-demo .` is the full app readiness gate after the Agent completes docs and implementation.
 
 ## Coding Rules
@@ -172,6 +174,7 @@ Keep comments load-bearing:
 - For generated or changed demo apps, prefer a real local run when feasible.
 - Always report exact commands run and whether they passed.
 - If a check could not be run, say so and explain why.
+- Use `bin/check-docs .` for docs-only validation before implementation or when implementation is explicitly out of scope.
 - `bin/check-demo` is the baseline readiness check for this repository or a generated project.
 
 ## Clarification Workflow

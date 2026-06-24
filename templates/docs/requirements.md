@@ -38,6 +38,26 @@
 - Acceptance check:
 - Out of scope:
 
+## Baseline Classification
+
+Each required baseline field must be backed by an observable answer type. Do not
+leave any required field as `Attitude / Wish` or `Unknown`.
+
+```markdown
+| Baseline Field | Evidence | Answer Type | Risk / Follow-up |
+|----------------|----------|-------------|------------------|
+| Primary user | | Behavior Fact | |
+| Primary loop | | Behavior Fact | |
+| Core entity | | Data Fact | |
+| Core states | | Workflow Rule | |
+| Workflow input | | Data Fact | |
+| Workflow output | | Data Fact | |
+| Acceptance check | | Acceptance Fact | |
+| Out of scope | | Concrete Constraint | |
+| Nice-to-have / attitude | | Attitude / Wish | Convert to assumption, risk, or out of scope. |
+| Unknown item | | Unknown | Ask a follow-up before freezing if it affects required fields. |
+```
+
 ## Primary Loop
 
 ```text

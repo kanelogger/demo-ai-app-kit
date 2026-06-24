@@ -47,6 +47,7 @@ Clarifications
 Assumptions
 Product Shape
 Requirements Baseline
+Baseline Classification
 Primary Loop
 Acceptance Checks
 Out of Scope
@@ -81,3 +82,16 @@ Facts, Concrete Constraints, Workflow Rules, Data Facts, or Acceptance Facts:
 - Out of scope
 
 If any item is still Attitude / Wish or Unknown, keep asking questions.
+
+### Baseline Classification table
+
+After filling the baseline, add an explicit evidence table:
+
+```markdown
+| Baseline Field | Evidence | Answer Type | Risk / Follow-up |
+|----------------|----------|-------------|------------------|
+```
+
+Required baseline fields must not be classified as `Attitude / Wish` or
+`Unknown`. Attitudes and unknowns can still be recorded, but only as assumptions,
+risks, follow-up questions, or out-of-scope notes.

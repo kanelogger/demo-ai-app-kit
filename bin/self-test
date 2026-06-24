@@ -7,30 +7,31 @@ const { execFileSync } = require('child_process');
 const kitRoot = path.resolve(__dirname, '..');
 const demoAiApp = path.join(kitRoot, 'bin', 'demo-ai-app');
 const checkDemo = path.join(kitRoot, 'bin', 'check-demo');
+const checkDocs = path.join(kitRoot, 'bin', 'check-docs');
 const projectName = `kit-selftest-${Date.now()}`;
 const workDir = os.tmpdir();
 const projectDir = path.join(workDir, projectName);
 
-function runCheck(args) {
-  return execFileSync(checkDemo, args, { encoding: 'utf8', cwd: projectDir });
+function runCommand(command, args) {
+  return execFileSync(command, args, { encoding: 'utf8', cwd: projectDir });
 }
 
-function expectCheck(args, shouldPass, expectedFailures) {
+function expectCommand(label, command, args, shouldPass, expectedFailures) {
   let output;
   try {
-    output = runCheck(args);
+    output = runCommand(command, args);
   } catch (err) {
     output = err.stdout || '';
     if (shouldPass) {
       console.error(output);
-      console.error(`Self-test: FAIL - expected check-demo to PASS for ${projectDir}`);
+      console.error(`Self-test: FAIL - expected ${label} to PASS for ${projectDir}`);
       process.exit(1);
     }
     if (expectedFailures) {
       for (const expected of expectedFailures) {
         if (!output.includes(expected)) {
           console.error(output);
-          console.error(`Self-test: FAIL - expected failure output to include: ${expected}`);
+          console.error(`Self-test: FAIL - expected ${label} failure output to include: ${expected}`);
           process.exit(1);
         }
       }
@@ -39,10 +40,18 @@ function expectCheck(args, shouldPass, expectedFailures) {
   }
   if (!shouldPass) {
     console.error(output);
-    console.error(`Self-test: FAIL - expected check-demo to FAIL for ${projectDir}`);
+    console.error(`Self-test: FAIL - expected ${label} to FAIL for ${projectDir}`);
     process.exit(1);
   }
   return output;
+}
+
+function expectCheck(args, shouldPass, expectedFailures) {
+  return expectCommand('check-demo', checkDemo, args, shouldPass, expectedFailures);
+}
+
+function expectDocs(args, shouldPass, expectedFailures) {
+  return expectCommand('check-docs', checkDocs, args, shouldPass, expectedFailures);
 }
 
 function fillDocs(dir) {
@@ -55,6 +64,11 @@ function fillDocs(dir) {
 |----------|--------|-------------|-----------------|
 | Who submits the request? | Community resident | Behavior Fact | Primary user |
 | What is the core entity? | Repair request | Data Fact | Entity mapping |
+| What must happen after submit? | The workflow returns category and handler suggestion before the user confirms dispatch. | Workflow Rule | Primary loop |
+| What is the implementation limit? | Local prototype only; no external notification channel. | Concrete Constraint | Out of scope |
+| How do we know it works? | A user can submit a repair request and see a suggestion. | Acceptance Fact | Acceptance check |
+| Should it support advanced analytics? | Nice to have after the primary loop works. | Attitude / Wish | Keep out of V1 |
+| Is the property system API available? | Unknown. | Unknown | Use mock fallback |
 
 ## Assumptions
 
@@ -79,6 +93,21 @@ function fillDocs(dir) {
 - Workflow output: triage category and suggested handler
 - Acceptance check: a resident can submit a request and see a suggestion
 - Out of scope: real notification channels, multi-tenant auth
+
+## Baseline Classification
+
+| Baseline Field | Evidence | Answer Type | Risk / Follow-up |
+|----------------|----------|-------------|------------------|
+| Primary user | Community resident submits a repair request | Behavior Fact | If staff enters requests, role changes |
+| Primary loop | Submit request, receive workflow suggestion, confirm dispatch | Workflow Rule | Dispatch handling is limited |
+| Core entity | Repair request fields and state | Data Fact | Attachment upload is out of scope |
+| Core states | pending, assigned, closed | Workflow Rule | More states can be added later |
+| Workflow input | request description | Data Fact | Real platform fields may differ |
+| Workflow output | triage category and suggested handler | Data Fact | Mock must match real envelope |
+| Acceptance check | user can submit and see a suggestion | Acceptance Fact | Browser verification still needed after implementation |
+| Out of scope | no external notifications or multi-tenant auth | Concrete Constraint | Add in later phase |
+| Nice-to-have analytics | future preference | Attitude / Wish | Do not freeze as V1 |
+| Property system API | no source available | Unknown | Use mock fallback |
 
 ## Primary Loop
 
@@ -477,7 +506,15 @@ try {
   // Phase 1: skeleton project must pass skeleton mode.
   expectCheck(['--skeleton', '.'], true);
 
-  // Phase 2: full mode must FAIL because docs are unfilled placeholders.
+  // Phase 2: docs-only mode must FAIL because generated docs are unfilled placeholders.
+  expectDocs(['.'], false, [
+    'FAIL: docs/requirements.md has no obvious placeholders',
+    'FAIL: docs/tech-plan.md has no obvious placeholders',
+    'FAIL: docs/workflow-integration.md has no obvious placeholders',
+    'Document quality: FAIL',
+  ]);
+
+  // Phase 3: full mode must FAIL because docs are unfilled placeholders.
   expectCheck(['.'], false, [
     'FAIL: docs/requirements.md has no obvious placeholders',
     'FAIL: solution selection fields are filled',
@@ -489,11 +526,12 @@ try {
     'FAIL: docs/skill-trace.md has no obvious placeholders',
   ]);
 
-  // Phase 3: fill docs and expect full PASS.
+  // Phase 4: fill docs and expect docs-only and full PASS.
   fillDocs(projectDir);
+  expectDocs(['.'], true);
   expectCheck(['.'], true);
 
-  // Phase 4: forbidden source terms detector must FAIL on week-report wording.
+  // Phase 5: forbidden source terms detector must FAIL on week-report wording.
   const templatesDir = path.join(projectDir, 'templates');
   fs.writeFileSync(path.join(templatesDir, 'residue_probe.html'), '<div>周报</div>\n');
   expectCheck(['--skeleton', '.'], false, [

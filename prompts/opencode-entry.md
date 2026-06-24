@@ -66,12 +66,13 @@ Copy this prompt as the first instruction after entering the generated project a
        - Failures: use debugging-and-error-recovery.
        - Before handoff or final quality gate: use code-review-and-quality.
     11. Generate a product-quality technical plan in the target document language with an SDD-lite single-page contract: Requirements Baseline Reference, Selected Solution Reference, Reference Patterns, Menu Plan, Page Plan, Entity Mapping, Field Mapping, Generated Files Plan, Workflow Mock Contract, Data Storage Decision, and Changed Decisions. Save the plan to `docs/tech-plan.md`. The Generated Files Plan must use Source `shell`, `pattern:<pattern-name>`, or `business-requirement`; never use a source label that means original example, legacy template, copied page, or reference implementation.
-    12. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `docs/template-patterns/` instead of copying the reference example.
-    13. Implement the smallest complete maintainable PC backend app slice that satisfies the primary loop and leaves stable extension seams.
-    14. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/workflow-integration.md` in the target document language.
-    15. Write test cases to `docs/test-cases.md` in the target document language covering primary loop, workflow fallback, invalid input, browser path, API JSON, and readiness check.
-    16. Verify the app locally with tests and browser checks; report exact commands, URL, business API response, and readiness result in `docs/test-report.md` in the target document language.
-    17. Update README in the target document language with run command, URL, core flow, adapter notes, known limits, selected solution, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
+    12. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/workflow-integration.md` in the target document language.
+    13. Write test cases to `docs/test-cases.md` in the target document language covering primary loop, workflow fallback, invalid input, browser path, API JSON, and readiness check.
+    14. Run `./bin/check-docs .` after `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-cases.md` are filled. Treat failures as document-quality issues to fix before implementation.
+    15. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `docs/template-patterns/` instead of copying the reference example.
+    16. Implement the smallest complete maintainable PC backend app slice that satisfies the primary loop and leaves stable extension seams.
+    17. Verify the app locally with tests and browser checks; report exact commands, URL, business API response, and readiness result in `docs/test-report.md` in the target document language.
+    18. Update README in the target document language with run command, URL, core flow, adapter notes, known limits, selected solution, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
   </task>
 
   <constraints>
@@ -98,6 +99,7 @@ Copy this prompt as the first instruction after entering the generated project a
     - The AI workflow call path is visible in code and demoable through mock fallback.
     - `docs/requirements.md`, `docs/solution-options.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-cases.md`, `docs/skill-trace.md`, and `docs/test-report.md` are present and consistent with code.
     - Requirements, selected solution, SDD-lite, API/workflow contracts, tests, skill trace, and README tell the same story.
+    - `./bin/check-docs .` passes before implementation starts or before a docs-only handoff.
     - The README contains run command, URL, accounts if any, core flow, adapter notes, known limits, and the purpose of each docs/ artifact.
     - The README and docs support a concise technical walkthrough of business value, structure, and live demo steps.
   </success_criteria>

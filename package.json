@@ -3,7 +3,8 @@
   "version": "0.1.1",
   "description": "AI Coding PC backend prototype kit: generate runnable, maintainable admin apps from a simple requirement.",
   "bin": {
-    "demo-ai-app": "bin/demo-ai-app"
+    "demo-ai-app": "bin/demo-ai-app",
+    "check-docs": "bin/check-docs"
   },
   "files": [
     "bin/",
