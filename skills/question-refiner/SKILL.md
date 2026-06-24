@@ -7,10 +7,11 @@ description: Refine a competition topic or rough app idea into a scoped requirem
 
 ## Workflow
 
-1. Extract the topic, target users, business scenario, required AI capability, and hard delivery constraints.
-2. Produce a concise requirements brief with behavior facts, constraints, data shape, workflow rules, and acceptance evidence.
-3. Identify the single most important unanswered blocking question.
-4. Hand off to `skills/grilling/SKILL.md` with that question, or ask it directly if continuing the same conversation.
+1. Infer the target document language from the user's native/dominant language. If native language is unknown, use the dominant natural language of the requirement.
+2. Extract the topic, target users, business scenario, required AI capability, and hard delivery constraints.
+3. Produce a concise requirements brief in the target document language with behavior facts, constraints, data shape, workflow rules, and acceptance evidence.
+4. Identify the single most important unanswered blocking question.
+5. Hand off to `skills/grilling/SKILL.md` with that question, or ask it directly if continuing the same conversation.
 
 ## Output Contract
 
@@ -26,6 +27,7 @@ Return Markdown with these sections:
 
 ## Rules
 
+- Write user-facing output in the inferred target document language, including headings and table labels. Keep file paths, API routes, commands, JSON keys, and code identifiers in English.
 - Prefer a complete narrow loop over multiple shallow features.
 - Treat platform integration as an adapter contract plus mock fallback until proven live.
 - Do not invent policies, statistics, or platform capabilities.

@@ -21,17 +21,18 @@ implementation starts.
 
 ## Workflow
 
-1. Copy the Requirements Baseline into the tech plan verbatim.
-2. Choose applicable patterns from `docs/template-patterns/` and list them in
+1. Infer the target document language from `docs/requirements.md` and the original requirement. Keep the completed tech plan in that language.
+2. Copy the Requirements Baseline into the tech plan verbatim.
+3. Choose applicable patterns from `docs/template-patterns/` and list them in
    `Reference Patterns`.
-3. Design the menu plan, page plan, entity mapping, and field mapping from the
+4. Design the menu plan, page plan, entity mapping, and field mapping from the
    baseline and patterns.
-4. Produce a `Generated Files Plan` where every file has `Action` and `Source`.
-5. Decide storage strategy and document it in `Data Storage Decision`.
-6. Copy or refine the workflow mock contract from
+5. Produce a `Generated Files Plan` where every file has `Action` and `Source`.
+6. Decide storage strategy and document it in `Data Storage Decision`.
+7. Copy or refine the workflow mock contract from
    `docs/workflow-integration.md`.
-7. List any minor implementation changes in `Changed Decisions`.
-8. If a change alters core entity, primary loop, workflow input/output, storage
+8. List any minor implementation changes in `Changed Decisions`.
+9. If a change alters core entity, primary loop, workflow input/output, storage
    strategy, or acceptance check, stop and ask the user before continuing.
 
 ## Output Contract
@@ -53,6 +54,7 @@ Return Markdown sections that match `templates/docs/tech-plan.md`:
 
 ## Rules
 
+- Write user-facing output in the inferred target document language, including headings and table labels. Keep file paths, API routes, commands, JSON keys, enum values, and code identifiers in English.
 - Use `Reference Patterns`, not the old template-oriented label.
 - Every generated file must have an `Action` (`create`, `modify`, `delete`, `keep`)
   and a `Source` (`shell`, `pattern:<pattern-name>`, `business-requirement`).

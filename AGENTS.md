@@ -57,6 +57,17 @@ Competition use is the first validation scenario, but the product quality target
 - Optimize for generated-app quality: clear requirements, stable contracts, local run, visible URL, mock fallback, meaningful tests, readable code, useful README, and local verification grounded in the verified app.
 - Do not add long theoretical materials unless they directly improve generated-app quality or maintainability.
 
+## Language Policy
+
+Generated documents are for both the Agent and the human app owner.
+
+- Infer the target document language from the user's requirement text before writing or filling `docs/*.md`, `README.md`, and user-facing UI copy.
+- Use the user's native or dominant language when it is clear. If native language cannot be known, use the dominant natural language of the requirement. If the requirement is mixed, prefer the language used for the business scenario and acceptance constraints.
+- If language choice is genuinely ambiguous and affects user-facing delivery, ask one concise blocking question.
+- Write final user-facing documents in the target language, including section headings, table labels, acceptance checks, known limits, and test reports.
+- Keep code identifiers, file paths, API routes, HTTP methods, JSON keys, environment variable names, CLI commands, and log/error codes in English unless the existing code contract requires otherwise.
+- Do not leave English template scaffolding in completed documents when the target language is Chinese or another non-English language.
+
 ## Default Product-Quality Workflow
 
 The default path is the product quality baseline. It should produce a clear, stable, testable, maintainable AI Web app, not only the quickest runnable demo.

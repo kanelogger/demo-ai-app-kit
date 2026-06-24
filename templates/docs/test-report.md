@@ -1,6 +1,9 @@
 # Test Report
 
 > Generated from demo-ai-app-kit. Fill this in after verification.
+> Language policy: when completing this file, infer the user's native/dominant
+> language from the requirement and rewrite this document in that language.
+> Keep code identifiers, paths, commands, API routes, and JSON keys in English.
 
 ## Test Scope
 

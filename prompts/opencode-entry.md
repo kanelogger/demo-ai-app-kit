@@ -24,6 +24,15 @@ Copy this prompt as the first instruction after entering the generated project a
     You are working in the demo-ai-app-kit repository or a project generated from it. Follow AGENTS.md. The target is a product-quality AI web app prototype: locally runnable, easy to understand, testable, and ready to explain.
   </context>
 
+  <language_policy>
+    Infer the target document language from the user's requirement before writing any user-facing artifact.
+    Use the user's native or dominant language when clear. If native language cannot be known, use the dominant natural language of the requirement. If the requirement is mixed, prefer the language used for the business scenario and acceptance constraints.
+    Write completed `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-cases.md`, `docs/test-report.md`, `README.md`, and UI copy in that target language, including headings and table labels.
+    Keep code identifiers, file paths, API routes, HTTP methods, JSON keys, environment variables, CLI commands, and machine-readable error codes in English.
+    If the target language is genuinely ambiguous and affects delivery, ask one concise blocking question before freezing requirements.
+    Remove or translate English template scaffolding from completed human-facing documents.
+  </language_policy>
+
   <input_data>
     App requirement or topic:
     [PASTE REQUIREMENT HERE]
@@ -35,11 +44,12 @@ Copy this prompt as the first instruction after entering the generated project a
   <task>
     Execute the product-quality default workflow:
     1. Restate the app concept in 5 lines or less.
-    2. Ask at most 3 blocking questions. If none are blocking, state assumptions and continue.
-    3. Define one primary user loop and one optional secondary loop.
-    4. Generate a scoped requirements document and save it to `docs/requirements.md`.
-    5. Classify requirement route: simple requirement -> question-refiner; vague, complex, or product-shape unclear -> ce-brainstorm.
-    6. Use this skill routing table:
+    2. State the inferred target document language and the evidence used. If ambiguous, ask one blocking language question.
+    3. Ask at most 3 blocking questions. If none are blocking, state assumptions and continue.
+    4. Define one primary user loop and one optional secondary loop.
+    5. Generate a scoped requirements document in the target document language and save it to `docs/requirements.md`.
+    6. Classify requirement route: simple requirement -> question-refiner; vague, complex, or product-shape unclear -> ce-brainstorm.
+    7. Use this skill routing table:
        - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> shell-implementation -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality.
        - Simple requirement: use question-refiner and hand off to grilling; skip full ce-brainstorm.
        - Vague, complex, or product-shape unclear: use ce-brainstorm and hand off to grilling with the next best blocking question.
@@ -52,13 +62,13 @@ Copy this prompt as the first instruction after entering the generated project a
        - Any completed Web app: use webapp-testing.
        - Failures: use debugging-and-error-recovery.
        - Before handoff or final quality gate: use code-review-and-quality.
-    7. Generate a product-quality technical plan with an SDD-lite single-page contract: Requirements Baseline Reference, Reference Patterns, Menu Plan, Page Plan, Entity Mapping, Field Mapping, Generated Files Plan, Workflow Mock Contract, Data Storage Decision, and Changed Decisions. Save the plan to `docs/tech-plan.md`. The Generated Files Plan must use Source `shell`, `pattern:<pattern-name>`, or `business-requirement`; never use a source label that means original example, legacy template, copied page, or reference implementation.
-    8. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `docs/template-patterns/` instead of copying the reference example.
-    9. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
-    10. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/workflow-integration.md`.
-    11. Write test cases to `docs/test-cases.md` covering primary loop, workflow fallback, invalid input, browser path, and readiness check.
-    12. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md`.
-    12. Update README with run command, URL, core flow, adapter notes, known limits, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
+    8. Generate a product-quality technical plan in the target document language with an SDD-lite single-page contract: Requirements Baseline Reference, Reference Patterns, Menu Plan, Page Plan, Entity Mapping, Field Mapping, Generated Files Plan, Workflow Mock Contract, Data Storage Decision, and Changed Decisions. Save the plan to `docs/tech-plan.md`. The Generated Files Plan must use Source `shell`, `pattern:<pattern-name>`, or `business-requirement`; never use a source label that means original example, legacy template, copied page, or reference implementation.
+    9. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `docs/template-patterns/` instead of copying the reference example.
+    10. Implement the smallest complete maintainable app slice that satisfies the primary loop and leaves stable extension seams.
+    11. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/workflow-integration.md` in the target document language.
+    12. Write test cases to `docs/test-cases.md` in the target document language covering primary loop, workflow fallback, invalid input, browser path, and readiness check.
+    13. Verify the app locally with tests and browser checks; report exact commands and URL and record results in `docs/test-report.md` in the target document language.
+    14. Update README in the target document language with run command, URL, core flow, adapter notes, known limits, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
   </task>
 
   <constraints>
@@ -71,6 +81,7 @@ Copy this prompt as the first instruction after entering the generated project a
     - Include mock workflow mode that works without external AI platform network access.
     - Keep workflow input/output JSON stable between mock and real adapter.
     - Keep SDD-lite to one page. Treat it as a frozen pre-build contract, not a document to maintain throughout implementation.
+    - Keep completed human-facing documents in the inferred target document language; do not leave English skeleton headings when the target language is not English.
     - Do not invoke explicit heavy skills unless their trigger condition is concrete.
     - Keep explicit heavy skills out of the default path: ce-code-review, review, ce-debug, ce-dogfood-beta, mcp-builder, to-prd, to-issues, triage, handoff.
     - Avoid secrets, private event notes, and hardcoded credentials beyond documented demo accounts.
