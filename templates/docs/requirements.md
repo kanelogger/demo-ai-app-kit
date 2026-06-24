@@ -20,6 +20,13 @@
 |------------|--------|---------------|
 ```
 
+## Product Shape
+
+- Target app type: PC backend/admin app.
+- First screen after login:
+- Required workbench surfaces: dashboard / list / form / detail / review / dispatch / other.
+- Explicitly not building: marketing page / mobile app / chat-only page / pure report page.
+
 ## Requirements Baseline
 
 - Primary user:
@@ -43,8 +50,10 @@
 
 ## Acceptance Checks
 
+- [ ] App is recognizably a PC backend/admin app.
 - [ ] Primary loop works end-to-end locally.
 - [ ] AI workflow adapter has a mock fallback with the same response shape.
+- [ ] `docs/solution-options.md` records 3 options and the selected option before implementation.
 - [ ] README documents run command, URL, and demo account if any.
 - [ ] `bin/check-demo .` passes.
 

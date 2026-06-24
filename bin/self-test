@@ -62,6 +62,13 @@ function fillDocs(dir) {
 |------------|--------|---------------|
 | Single demo account is enough | Local prototype | Add login flow later |
 
+## Product Shape
+
+- Target app type: PC backend/admin app.
+- First screen after login: dashboard with repair workbench entry.
+- Required workbench surfaces: dashboard, list, form, detail.
+- Explicitly not building: marketing page, mobile app, chat-only page, pure report page.
+
 ## Requirements Baseline
 
 - Primary user: community resident
@@ -83,8 +90,10 @@ function fillDocs(dir) {
 
 ## Acceptance Checks
 
+- [ ] App is recognizably a PC backend/admin app.
 - [ ] Primary loop works end-to-end locally.
 - [ ] AI workflow adapter has a mock fallback with the same response shape.
+- [ ] docs/solution-options.md records 3 options and the selected option before implementation.
 - [ ] README documents run command, URL, and demo account if any.
 - [ ] \`bin/check-demo .\` passes.
 
@@ -92,6 +101,76 @@ function fillDocs(dir) {
 
 - Multi-tenant authentication.
 - External notification channels.
+`,
+    'docs/solution-options.md': `# Solution Options
+
+## Requirements Baseline Reference
+
+- Primary user: community resident
+- Primary loop: resident submits a repair request and receives an AI-generated triage suggestion
+- Core entity: repair request
+- Core states: pending, assigned, closed
+- Workflow input: request description
+- Workflow output: triage category and suggested handler
+- Acceptance check: a resident can submit a request and see a suggestion
+- Out of scope: real notification channels, multi-tenant auth
+
+## Option 1 - Fast Flask Admin
+
+| Dimension | Decision |
+|-----------|----------|
+| Architecture | Flask + native HTML/CSS/JS + in-memory store |
+| AI integration | workflow_adapter.py mock fallback first |
+| Best for | 10-hour PC backend demo with low dependency risk |
+| Main risk | Records reset on restart |
+| Demo cost | Low |
+
+## Option 2 - Flask API + Richer Frontend
+
+| Dimension | Decision |
+|-----------|----------|
+| Architecture | Flask API + progressively enhanced admin pages |
+| AI integration | Stable business API endpoint plus workflow adapter |
+| Best for | More interactive list filtering |
+| Main risk | More browser test surface |
+| Demo cost | Medium |
+
+## Option 3 - Persistence-First Admin
+
+| Dimension | Decision |
+|-----------|----------|
+| Architecture | Flask + local JSON persistence + admin pages |
+| AI integration | Workflow adapter writes normalized results back to storage |
+| Best for | Repeatable records across restarts |
+| Main risk | More state-reset work |
+| Demo cost | Medium |
+
+## Recommendation
+
+- Recommended option: Option 1 - Fast Flask Admin
+- Reason: enough for the primary loop and keeps dependency risk low
+- Tradeoff accepted: repair records reset on restart
+
+## Customization Entry
+
+| Requested Change | Accepted? | Effect On Scope / Risk |
+|------------------|-----------|------------------------|
+| none | yes | no extra scope |
+
+## User Selection
+
+- Selected option: Option 1 - Fast Flask Admin
+- Selected by: Agent default
+- Selected at: self-test fixture
+- Selection notes: chosen because this fixture only validates readiness gates
+
+## Freeze Gate
+
+- [x] docs/requirements.md is filled and has no unresolved Unknown fields.
+- [x] Three materially different options are documented.
+- [x] One option is recommended with a concrete tradeoff.
+- [x] User selection is recorded above.
+- [x] docs/tech-plan.md follows this selection.
 `,
     'docs/tech-plan.md': `# Technical Plan
 
@@ -106,6 +185,13 @@ function fillDocs(dir) {
 - Acceptance check: a resident can submit a request and see a suggestion
 - Out of scope: real notification channels, multi-tenant auth
 
+## Selected Solution Reference
+
+- Selected option: Option 1 - Fast Flask Admin
+- Selected by: Agent default
+- Tradeoff accepted: repair records reset on restart
+- Customization: none
+
 ## Reference Patterns
 
 | Pattern | Source File | Why Used |
@@ -119,6 +205,16 @@ function fillDocs(dir) {
 - Frontend: Tailwind CSS + native HTML/JS (from shell)
 - AI workflow adapter: workflow_adapter.py (from shell)
 - Test runner: bin/check-demo .
+
+## Primary Loop API
+
+| Item | Value |
+|------|-------|
+| Page route | /repair/create |
+| Business API endpoint | /api/repairs/triage |
+| Method | POST |
+| Success JSON envelope | {ok, data, error, fallback} |
+| Invalid input behavior | HTTP 400 with error.code: INVALID_INPUT |
 
 ## Menu Plan
 
@@ -192,6 +288,13 @@ The AI workflow classifies repair requests and returns a suggested action.
 
 \`POST /api/repairs/triage\`
 
+| Field | Value |
+|-------|-------|
+| Page route | /repair/create |
+| Business API endpoint | /api/repairs/triage |
+| Method | POST |
+| Called from UI file | templates/repair/create.html |
+
 ## Adapter Location
 \`workflow_adapter.py\`
 
@@ -225,6 +328,11 @@ When the AI platform is unavailable, the app returns a mock response with the sa
 ## Switching to Real Workflow
 Set WORKFLOW_MOCK=false and implement _call_real_workflow.
 
+## Readiness Probe
+\`\`\`bash
+DEMO_BASE_URL=http://127.0.0.1:5000 DEMO_PRIMARY_LOOP_PATH=/repair/create DEMO_BUSINESS_API_PATH=/api/repairs/triage DEMO_BUSINESS_API_PAYLOAD='{"input":"楼道灯坏了"}' ./bin/check-demo .
+\`\`\`
+
 ## Test Examples
 \`\`\`bash
 curl -X POST http://127.0.0.1:5000/api/repairs/triage -H "Content-Type: application/json" -d '{"input":"楼道灯坏了"}'
@@ -242,6 +350,14 @@ python3 app.py
 
 Result: PASS
 URL: http://127.0.0.1:5000
+
+## Readiness Probe
+
+\`\`\`bash
+DEMO_BASE_URL=http://127.0.0.1:5000 DEMO_PRIMARY_LOOP_PATH=/repair/create DEMO_BUSINESS_API_PATH=/api/repairs/triage DEMO_BUSINESS_API_PAYLOAD='{"input":"楼道灯坏了"}' ./bin/check-demo .
+\`\`\`
+
+Result: PASS
 
 ## Unit / Behavior Tests
 | Test | Result |
@@ -304,6 +420,49 @@ None.
 | Test ID | Scenario | Source | Steps | Expected Result |
 |---------|----------|--------|-------|-----------------|
 | RC-001 | check-demo | tech-plan.md | Run ./bin/check-demo . | PASS |
+| RC-002 | running app probe | workflow-integration.md | Run DEMO_BASE_URL and business API check | Stable JSON envelope |
+`,
+    'docs/skill-trace.md': `# Skill Trace
+
+## Routing Summary
+
+| Step | Skill | Status | Input / Evidence | Output Artifact | Skipped Reason |
+|------|-------|--------|------------------|-----------------|----------------|
+| Requirements route | question-refiner | used | Community repair fixture | docs/requirements.md | |
+| Plan challenge | grilling | used | Requirements baseline | Assumptions table | |
+| Feasibility check | solution-stress-test | used | Three options | docs/solution-options.md | |
+| Domain terms | domain-modeling | used | Repair request states | Entity and field mapping | |
+| Tech plan | tech-plan-generator | used | Selected option | docs/tech-plan.md | |
+| API contract | api-and-interface-design | used | Business API endpoint | docs/workflow-integration.md | |
+| Security boundary | security-and-hardening | used | User input and mock adapter | Validation notes | |
+| Implementation | shell-implementation | used | Frozen docs | App file plan | |
+| Tests | tdd | used | Adapter behavior | docs/test-cases.md | |
+| Browser verification | webapp-testing | used | Local URL | docs/test-report.md | |
+| Debugging | debugging-and-error-recovery | skipped | No failing command | No fix needed | no failure occurred |
+| Quality review | code-review-and-quality | used | Final fixture | docs/test-report.md | |
+
+## Command Evidence
+
+| Command | Result | Notes |
+|---------|--------|-------|
+| ./bin/check-demo . | PASS | self-test fixture |
+
+## Output Inventory
+
+| Artifact | Producer Skill | Verification |
+|----------|----------------|--------------|
+| docs/requirements.md | question-refiner | filled |
+| docs/solution-options.md | solution-stress-test | selected option recorded |
+| docs/tech-plan.md | tech-plan-generator | selected option referenced |
+| docs/workflow-integration.md | api-and-interface-design | endpoint documented |
+| docs/test-cases.md | tdd | readiness cases listed |
+| docs/test-report.md | webapp-testing | local URL recorded |
+
+## Deviations
+
+| Deviation | Reason | Risk | Accepted By |
+|-----------|--------|------|-------------|
+| Agent default selected Option 1 | self-test has no human respondent | low | self-test |
 `
   };
   for (const [relPath, content] of Object.entries(docs)) {
@@ -321,9 +480,13 @@ try {
   // Phase 2: full mode must FAIL because docs are unfilled placeholders.
   expectCheck(['.'], false, [
     'FAIL: docs/requirements.md has no obvious placeholders',
+    'FAIL: solution selection fields are filled',
+    'FAIL: docs/solution-options.md has no obvious placeholders',
     'FAIL: docs/tech-plan.md has no obvious placeholders',
     'FAIL: docs/workflow-integration.md has no obvious placeholders',
     'FAIL: docs/test-report.md has no obvious placeholders',
+    'FAIL: skill trace has no pending status',
+    'FAIL: docs/skill-trace.md has no obvious placeholders',
   ]);
 
   // Phase 3: fill docs and expect full PASS.

@@ -18,6 +18,15 @@ Copy the Requirements Baseline from `docs/requirements.md`:
 - Acceptance check:
 - Out of scope:
 
+## Selected Solution Reference
+
+Copy the selected option from `docs/solution-options.md`:
+
+- Selected option:
+- Selected by:
+- Tradeoff accepted:
+- Customization:
+
 ## Reference Patterns
 
 ```markdown
@@ -31,6 +40,16 @@ Copy the Requirements Baseline from `docs/requirements.md`:
 - Frontend: Tailwind CSS + native HTML/JS (from shell)
 - AI workflow adapter: `workflow_adapter.py` (from shell)
 - Test runner: `bin/check-demo .`
+
+## Primary Loop API
+
+| Item | Value |
+|------|-------|
+| Page route | |
+| Business API endpoint | |
+| Method | POST |
+| Success JSON envelope | `{ok, data, error, fallback}` |
+| Invalid input behavior | HTTP 400 with `error.code: INVALID_INPUT` |
 
 ## Menu Plan
 
@@ -109,9 +128,9 @@ Default policy:
 |----------|---------------|------------|--------|
 |          |               |            |        |
 
-Only minor implementation details go here. If a change affects core entity,
-primary loop, workflow input/output, storage strategy, or acceptance check,
-stop and ask the user.
+Only minor implementation details go here. If a change affects selected solution,
+core entity, primary loop, workflow input/output, storage strategy, or acceptance
+check, stop and ask the user.
 
 ## Known Limits
 

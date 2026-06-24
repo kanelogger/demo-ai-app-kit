@@ -29,6 +29,8 @@ Classify every answer into one of these types:
 
 A sufficient baseline must be able to fill in every field below:
 
+- **Product shape:** the PC backend/admin surface type; reject marketing,
+  mobile-only, chat-only, or pure report outputs.
 - **Primary user:** the role who starts the primary loop.
 - **Primary loop:** the shortest complete path from user intent to user value.
 - **Core entity:** the single noun the loop creates, updates, or consumes.
@@ -43,6 +45,7 @@ A sufficient baseline must be able to fill in every field below:
 ```text
 Clarifications
 Assumptions
+Product Shape
 Requirements Baseline
 Primary Loop
 Acceptance Checks

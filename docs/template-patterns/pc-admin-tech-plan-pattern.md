@@ -2,13 +2,15 @@
 
 ## Purpose
 
-Produce a one-page pre-build contract from `docs/requirements.md` plus the
-pattern registry. The tech plan is frozen before implementation starts.
+Produce a one-page pre-build contract from `docs/requirements.md`,
+`docs/solution-options.md`, and the pattern registry. The tech plan is frozen
+after solution selection and before implementation starts.
 
 ## Required Anchors
 
 ```text
 Requirements Baseline Reference
+Selected Solution Reference
 Reference Patterns
 Menu Plan
 Page Plan
@@ -24,6 +26,17 @@ Changed Decisions
 
 Copy the Requirements Baseline fields from `docs/requirements.md`. Do not
 rewrite them. If a requirement changes, stop and ask the user.
+
+## Selected Solution Reference
+
+Copy the selected option from `docs/solution-options.md`. If no option is
+selected, stop before writing the tech plan. Implementation must follow this
+choice.
+
+```markdown
+| Selected Option | Selected By | Tradeoff Accepted | Customization |
+|-----------------|-------------|-------------------|---------------|
+```
 
 ## Reference Patterns
 
@@ -130,9 +143,9 @@ Default policy:
 
 ## Changed Decisions
 
-Minor implementation details go here. If a change affects core entity, primary
-loop, workflow input/output, storage strategy, or acceptance check, stop and ask
-the user instead.
+Minor implementation details go here. If a change affects selected solution,
+core entity, primary loop, workflow input/output, storage strategy, or acceptance
+check, stop and ask the user instead.
 
 ```markdown
 | Decision | Original Plan | Changed To | Reason |

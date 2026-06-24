@@ -34,3 +34,4 @@
 | Test ID | Scenario | Source | Steps | Expected Result |
 |---------|----------|--------|-------|-----------------|
 | RC-001  | `bin/check-demo .` passes | tech-plan.md | 1. Run `./bin/check-demo .` in generated project. | All checks pass. |
+| RC-002  | `bin/check-demo .` probes running app | workflow-integration.md | 1. Start the app. 2. Run `DEMO_BASE_URL=... DEMO_PRIMARY_LOOP_PATH=... DEMO_BUSINESS_API_PATH=... DEMO_BUSINESS_API_PAYLOAD=... ./bin/check-demo .`. | Primary page returns HTTP 200/302 and business API returns stable JSON envelope. |

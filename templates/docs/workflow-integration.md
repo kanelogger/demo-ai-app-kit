@@ -27,6 +27,15 @@ primary loop depends on.
 The shell keeps `POST /api/workflow/demo` as a diagnostic smoke test. Do not
 route the primary loop through `/api/workflow/demo`.
 
+Record the actual primary-loop endpoint here:
+
+| Field | Value |
+|-------|-------|
+| Page route | |
+| Business API endpoint | |
+| Method | POST |
+| Called from UI file | |
+
 ## Adapter Location
 
 File / module that calls the workflow or mock:
@@ -111,3 +120,16 @@ Steps to replace the mock with a real call:
 2. Return the same data shape as `_mock_workflow` or raise an exception on failure.
 3. Set `WORKFLOW_MOCK=false` and configure the real endpoint/credentials via environment variables.
 4. Verify timeout, empty-result, invalid-input, and platform-error paths still work.
+
+## Readiness Probe
+
+`bin/check-demo .` can validate the primary-loop API when the app is running.
+Set these values before running the gate:
+
+```bash
+DEMO_BASE_URL=http://127.0.0.1:5000 \
+DEMO_PRIMARY_LOOP_PATH=/your/page \
+DEMO_BUSINESS_API_PATH=/api/your/business-endpoint \
+DEMO_BUSINESS_API_PAYLOAD='{"input":"demo"}' \
+./bin/check-demo .
+```

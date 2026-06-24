@@ -116,6 +116,110 @@ check_no_placeholders() {
   fi
 }
 
+check_not_placeholder_text() {
+  local path="$1"
+  local pattern="$2"
+  local label="$3"
+  if [[ ! -f "$ROOT/$path" ]]; then
+    echo "FAIL: cannot check $label; missing $path"
+    failures=$((failures + 1))
+    return
+  fi
+  if grep -Eiq "$pattern" "$ROOT/$path"; then
+    echo "FAIL: $label"
+    failures=$((failures + 1))
+  else
+    echo "PASS: $label"
+  fi
+}
+
+check_curl_available() {
+  if command -v curl >/dev/null 2>&1; then
+    return 0
+  fi
+  echo "FAIL: curl is required for DEMO_BASE_URL probes"
+  failures=$((failures + 1))
+  return 1
+}
+
+check_running_app_probe() {
+  if [[ -z "${DEMO_BASE_URL:-}" ]]; then
+    echo "SKIP: running app probe (set DEMO_BASE_URL, DEMO_PRIMARY_LOOP_PATH, DEMO_BUSINESS_API_PATH, DEMO_BUSINESS_API_PAYLOAD)"
+    return
+  fi
+
+  check_curl_available || return
+
+  local base="${DEMO_BASE_URL%/}"
+  local page_path="${DEMO_PRIMARY_LOOP_PATH:-/}"
+  local api_path="${DEMO_BUSINESS_API_PATH:-}"
+  local payload="${DEMO_BUSINESS_API_PAYLOAD:-}"
+
+  local page_code
+  page_code="$(curl -s -o /tmp/demo_check_primary_page.$$ -w '%{http_code}' "$base$page_path" || true)"
+  rm -f /tmp/demo_check_primary_page.$$
+  if [[ "$page_code" =~ ^(200|302)$ ]]; then
+    echo "PASS: primary loop page responds ($page_code)"
+  else
+    echo "FAIL: primary loop page responds ($page_code) at $base$page_path"
+    failures=$((failures + 1))
+  fi
+
+  if [[ -z "$api_path" || -z "$payload" ]]; then
+    echo "FAIL: business API probe requires DEMO_BUSINESS_API_PATH and DEMO_BUSINESS_API_PAYLOAD"
+    failures=$((failures + 1))
+    return
+  fi
+
+  local response_file="/tmp/demo_check_business_api.$$"
+  local api_code
+  api_code="$(curl -s -o "$response_file" -w '%{http_code}' \
+    -X POST "$base$api_path" \
+    -H 'Content-Type: application/json' \
+    -d "$payload" || true)"
+
+  if [[ "$api_code" =~ ^(200|400)$ ]]; then
+    echo "PASS: business API responds ($api_code)"
+  else
+    echo "FAIL: business API responds ($api_code) at $base$api_path"
+    cat "$response_file" 2>/dev/null || true
+    rm -f "$response_file"
+    failures=$((failures + 1))
+    return
+  fi
+
+  if python3 - "$response_file" <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+required = {"ok", "data", "error", "fallback"}
+missing = sorted(required.difference(data))
+if missing:
+    print("missing keys: " + ", ".join(missing))
+    sys.exit(1)
+
+if not isinstance(data.get("ok"), bool):
+    print("ok must be boolean")
+    sys.exit(1)
+
+if not isinstance(data.get("fallback"), bool):
+    print("fallback must be boolean")
+    sys.exit(1)
+PY
+  then
+    echo "PASS: business API returns stable JSON envelope"
+  else
+    echo "FAIL: business API returns stable JSON envelope"
+    cat "$response_file" 2>/dev/null || true
+    failures=$((failures + 1))
+  fi
+  rm -f "$response_file"
+}
+
 check_forbidden_source_terms() {
   local label="no forbidden source terms in generated app surfaces"
   local zh_report="周""报"
@@ -225,7 +329,9 @@ if ! is_kit_repo; then
   check_file "workflow_adapter.py" "workflow adapter"
   check_file "bin/check-demo" "check-demo script"
   check_dir "docs/template-patterns" "pattern registry"
+  check_file "docs/solution-options.md" "solution options document"
   check_file "docs/test-cases.md" "test cases document"
+  check_file "docs/skill-trace.md" "skill trace document"
   check_dir "skills/shell-implementation" "shell-implementation skill"
   check_file "templates/base.html" "base template"
   check_file "templates/layout.html" "layout template"
@@ -240,17 +346,29 @@ fi
 # Full-mode checks for completed apps.
 if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
   check_file "docs/requirements.md" "requirements document"
+  check_file "docs/solution-options.md" "solution options document"
   check_file "docs/tech-plan.md" "technical plan"
   check_file "docs/workflow-integration.md" "workflow integration document"
+  check_file "docs/skill-trace.md" "skill trace document"
   check_file "docs/test-report.md" "test report"
 
+  check_text "README.md" "PC|后台|admin|workbench|管理" "README identifies PC backend/admin app"
   check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
   check_text "README.md" "127\.0\.0\.1|localhost|http://" "README includes local URL"
   check_text "README.md" "primary loop|主闭环|primary user loop|核心流程" "README includes primary loop"
   check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
   check_text "README.md" "workflow|工作流|agent|智能体" "README includes workflow integration notes"
-  check_text "README.md" "docs/requirements\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
+  check_text "README.md" "docs/requirements\.md|docs/solution-options\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
 
+  check_text "docs/solution-options.md" "Option 1|方案一|方案 1" "solution options include option 1"
+  check_text "docs/solution-options.md" "Option 2|方案二|方案 2" "solution options include option 2"
+  check_text "docs/solution-options.md" "Option 3|方案三|方案 3" "solution options include option 3"
+  check_text "docs/solution-options.md" "Recommendation|推荐" "solution options include recommendation"
+  check_text "docs/solution-options.md" "Selected option|选定方案|已选方案" "solution options record selected option"
+  check_not_placeholder_text "docs/solution-options.md" "Selected option:\\s*$|Selected by:\\s*$|Selected at:\\s*$" "solution selection fields are filled"
+
+  check_text "docs/tech-plan.md" "Selected Solution Reference|选定方案|已选方案" "tech plan references selected solution"
+  check_text "docs/tech-plan.md" "Primary Loop API|Business API endpoint|业务 API|业务接口" "tech plan includes primary loop API"
   check_text "docs/tech-plan.md" "Menu Plan|菜单规划" "tech plan includes Menu Plan"
   check_text "docs/tech-plan.md" "Page Plan|页面规划|页面分层" "tech plan includes Page Plan"
   check_text "docs/tech-plan.md" "Field Mapping|字段映射" "tech plan includes Field Mapping"
@@ -262,8 +380,12 @@ if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
   check_text "docs/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input strategy"
   check_text "docs/workflow-integration.md" "failure|platform error|FAILURE|失败" "workflow doc covers failure strategy"
 
+  check_text "docs/skill-trace.md" "\\bused\\b|已使用|使用" "skill trace records used skills"
+  check_text "docs/skill-trace.md" "\\bskipped\\b|已跳过|跳过" "skill trace records skipped skills"
+  check_not_placeholder_text "docs/skill-trace.md" "\\bpending\\b" "skill trace has no pending status"
+
   # Basic non-empty checks for standard docs.
-  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/test-cases.md; do
+  for doc in docs/requirements.md docs/solution-options.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/test-cases.md docs/skill-trace.md; do
     if [[ -f "$ROOT/$doc" ]] && [[ ! -s "$ROOT/$doc" ]]; then
       echo "FAIL: $doc is empty"
       failures=$((failures + 1))
@@ -273,9 +395,11 @@ if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
   done
 
   # Content-quality guard: detect obvious unfilled placeholders.
-  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md; do
+  for doc in docs/requirements.md docs/solution-options.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/skill-trace.md; do
     check_no_placeholders "$doc"
   done
+
+  check_running_app_probe
 fi
 
 check_no_private_text

@@ -18,6 +18,18 @@ What was verified: local run, unit tests, browser tests, mock fallback, error st
 Result: PASS / FAIL
 URL:
 
+## Readiness Probe
+
+```bash
+DEMO_BASE_URL=
+DEMO_PRIMARY_LOOP_PATH=
+DEMO_BUSINESS_API_PATH=
+DEMO_BUSINESS_API_PAYLOAD=
+./bin/check-demo .
+```
+
+Result: PASS / FAIL
+
 ## Unit / Behavior Tests
 
 | Test | Result |

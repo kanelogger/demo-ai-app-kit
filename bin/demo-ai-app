@@ -119,14 +119,17 @@ Generated from demo-ai-app-kit.
 
 ## Purpose
 
-A locally runnable AI web app prototype built from a neutral Flask admin shell
-and pattern-driven documents.
+A locally runnable PC backend application prototype built from a neutral Flask
+admin shell and pattern-driven documents. The default product loop is:
+\`business requirement -> requirements baseline -> 3 solution options -> user
+selection -> frozen tech plan -> implementation -> local verification\`.
 
 **业务类型 / Business type**: [Fill in target business, e.g. 社区报修 / community repair]
 
 This generated directory is an Agent workspace, not a finished app. The shell can
 run immediately, but \`bin/check-demo\` is expected to fail on placeholders until
-the Agent fills the docs and adapts the app.
+the Agent fills the docs, records the selected solution, records skill execution,
+and adapts the app.
 
 ## PDCA workflow
 
@@ -134,9 +137,11 @@ the Agent fills the docs and adapts the app.
 Input a simple app requirement
 -> Clarification (question-refiner / ce-brainstorm -> grilling)
 -> docs/requirements.md
+-> docs/solution-options.md (3 options + recommendation + user selection)
 -> docs/tech-plan.md
 -> docs/workflow-integration.md
 -> docs/test-cases.md
+-> docs/skill-trace.md
 -> Implementation from shell + patterns (shell-implementation)
 -> Local verification (tdd, webapp-testing)
 -> Quality review (code-review-and-quality)
@@ -148,7 +153,8 @@ Input a simple app requirement
 - \`./bin/check-demo --skeleton .\` checks that the generated project has the
   correct files, no copied reference material, and a runnable shell.
 - \`./bin/check-demo .\` checks full app readiness after the Agent has filled
-  the docs and implemented the primary loop.
+  the docs, recorded the selected solution, implemented the primary loop, and
+  updated \`docs/skill-trace.md\`.
 
 ## Run locally
 
@@ -179,9 +185,11 @@ PORT=5001 python3 app.py
 ├── bin/check-demo            # Demo readiness check
 ├── docs/                     # Product-quality workflow artifacts
 │   ├── requirements.md
+│   ├── solution-options.md
 │   ├── tech-plan.md
 │   ├── workflow-integration.md
 │   ├── test-cases.md
+│   ├── skill-trace.md
 │   └── test-report.md
 ├── docs/template-patterns/   # Neutral PC admin patterns
 ├── templates/                # Jinja2 / HTML templates
@@ -231,9 +239,11 @@ The Agent fills these standard files during the product-quality workflow:
 | File | Purpose |
 |------|---------|
 | \`docs/requirements.md\` | Clarifications, assumptions, baseline, primary loop, acceptance checks, out of scope. |
+| \`docs/solution-options.md\` | Three selectable technical approaches, recommendation, user-selected option, and freeze gate. |
 | \`docs/tech-plan.md\` | Reference patterns, menu/page plan, entity/field mapping, generated files plan, storage decision. |
 | \`docs/workflow-integration.md\` | Business endpoint, request/response JSON, mock fallback, error cases. |
 | \`docs/test-cases.md\` | Primary loop, fallback, invalid input, browser, readiness checks. |
+| \`docs/skill-trace.md\` | Actual skills used, skipped skills with reasons, output inventory, and command evidence. |
 | \`docs/test-report.md\` | Local run result, fixes, sign-off. |
 
 Keep these files in sync with code and README.
