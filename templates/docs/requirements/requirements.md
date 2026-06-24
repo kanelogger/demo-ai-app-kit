@@ -73,7 +73,7 @@ leave any required field as `Attitude / Wish` or `Unknown`.
 - [ ] App is recognizably a PC backend/admin app.
 - [ ] Primary loop works end-to-end locally.
 - [ ] AI workflow adapter has a mock fallback with the same response shape.
-- [ ] `docs/solution-options.md` records 3 options and the selected option before implementation.
+- [ ] `docs/requirements/solution-options.md` records 3 options and the selected option before implementation.
 - [ ] README documents run command, URL, and demo account if any.
 - [ ] `bin/check-demo .` passes.
 

@@ -28,10 +28,10 @@ Open http://127.0.0.1:5000 and log in with:
 After the Agent adapts the shell, the primary loop is:
 
 1. User logs in.
-2. User navigates to a business page generated from `docs/template-patterns/`.
+2. User navigates to a business page generated from `kit/template-patterns/`.
 3. User submits data to a business-specific workflow endpoint.
 4. Backend calls `workflow_adapter.call_workflow()`.
-5. Result is rendered or stored according to `docs/tech-plan.md`.
+5. Result is rendered or stored according to `docs/technical/tech-plan.md`.
 
 The diagnostic `/api/workflow/demo` endpoint is only for smoke tests and is not
 part of the primary loop.

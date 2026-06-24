@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: Build a requirements baseline one Mom-Test-style blocking question at a time. Use after an initial idea exists and before writing docs/requirements.md.
+description: Build a requirements baseline one Mom-Test-style blocking question at a time. Use after an initial idea exists and before writing docs/requirements/requirements.md.
 ---
 
 # Grilling
@@ -50,12 +50,12 @@ Behavior Fact, Concrete Constraint, Workflow Rule, Data Fact, or Acceptance Fact
 - Acceptance check
 - Out of scope
 
-When the gate is reached, stop asking questions and write `docs/requirements.md`
-using the structure in `docs/template-patterns/pc-admin-requirements-pattern.md`.
+When the gate is reached, stop asking questions and write `docs/requirements/requirements.md`
+using the structure in `kit/template-patterns/pc-admin-requirements-pattern.md`.
 
 ## Output Contract
 
-When the baseline is sufficient, produce `docs/requirements.md` with:
+When the baseline is sufficient, produce `docs/requirements/requirements.md` with:
 
 - `Clarifications` table
 - `Assumptions` table

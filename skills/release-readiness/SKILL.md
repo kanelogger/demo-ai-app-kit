@@ -125,7 +125,7 @@ Pass condition:
 
 - Command exits `0`.
 - Output includes `Demo readiness: PASS`.
-- Checks pass for app entry, workflow adapter, pattern registry, `docs/test-cases.md`, `skills/shell-implementation`, templates, assets, no forbidden source terms, and no copied reference/example paths.
+- Checks pass for app entry, workflow adapter, pattern registry, `docs/technical/test-cases.md`, `kit/skills/shell-implementation`, templates, assets, no forbidden source terms, and no copied reference/example paths.
 
 ### 7. Verify local Flask startup
 

@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Produce a one-page pre-build contract from `docs/requirements.md`,
-`docs/solution-options.md`, and the pattern registry. The tech plan is frozen
+Produce a one-page pre-build contract from `docs/requirements/requirements.md`,
+`docs/requirements/solution-options.md`, and the pattern registry. The tech plan is frozen
 after solution selection and before implementation starts.
 
 ## Required Anchors
@@ -24,12 +24,12 @@ Changed Decisions
 
 ## Requirements Baseline Reference
 
-Copy the Requirements Baseline fields from `docs/requirements.md`. Do not
+Copy the Requirements Baseline fields from `docs/requirements/requirements.md`. Do not
 rewrite them. If a requirement changes, stop and ask the user.
 
 ## Selected Solution Reference
 
-Copy the selected option from `docs/solution-options.md`. If no option is
+Copy the selected option from `docs/requirements/solution-options.md`. If no option is
 selected, stop before writing the tech plan. Implementation must follow this
 choice.
 
@@ -125,7 +125,7 @@ neutral shell and patterns.
 
 ## Workflow Mock Contract
 
-Copy or refine the contract from `docs/workflow-integration.md`.
+Copy or refine the contract from `docs/technical/workflow-integration.md`.
 
 ## Data Storage Decision
 

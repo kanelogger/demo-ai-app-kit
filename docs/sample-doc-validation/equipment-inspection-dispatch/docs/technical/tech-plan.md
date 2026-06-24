@@ -97,8 +97,8 @@
 | `templates/inspections/equipment.html` | create | pattern:operation-flow-patterns | 待巡检设备列表。 |
 | `templates/inspections/dispatch.html` | create | business-requirement | 主闭环派单页面。 |
 | `templates/inspections/tasks.html` | create | pattern:operation-flow-patterns | 派单任务列表。 |
-| `docs/workflow-integration.md` | modify | pattern:workflow-integration-pattern | 记录派单 API 契约。 |
-| `docs/test-cases.md` | modify | business-requirement | 记录文档阶段和实现阶段测试。 |
+| `docs/technical/workflow-integration.md` | modify | pattern:workflow-integration-pattern | 记录派单 API 契约。 |
+| `docs/technical/test-cases.md` | modify | business-requirement | 记录文档阶段和实现阶段测试。 |
 
 ## Workflow Mock Contract
 

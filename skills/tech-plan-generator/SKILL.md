@@ -1,43 +1,43 @@
 ---
 name: tech-plan-generator
-description: Generate a lean technical plan from frozen requirements and the pattern registry. Use after docs/requirements.md is written and before implementation.
+description: Generate a lean technical plan from frozen requirements and the pattern registry. Use after docs/requirements/requirements.md is written and before implementation.
 ---
 
 # Tech Plan Generator
 
 ## Purpose
 
-Produce a one-page pre-build contract (`docs/tech-plan.md`) from
-`docs/requirements.md` and `docs/template-patterns/`. The plan is frozen before
+Produce a one-page pre-build contract (`docs/technical/tech-plan.md`) from
+`docs/requirements/requirements.md` and `kit/template-patterns/`. The plan is frozen before
 implementation starts.
 
 ## Inputs To Read
 
-1. `docs/requirements.md` — Requirements Baseline, Primary Loop, Acceptance Checks, Out of Scope.
-2. `docs/template-patterns/README.md` — Pattern registry and read order.
-3. Relevant pattern files from `docs/template-patterns/`.
+1. `docs/requirements/requirements.md` — Requirements Baseline, Primary Loop, Acceptance Checks, Out of Scope.
+2. `kit/template-patterns/README.md` — Pattern registry and read order.
+3. Relevant pattern files from `kit/template-patterns/`.
 4. `templates/flask-admin-shell/` — The neutral shell that all generated files start from.
 5. `AGENTS.md` — Workflow and quality constraints.
 
 ## Workflow
 
-1. Infer the target document language from `docs/requirements.md` and the original requirement. Keep the completed tech plan in that language.
+1. Infer the target document language from `docs/requirements/requirements.md` and the original requirement. Keep the completed tech plan in that language.
 2. Copy the Requirements Baseline into the tech plan verbatim.
-3. Choose applicable patterns from `docs/template-patterns/` and list them in
+3. Choose applicable patterns from `kit/template-patterns/` and list them in
    `Reference Patterns`.
 4. Design the menu plan, page plan, entity mapping, and field mapping from the
    baseline and patterns.
 5. Produce a `Generated Files Plan` where every file has `Action` and `Source`.
 6. Decide storage strategy and document it in `Data Storage Decision`.
 7. Copy or refine the workflow mock contract from
-   `docs/workflow-integration.md`.
+   `docs/technical/workflow-integration.md`.
 8. List any minor implementation changes in `Changed Decisions`.
 9. If a change alters core entity, primary loop, workflow input/output, storage
    strategy, or acceptance check, stop and ask the user before continuing.
 
 ## Output Contract
 
-Return Markdown sections that match `templates/docs/tech-plan.md`:
+Return Markdown sections that match `templates/docs/technical/tech-plan.md`:
 
 - `Requirements Baseline Reference`
 - `Reference Patterns`

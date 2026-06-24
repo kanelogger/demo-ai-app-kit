@@ -8,10 +8,10 @@ template and not an implementation fixture.
 
 The validation target is the pre-implementation document package:
 
-- `docs/requirements.md`
-- `docs/tech-plan.md`
-- `docs/workflow-integration.md`
-- `docs/test-cases.md`
+- `docs/requirements/requirements.md`
+- `docs/technical/tech-plan.md`
+- `docs/technical/workflow-integration.md`
+- `docs/technical/test-cases.md`
 
 System implementation is intentionally out of scope here. Full app readiness
 stays covered by `bin/check-demo` after implementation.

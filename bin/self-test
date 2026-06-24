@@ -56,7 +56,7 @@ function expectDocs(args, shouldPass, expectedFailures) {
 
 function fillDocs(dir) {
   const docs = {
-    'docs/requirements.md': `# Requirements
+    'docs/requirements/requirements.md': `# Requirements
 
 ## Clarifications
 
@@ -122,7 +122,7 @@ function fillDocs(dir) {
 - [ ] App is recognizably a PC backend/admin app.
 - [ ] Primary loop works end-to-end locally.
 - [ ] AI workflow adapter has a mock fallback with the same response shape.
-- [ ] docs/solution-options.md records 3 options and the selected option before implementation.
+- [ ] docs/requirements/solution-options.md records 3 options and the selected option before implementation.
 - [ ] README documents run command, URL, and demo account if any.
 - [ ] \`bin/check-demo .\` passes.
 
@@ -131,7 +131,7 @@ function fillDocs(dir) {
 - Multi-tenant authentication.
 - External notification channels.
 `,
-    'docs/solution-options.md': `# Solution Options
+    'docs/requirements/solution-options.md': `# Solution Options
 
 ## Requirements Baseline Reference
 
@@ -195,13 +195,13 @@ function fillDocs(dir) {
 
 ## Freeze Gate
 
-- [x] docs/requirements.md is filled and has no unresolved Unknown fields.
+- [x] docs/requirements/requirements.md is filled and has no unresolved Unknown fields.
 - [x] Three materially different options are documented.
 - [x] One option is recommended with a concrete tradeoff.
 - [x] User selection is recorded above.
-- [x] docs/tech-plan.md follows this selection.
+- [x] docs/technical/tech-plan.md follows this selection.
 `,
-    'docs/tech-plan.md': `# Technical Plan
+    'docs/technical/tech-plan.md': `# Technical Plan
 
 ## Requirements Baseline Reference
 
@@ -225,8 +225,8 @@ function fillDocs(dir) {
 
 | Pattern | Source File | Why Used |
 |---------|-------------|----------|
-| pc-admin-tech-plan-pattern | docs/template-patterns/pc-admin-tech-plan-pattern.md | Derive plan from baseline |
-| workflow-integration-pattern | docs/template-patterns/workflow-integration-pattern.md | Workflow contract |
+| pc-admin-tech-plan-pattern | kit/template-patterns/pc-admin-tech-plan-pattern.md | Derive plan from baseline |
+| workflow-integration-pattern | kit/template-patterns/workflow-integration-pattern.md | Workflow contract |
 
 ## Stack
 
@@ -308,7 +308,7 @@ function fillDocs(dir) {
 
 - Prototype only.
 `,
-    'docs/workflow-integration.md': `# Workflow Integration
+    'docs/technical/workflow-integration.md': `# Workflow Integration
 
 ## Role
 The AI workflow classifies repair requests and returns a suggested action.
@@ -367,7 +367,7 @@ DEMO_BASE_URL=http://127.0.0.1:5000 DEMO_PRIMARY_LOOP_PATH=/repair/create DEMO_B
 curl -X POST http://127.0.0.1:5000/api/repairs/triage -H "Content-Type: application/json" -d '{"input":"楼道灯坏了"}'
 \`\`\`
 `,
-    'docs/test-report.md': `# Test Report
+    'docs/execution/test-report.md': `# Test Report
 
 ## Test Scope
 Local run, adapter behavior test, browser primary loop, mock fallback, error state.
@@ -418,7 +418,7 @@ None.
 - \`bin/check-demo .\` passes: yes
 - README is accurate: yes
 `,
-    'docs/test-cases.md': `# Test Cases
+    'docs/technical/test-cases.md': `# Test Cases
 
 ## Primary Loop Test
 
@@ -451,24 +451,24 @@ None.
 | RC-001 | check-demo | tech-plan.md | Run ./bin/check-demo . | PASS |
 | RC-002 | running app probe | workflow-integration.md | Run DEMO_BASE_URL and business API check | Stable JSON envelope |
 `,
-    'docs/skill-trace.md': `# Skill Trace
+    'docs/execution/skill-trace.md': `# Skill Trace
 
 ## Routing Summary
 
 | Step | Skill | Status | Input / Evidence | Output Artifact | Skipped Reason |
 |------|-------|--------|------------------|-----------------|----------------|
-| Requirements route | question-refiner | used | Community repair fixture | docs/requirements.md | |
+| Requirements route | question-refiner | used | Community repair fixture | docs/requirements/requirements.md | |
 | Plan challenge | grilling | used | Requirements baseline | Assumptions table | |
-| Feasibility check | solution-stress-test | used | Three options | docs/solution-options.md | |
+| Feasibility check | solution-stress-test | used | Three options | docs/requirements/solution-options.md | |
 | Domain terms | domain-modeling | used | Repair request states | Entity and field mapping | |
-| Tech plan | tech-plan-generator | used | Selected option | docs/tech-plan.md | |
-| API contract | api-and-interface-design | used | Business API endpoint | docs/workflow-integration.md | |
+| Tech plan | tech-plan-generator | used | Selected option | docs/technical/tech-plan.md | |
+| API contract | api-and-interface-design | used | Business API endpoint | docs/technical/workflow-integration.md | |
 | Security boundary | security-and-hardening | used | User input and mock adapter | Validation notes | |
 | Implementation | shell-implementation | used | Frozen docs | App file plan | |
-| Tests | tdd | used | Adapter behavior | docs/test-cases.md | |
-| Browser verification | webapp-testing | used | Local URL | docs/test-report.md | |
+| Tests | tdd | used | Adapter behavior | docs/technical/test-cases.md | |
+| Browser verification | webapp-testing | used | Local URL | docs/execution/test-report.md | |
 | Debugging | debugging-and-error-recovery | skipped | No failing command | No fix needed | no failure occurred |
-| Quality review | code-review-and-quality | used | Final fixture | docs/test-report.md | |
+| Quality review | code-review-and-quality | used | Final fixture | docs/execution/test-report.md | |
 
 ## Command Evidence
 
@@ -480,12 +480,12 @@ None.
 
 | Artifact | Producer Skill | Verification |
 |----------|----------------|--------------|
-| docs/requirements.md | question-refiner | filled |
-| docs/solution-options.md | solution-stress-test | selected option recorded |
-| docs/tech-plan.md | tech-plan-generator | selected option referenced |
-| docs/workflow-integration.md | api-and-interface-design | endpoint documented |
-| docs/test-cases.md | tdd | readiness cases listed |
-| docs/test-report.md | webapp-testing | local URL recorded |
+| docs/requirements/requirements.md | question-refiner | filled |
+| docs/requirements/solution-options.md | solution-stress-test | selected option recorded |
+| docs/technical/tech-plan.md | tech-plan-generator | selected option referenced |
+| docs/technical/workflow-integration.md | api-and-interface-design | endpoint documented |
+| docs/technical/test-cases.md | tdd | readiness cases listed |
+| docs/execution/test-report.md | webapp-testing | local URL recorded |
 
 ## Deviations
 
@@ -508,22 +508,22 @@ try {
 
   // Phase 2: docs-only mode must FAIL because generated docs are unfilled placeholders.
   expectDocs(['.'], false, [
-    'FAIL: docs/requirements.md has no obvious placeholders',
-    'FAIL: docs/tech-plan.md has no obvious placeholders',
-    'FAIL: docs/workflow-integration.md has no obvious placeholders',
+    'FAIL: docs/requirements/requirements.md has no obvious placeholders',
+    'FAIL: docs/technical/tech-plan.md has no obvious placeholders',
+    'FAIL: docs/technical/workflow-integration.md has no obvious placeholders',
     'Document quality: FAIL',
   ]);
 
   // Phase 3: full mode must FAIL because docs are unfilled placeholders.
   expectCheck(['.'], false, [
-    'FAIL: docs/requirements.md has no obvious placeholders',
+    'FAIL: docs/requirements/requirements.md has no obvious placeholders',
     'FAIL: solution selection fields are filled',
-    'FAIL: docs/solution-options.md has no obvious placeholders',
-    'FAIL: docs/tech-plan.md has no obvious placeholders',
-    'FAIL: docs/workflow-integration.md has no obvious placeholders',
-    'FAIL: docs/test-report.md has no obvious placeholders',
+    'FAIL: docs/requirements/solution-options.md has no obvious placeholders',
+    'FAIL: docs/technical/tech-plan.md has no obvious placeholders',
+    'FAIL: docs/technical/workflow-integration.md has no obvious placeholders',
+    'FAIL: docs/execution/test-report.md has no obvious placeholders',
     'FAIL: skill trace has no pending status',
-    'FAIL: docs/skill-trace.md has no obvious placeholders',
+    'FAIL: docs/execution/skill-trace.md has no obvious placeholders',
   ]);
 
   // Phase 4: fill docs and expect docs-only and full PASS.

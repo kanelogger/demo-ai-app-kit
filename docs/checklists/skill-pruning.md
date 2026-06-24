@@ -278,7 +278,7 @@ Assessment:
 
 - Fit at prompt/workflow level: mostly yes. `AGENTS.md`, `prompts/opencode-entry.md`, and core skills describe the product-quality chain.
 - Fit at install/CLI level: yes. `package.json` and `bin/demo-ai-app <project-name>` are now in place; the generator copies the template, `AGENTS.md`, entry prompt, core skills, `bin/check-demo`, and a README skeleton into the generated project.
-- Fit at artifact level: yes. Fixed output paths are now specified: `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-report.md`. The generator copies skeletons for each path into the generated project.
+- Fit at artifact level: yes. Fixed output paths are now specified: `docs/requirements/requirements.md`, `docs/technical/tech-plan.md`, `docs/technical/workflow-integration.md`, and `docs/execution/test-report.md`. The generator copies skeletons for each path into the generated project.
 - Fit at testing level: mostly yes. `bin/check-demo` verifies the generated project has README, run command, URL, mock fallback, workflow notes, and the standard docs, and detects unfilled placeholders in those docs. Content-quality checks for tests can be added later.
 - Fit at quality-review level: yes. `code-review-and-quality` is the final default gate before handoff; it checks coherence, local run, tests, README accuracy, and known limits.
 

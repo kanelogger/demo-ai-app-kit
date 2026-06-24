@@ -92,8 +92,8 @@
 | `templates/contracts/new.html` | create | business-requirement | 合同条款输入表单。 |
 | `templates/contracts/index.html` | create | pattern:operation-flow-patterns | 待确认合同列表。 |
 | `templates/contracts/detail.html` | create | pattern:page-component-patterns | 风险条款和法务确认。 |
-| `docs/workflow-integration.md` | modify | pattern:workflow-integration-pattern | 记录风险扫描契约。 |
-| `docs/test-cases.md` | modify | business-requirement | 记录文档阶段和实现阶段测试。 |
+| `docs/technical/workflow-integration.md` | modify | pattern:workflow-integration-pattern | 记录风险扫描契约。 |
+| `docs/technical/test-cases.md` | modify | business-requirement | 记录文档阶段和实现阶段测试。 |
 
 ## Workflow Mock Contract
 

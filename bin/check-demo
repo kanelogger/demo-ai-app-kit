@@ -247,8 +247,9 @@ check_forbidden_source_terms() {
   for scope in \
     "app.py" "workflow_adapter.py" "README.md" \
     "templates" "assets" \
-    "docs/requirements.md" "docs/tech-plan.md" "docs/workflow-integration.md" \
-    "docs/test-cases.md" "docs/test-report.md"; do
+    "docs/requirements/requirements.md" "docs/requirements/solution-options.md" \
+    "docs/technical/tech-plan.md" "docs/technical/workflow-integration.md" \
+    "docs/technical/test-cases.md" "docs/execution/test-report.md"; do
     if [[ -e "$ROOT/$scope" ]]; then
       search_paths+=("$ROOT/$scope")
     fi
@@ -285,8 +286,9 @@ check_no_copied_reference_paths() {
   for scope in \
     "app.py" "workflow_adapter.py" "README.md" \
     "templates" "assets" \
-    "docs/requirements.md" "docs/tech-plan.md" "docs/workflow-integration.md" \
-    "docs/test-cases.md" "docs/test-report.md"; do
+    "docs/requirements/requirements.md" "docs/requirements/solution-options.md" \
+    "docs/technical/tech-plan.md" "docs/technical/workflow-integration.md" \
+    "docs/technical/test-cases.md" "docs/execution/test-report.md"; do
     if [[ -e "$ROOT/$scope" ]]; then
       search_paths+=("$ROOT/$scope")
     fi
@@ -328,12 +330,14 @@ if ! is_kit_repo; then
   check_file "app.py" "app entry"
   check_file "workflow_adapter.py" "workflow adapter"
   check_file "bin/check-demo" "check-demo script"
-  check_file "bin/check-docs" "check-docs script"
-  check_dir "docs/template-patterns" "pattern registry"
-  check_file "docs/solution-options.md" "solution options document"
-  check_file "docs/test-cases.md" "test cases document"
-  check_file "docs/skill-trace.md" "skill trace document"
-  check_dir "skills/shell-implementation" "shell-implementation skill"
+  check_file "kit/checkers/check-docs" "check-docs script"
+  check_dir "kit" "kit initialization folder"
+  check_dir "kit/template-patterns" "pattern registry"
+  check_file "kit/prompts/opencode-entry.md" "entry prompt"
+  check_dir "kit/skills/shell-implementation" "shell-implementation skill"
+  check_file "docs/requirements/solution-options.md" "solution options document"
+  check_file "docs/technical/test-cases.md" "test cases document"
+  check_file "docs/execution/skill-trace.md" "skill trace document"
   check_file "templates/base.html" "base template"
   check_file "templates/layout.html" "layout template"
   check_file "templates/auth/login.html" "login template"
@@ -346,12 +350,12 @@ fi
 
 # Full-mode checks for completed apps.
 if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
-  check_file "docs/requirements.md" "requirements document"
-  check_file "docs/solution-options.md" "solution options document"
-  check_file "docs/tech-plan.md" "technical plan"
-  check_file "docs/workflow-integration.md" "workflow integration document"
-  check_file "docs/skill-trace.md" "skill trace document"
-  check_file "docs/test-report.md" "test report"
+  check_file "docs/requirements/requirements.md" "requirements document"
+  check_file "docs/requirements/solution-options.md" "solution options document"
+  check_file "docs/technical/tech-plan.md" "technical plan"
+  check_file "docs/technical/workflow-integration.md" "workflow integration document"
+  check_file "docs/execution/skill-trace.md" "skill trace document"
+  check_file "docs/execution/test-report.md" "test report"
 
   check_text "README.md" "PC|后台|admin|workbench|管理" "README identifies PC backend/admin app"
   check_text "README.md" "run|启动|运行|python|npm|flask" "README includes run instructions"
@@ -359,34 +363,34 @@ if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
   check_text "README.md" "primary loop|主闭环|primary user loop|核心流程" "README includes primary loop"
   check_text "README.md" "mock|fallback|兜底|模拟" "README includes mock fallback"
   check_text "README.md" "workflow|工作流|agent|智能体" "README includes workflow integration notes"
-  check_text "README.md" "docs/requirements\.md|docs/solution-options\.md|docs/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
+  check_text "README.md" "docs/requirements/requirements\.md|docs/requirements/solution-options\.md|docs/technical/tech-plan\.md|Project artifacts|产物" "README explains standard docs artifacts"
 
-  check_text "docs/solution-options.md" "Option 1|方案一|方案 1" "solution options include option 1"
-  check_text "docs/solution-options.md" "Option 2|方案二|方案 2" "solution options include option 2"
-  check_text "docs/solution-options.md" "Option 3|方案三|方案 3" "solution options include option 3"
-  check_text "docs/solution-options.md" "Recommendation|推荐" "solution options include recommendation"
-  check_text "docs/solution-options.md" "Selected option|选定方案|已选方案" "solution options record selected option"
-  check_not_placeholder_text "docs/solution-options.md" "Selected option:\\s*$|Selected by:\\s*$|Selected at:\\s*$" "solution selection fields are filled"
+  check_text "docs/requirements/solution-options.md" "Option 1|方案一|方案 1" "solution options include option 1"
+  check_text "docs/requirements/solution-options.md" "Option 2|方案二|方案 2" "solution options include option 2"
+  check_text "docs/requirements/solution-options.md" "Option 3|方案三|方案 3" "solution options include option 3"
+  check_text "docs/requirements/solution-options.md" "Recommendation|推荐" "solution options include recommendation"
+  check_text "docs/requirements/solution-options.md" "Selected option|选定方案|已选方案" "solution options record selected option"
+  check_not_placeholder_text "docs/requirements/solution-options.md" "Selected option:\\s*$|Selected by:\\s*$|Selected at:\\s*$" "solution selection fields are filled"
 
-  check_text "docs/tech-plan.md" "Selected Solution Reference|选定方案|已选方案" "tech plan references selected solution"
-  check_text "docs/tech-plan.md" "Primary Loop API|Business API endpoint|业务 API|业务接口" "tech plan includes primary loop API"
-  check_text "docs/tech-plan.md" "Menu Plan|菜单规划" "tech plan includes Menu Plan"
-  check_text "docs/tech-plan.md" "Page Plan|页面规划|页面分层" "tech plan includes Page Plan"
-  check_text "docs/tech-plan.md" "Field Mapping|字段映射" "tech plan includes Field Mapping"
-  check_text "docs/tech-plan.md" "Workflow Mock Contract|Workflow Mock|Mock Contract" "tech plan includes Workflow Mock Contract"
+  check_text "docs/technical/tech-plan.md" "Selected Solution Reference|选定方案|已选方案" "tech plan references selected solution"
+  check_text "docs/technical/tech-plan.md" "Primary Loop API|Business API endpoint|业务 API|业务接口" "tech plan includes primary loop API"
+  check_text "docs/technical/tech-plan.md" "Menu Plan|菜单规划" "tech plan includes Menu Plan"
+  check_text "docs/technical/tech-plan.md" "Page Plan|页面规划|页面分层" "tech plan includes Page Plan"
+  check_text "docs/technical/tech-plan.md" "Field Mapping|字段映射" "tech plan includes Field Mapping"
+  check_text "docs/technical/tech-plan.md" "Workflow Mock Contract|Workflow Mock|Mock Contract" "tech plan includes Workflow Mock Contract"
 
   check_text "README.md" "workflow_adapter|Core modules|核心模块|模块说明" "README includes workflow adapter / module description"
-  check_text "docs/workflow-integration.md" "timeout|TIMEOUT|超时" "workflow doc covers timeout strategy"
-  check_text "docs/workflow-integration.md" "empty|EMPTY|空结果" "workflow doc covers empty result strategy"
-  check_text "docs/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input strategy"
-  check_text "docs/workflow-integration.md" "failure|platform error|FAILURE|失败" "workflow doc covers failure strategy"
+  check_text "docs/technical/workflow-integration.md" "timeout|TIMEOUT|超时" "workflow doc covers timeout strategy"
+  check_text "docs/technical/workflow-integration.md" "empty|EMPTY|空结果" "workflow doc covers empty result strategy"
+  check_text "docs/technical/workflow-integration.md" "invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input strategy"
+  check_text "docs/technical/workflow-integration.md" "failure|platform error|FAILURE|失败" "workflow doc covers failure strategy"
 
-  check_text "docs/skill-trace.md" "\\bused\\b|已使用|使用" "skill trace records used skills"
-  check_text "docs/skill-trace.md" "\\bskipped\\b|已跳过|跳过" "skill trace records skipped skills"
-  check_not_placeholder_text "docs/skill-trace.md" "\\bpending\\b" "skill trace has no pending status"
+  check_text "docs/execution/skill-trace.md" "\\bused\\b|已使用|使用" "skill trace records used skills"
+  check_text "docs/execution/skill-trace.md" "\\bskipped\\b|已跳过|跳过" "skill trace records skipped skills"
+  check_not_placeholder_text "docs/execution/skill-trace.md" "\\bpending\\b" "skill trace has no pending status"
 
   # Basic non-empty checks for standard docs.
-  for doc in docs/requirements.md docs/solution-options.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/test-cases.md docs/skill-trace.md; do
+  for doc in docs/requirements/requirements.md docs/requirements/solution-options.md docs/technical/tech-plan.md docs/technical/workflow-integration.md docs/execution/test-report.md docs/technical/test-cases.md docs/execution/skill-trace.md; do
     if [[ -f "$ROOT/$doc" ]] && [[ ! -s "$ROOT/$doc" ]]; then
       echo "FAIL: $doc is empty"
       failures=$((failures + 1))
@@ -396,7 +400,7 @@ if ! is_kit_repo && [[ "$SKELETON_MODE" -eq 0 ]]; then
   done
 
   # Content-quality guard: detect obvious unfilled placeholders.
-  for doc in docs/requirements.md docs/solution-options.md docs/tech-plan.md docs/workflow-integration.md docs/test-report.md docs/skill-trace.md; do
+  for doc in docs/requirements/requirements.md docs/requirements/solution-options.md docs/technical/tech-plan.md docs/technical/workflow-integration.md docs/execution/test-report.md docs/execution/skill-trace.md; do
     check_no_placeholders "$doc"
   done
 

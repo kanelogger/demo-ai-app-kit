@@ -13,14 +13,14 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       cat <<'EOF'
 Usage:
-  ./bin/check-docs [root]
-  ./bin/check-docs --patterns-only [root]
+  ./kit/checkers/check-docs [root]
+  ./kit/checkers/check-docs --patterns-only [root]
 
 Checks the pre-implementation document package:
-  docs/requirements.md
-  docs/tech-plan.md
-  docs/workflow-integration.md
-  docs/test-cases.md
+  docs/requirements/requirements.md
+  docs/technical/tech-plan.md
+  docs/technical/workflow-integration.md
+  docs/technical/test-cases.md
 
 It validates document quality only. It does not run the app, probe pages, or
 verify implementation behavior.
@@ -120,83 +120,91 @@ check_no_reference_business_terms() {
 }
 
 check_patterns() {
-  if [[ ! -d "$ROOT/docs/template-patterns" ]]; then
-    fail "missing pattern registry: docs/template-patterns"
+  local pattern_root=""
+  if [[ -d "$ROOT/kit/template-patterns" ]]; then
+    pattern_root="kit/template-patterns"
+  elif [[ -d "$ROOT/docs/template-patterns" ]]; then
+    pattern_root="docs/template-patterns"
+  fi
+
+  if [[ -z "$pattern_root" ]]; then
+    fail "missing pattern registry: kit/template-patterns or docs/template-patterns"
     return
   fi
-  check_no_reference_business_terms "docs/template-patterns" "pattern docs do not contain default/reference business semantics"
-  check_text "docs/template-patterns/pc-admin-requirements-pattern.md" "Behavior Fact|行为事实" "requirements pattern defines answer types"
-  check_text "docs/template-patterns/pc-admin-tech-plan-pattern.md" "Generated Files Plan|生成文件" "tech-plan pattern defines generated files plan"
-  check_text "docs/template-patterns/workflow-integration-pattern.md" "INVALID_INPUT|Timeout|超时" "workflow pattern defines error handling"
+
+  check_no_reference_business_terms "$pattern_root" "pattern docs do not contain default/reference business semantics"
+  check_text "$pattern_root/pc-admin-requirements-pattern.md" "Behavior Fact|行为事实" "requirements pattern defines answer types"
+  check_text "$pattern_root/pc-admin-tech-plan-pattern.md" "Generated Files Plan|生成文件" "tech-plan pattern defines generated files plan"
+  check_text "$pattern_root/workflow-integration-pattern.md" "INVALID_INPUT|Timeout|超时" "workflow pattern defines error handling"
 }
 
 check_required_docs() {
-  check_file "docs/requirements.md" "requirements document"
-  check_file "docs/tech-plan.md" "technical plan"
-  check_file "docs/workflow-integration.md" "workflow integration document"
-  check_file "docs/test-cases.md" "test cases document"
+  check_file "docs/requirements/requirements.md" "requirements document"
+  check_file "docs/technical/tech-plan.md" "technical plan"
+  check_file "docs/technical/workflow-integration.md" "workflow integration document"
+  check_file "docs/technical/test-cases.md" "test cases document"
 
-  for doc in docs/requirements.md docs/tech-plan.md docs/workflow-integration.md docs/test-cases.md; do
+  for doc in docs/requirements/requirements.md docs/technical/tech-plan.md docs/technical/workflow-integration.md docs/technical/test-cases.md; do
     check_no_placeholders "$doc"
   done
 
   check_no_reference_business_terms "docs" "document package does not contain default/reference business semantics"
 
-  check_text "docs/requirements.md" "Clarifications|澄清" "requirements include clarifications"
-  check_text "docs/requirements.md" "Product Shape|产品形态" "requirements include product shape"
-  check_text "docs/requirements.md" "PC|后台|admin|管理" "requirements target a PC backend/admin app"
-  check_text "docs/requirements.md" "Requirements Baseline|需求基线" "requirements include baseline"
-  check_text "docs/requirements.md" "Baseline Classification|基线分类|基线证据" "requirements map baseline fields to answer types"
-  check_text "docs/requirements.md" "Primary Loop|主闭环|核心流程" "requirements include primary loop"
-  check_text "docs/requirements.md" "Acceptance Checks|验收" "requirements include acceptance checks"
-  check_text "docs/requirements.md" "Out of Scope|范围外" "requirements include out of scope"
+  check_text "docs/requirements/requirements.md" "Clarifications|澄清" "requirements include clarifications"
+  check_text "docs/requirements/requirements.md" "Product Shape|产品形态" "requirements include product shape"
+  check_text "docs/requirements/requirements.md" "PC|后台|admin|管理" "requirements target a PC backend/admin app"
+  check_text "docs/requirements/requirements.md" "Requirements Baseline|需求基线" "requirements include baseline"
+  check_text "docs/requirements/requirements.md" "Baseline Classification|基线分类|基线证据" "requirements map baseline fields to answer types"
+  check_text "docs/requirements/requirements.md" "Primary Loop|主闭环|核心流程" "requirements include primary loop"
+  check_text "docs/requirements/requirements.md" "Acceptance Checks|验收" "requirements include acceptance checks"
+  check_text "docs/requirements/requirements.md" "Out of Scope|范围外" "requirements include out of scope"
 
-  check_text "docs/requirements.md" "Behavior Fact|行为事实" "requirements distinguish behavior facts"
-  check_text "docs/requirements.md" "Concrete Constraint|具体约束" "requirements distinguish concrete constraints"
-  check_text "docs/requirements.md" "Workflow Rule|工作流规则" "requirements distinguish workflow rules"
-  check_text "docs/requirements.md" "Data Fact|数据事实" "requirements distinguish data facts"
-  check_text "docs/requirements.md" "Acceptance Fact|验收事实" "requirements distinguish acceptance facts"
-  check_text "docs/requirements.md" "Attitude / Wish|态度 / 愿望|态度|愿望" "requirements distinguish attitudes or wishes"
-  check_text "docs/requirements.md" "Unknown|未知项" "requirements distinguish unknowns"
+  check_text "docs/requirements/requirements.md" "Behavior Fact|行为事实" "requirements distinguish behavior facts"
+  check_text "docs/requirements/requirements.md" "Concrete Constraint|具体约束" "requirements distinguish concrete constraints"
+  check_text "docs/requirements/requirements.md" "Workflow Rule|工作流规则" "requirements distinguish workflow rules"
+  check_text "docs/requirements/requirements.md" "Data Fact|数据事实" "requirements distinguish data facts"
+  check_text "docs/requirements/requirements.md" "Acceptance Fact|验收事实" "requirements distinguish acceptance facts"
+  check_text "docs/requirements/requirements.md" "Attitude / Wish|态度 / 愿望|态度|愿望" "requirements distinguish attitudes or wishes"
+  check_text "docs/requirements/requirements.md" "Unknown|未知项" "requirements distinguish unknowns"
 
-  check_text "docs/requirements.md" "Primary user|Primary loop|Core entity|Core states|Workflow input|Workflow output|Acceptance check|Out of scope" "requirements baseline uses standard fields"
-  if grep -Eiq "\|[^|\n]*(Primary user|Primary loop|Core entity|Core states|Workflow input|Workflow output|Acceptance check|Out of scope)[^|\n]*\|[^|\n]*(Attitude / Wish|Unknown|态度|愿望|未知)" "$ROOT/docs/requirements.md"; then
+  check_text "docs/requirements/requirements.md" "Primary user|Primary loop|Core entity|Core states|Workflow input|Workflow output|Acceptance check|Out of scope" "requirements baseline uses standard fields"
+  if grep -Eiq "\|[^|\n]*(Primary user|Primary loop|Core entity|Core states|Workflow input|Workflow output|Acceptance check|Out of scope)[^|\n]*\|[^|\n]*(Attitude / Wish|Unknown|态度|愿望|未知)" "$ROOT/docs/requirements/requirements.md"; then
     fail "required baseline fields are not left as attitude/wish/unknown"
   else
     pass "required baseline fields are not left as attitude/wish/unknown"
   fi
 
-  check_text "docs/tech-plan.md" "Selected Solution Reference|选定方案|已选方案" "tech plan references selected solution"
-  check_text "docs/tech-plan.md" "Primary Loop API|业务 API|Business API endpoint" "tech plan defines primary loop API"
-  check_text "docs/tech-plan.md" "Menu Plan|菜单" "tech plan includes menu plan"
-  check_text "docs/tech-plan.md" "Page Plan|页面" "tech plan includes page plan"
-  check_text "docs/tech-plan.md" "Entity Mapping|实体映射" "tech plan includes entity mapping"
-  check_text "docs/tech-plan.md" "Field Mapping|字段映射" "tech plan includes field mapping"
-  check_text "docs/tech-plan.md" "Generated Files Plan|生成文件" "tech plan includes generated files plan"
-  check_text "docs/tech-plan.md" "Workflow Mock Contract|Mock Contract|mock contract" "tech plan includes workflow mock contract"
-  check_text "docs/tech-plan.md" "Data Storage Decision|数据存储" "tech plan includes data storage decision"
-  check_text "docs/tech-plan.md" "shell|pattern:|business-requirement" "tech plan uses allowed source labels"
+  check_text "docs/technical/tech-plan.md" "Selected Solution Reference|选定方案|已选方案" "tech plan references selected solution"
+  check_text "docs/technical/tech-plan.md" "Primary Loop API|业务 API|Business API endpoint" "tech plan defines primary loop API"
+  check_text "docs/technical/tech-plan.md" "Menu Plan|菜单" "tech plan includes menu plan"
+  check_text "docs/technical/tech-plan.md" "Page Plan|页面" "tech plan includes page plan"
+  check_text "docs/technical/tech-plan.md" "Entity Mapping|实体映射" "tech plan includes entity mapping"
+  check_text "docs/technical/tech-plan.md" "Field Mapping|字段映射" "tech plan includes field mapping"
+  check_text "docs/technical/tech-plan.md" "Generated Files Plan|生成文件" "tech plan includes generated files plan"
+  check_text "docs/technical/tech-plan.md" "Workflow Mock Contract|Mock Contract|mock contract" "tech plan includes workflow mock contract"
+  check_text "docs/technical/tech-plan.md" "Data Storage Decision|数据存储" "tech plan includes data storage decision"
+  check_text "docs/technical/tech-plan.md" "shell|pattern:|business-requirement" "tech plan uses allowed source labels"
 
-  check_text "docs/workflow-integration.md" "POST /api/" "workflow doc defines business endpoint"
-  check_text "docs/workflow-integration.md" "Request Shape|请求" "workflow doc defines request shape"
-  check_text "docs/workflow-integration.md" "Response Shape|响应" "workflow doc defines response shape"
-  check_text "docs/workflow-integration.md" '"ok"| ok |`ok`' "workflow doc envelope includes ok"
-  check_text "docs/workflow-integration.md" '"data"| data |`data`' "workflow doc envelope includes data"
-  check_text "docs/workflow-integration.md" '"error"| error |`error`' "workflow doc envelope includes error"
-  check_text "docs/workflow-integration.md" '"fallback"| fallback |`fallback`' "workflow doc envelope includes fallback"
-  check_text "docs/workflow-integration.md" "Mock Fallback|mock fallback|模拟|兜底" "workflow doc defines mock fallback"
-  check_text "docs/workflow-integration.md" "Error Handling|错误" "workflow doc defines error handling"
-  check_text "docs/workflow-integration.md" "Timeout|TIMEOUT|超时" "workflow doc covers timeout"
-  check_text "docs/workflow-integration.md" "Empty|EMPTY|空结果" "workflow doc covers empty result"
-  check_text "docs/workflow-integration.md" "Invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input"
-  check_text "docs/workflow-integration.md" "Platform error|platform failure|平台失败|平台错误|失败" "workflow doc covers platform failure"
+  check_text "docs/technical/workflow-integration.md" "POST /api/" "workflow doc defines business endpoint"
+  check_text "docs/technical/workflow-integration.md" "Request Shape|请求" "workflow doc defines request shape"
+  check_text "docs/technical/workflow-integration.md" "Response Shape|响应" "workflow doc defines response shape"
+  check_text "docs/technical/workflow-integration.md" '"ok"| ok |`ok`' "workflow doc envelope includes ok"
+  check_text "docs/technical/workflow-integration.md" '"data"| data |`data`' "workflow doc envelope includes data"
+  check_text "docs/technical/workflow-integration.md" '"error"| error |`error`' "workflow doc envelope includes error"
+  check_text "docs/technical/workflow-integration.md" '"fallback"| fallback |`fallback`' "workflow doc envelope includes fallback"
+  check_text "docs/technical/workflow-integration.md" "Mock Fallback|mock fallback|模拟|兜底" "workflow doc defines mock fallback"
+  check_text "docs/technical/workflow-integration.md" "Error Handling|错误" "workflow doc defines error handling"
+  check_text "docs/technical/workflow-integration.md" "Timeout|TIMEOUT|超时" "workflow doc covers timeout"
+  check_text "docs/technical/workflow-integration.md" "Empty|EMPTY|空结果" "workflow doc covers empty result"
+  check_text "docs/technical/workflow-integration.md" "Invalid|INVALID_INPUT|非法输入" "workflow doc covers invalid input"
+  check_text "docs/technical/workflow-integration.md" "Platform error|platform failure|平台失败|平台错误|失败" "workflow doc covers platform failure"
 
-  check_text "docs/test-cases.md" "PL-[0-9]|Primary Loop|主闭环|核心流程" "test cases include primary loop test"
-  check_text "docs/test-cases.md" "WF-[0-9]|Fallback|fallback|兜底" "test cases include workflow fallback test"
-  check_text "docs/test-cases.md" "II-[0-9]|INVALID_INPUT|Invalid Input|非法输入" "test cases include invalid input test"
-  check_text "docs/test-cases.md" "BR-[0-9]|Browser|浏览器" "test cases include browser test"
-  check_text "docs/test-cases.md" "RC-[0-9]|check-demo|check-docs|Readiness" "test cases include readiness check"
-  check_text "docs/test-cases.md" "requirements.md|workflow-integration.md|tech-plan.md" "test cases cite source documents"
+  check_text "docs/technical/test-cases.md" "PL-[0-9]|Primary Loop|主闭环|核心流程" "test cases include primary loop test"
+  check_text "docs/technical/test-cases.md" "WF-[0-9]|Fallback|fallback|兜底" "test cases include workflow fallback test"
+  check_text "docs/technical/test-cases.md" "II-[0-9]|INVALID_INPUT|Invalid Input|非法输入" "test cases include invalid input test"
+  check_text "docs/technical/test-cases.md" "BR-[0-9]|Browser|浏览器" "test cases include browser test"
+  check_text "docs/technical/test-cases.md" "RC-[0-9]|check-demo|check-docs|Readiness" "test cases include readiness check"
+  check_text "docs/technical/test-cases.md" "requirements.md|workflow-integration.md|tech-plan.md" "test cases cite source documents"
 }
 
 if [[ "$PATTERNS_ONLY" -eq 1 ]]; then
@@ -205,7 +213,7 @@ if [[ "$PATTERNS_ONLY" -eq 1 ]]; then
 else
   echo "Mode: business document quality"
   check_required_docs
-  if [[ -d "$ROOT/docs/template-patterns" ]]; then
+  if [[ -d "$ROOT/kit/template-patterns" || -d "$ROOT/docs/template-patterns" ]]; then
     check_patterns
   fi
 fi

@@ -7,7 +7,7 @@
 
 ## Requirements Baseline Reference
 
-Copy the Requirements Baseline from `docs/requirements.md`:
+Copy the Requirements Baseline from `docs/requirements/requirements.md`:
 
 - Primary user:
 - Primary loop:
@@ -20,7 +20,7 @@ Copy the Requirements Baseline from `docs/requirements.md`:
 
 ## Selected Solution Reference
 
-Copy the selected option from `docs/solution-options.md`:
+Copy the selected option from `docs/requirements/solution-options.md`:
 
 - Selected option:
 - Selected by:
@@ -87,7 +87,7 @@ Allowed `Source`: `shell`, `pattern:<pattern-name>`, `business-requirement`.
 
 Allowed `Action`: `create`, `modify`, `delete`, `keep`.
 Allowed `Source`: `shell`, `pattern:<pattern-name>`, `business-requirement`.
-Forbidden `Source`: see `docs/template-patterns/pc-admin-tech-plan-pattern.md`.
+Forbidden `Source`: see `kit/template-patterns/pc-admin-tech-plan-pattern.md`.
 
 ## Workflow Mock Contract
 

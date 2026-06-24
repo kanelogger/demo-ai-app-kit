@@ -10,6 +10,6 @@ Use this checklist before a competition simulation or final submission.
 - Error, timeout, empty, and mock states are visible or documented.
 - No private event notes, secrets, `.env`, or local credentials are included.
 - Primary loop demo path is documented with sample input, click path, expected output, and fallback path.
-- `docs/tech-plan.md` includes Menu Plan, Page Plan (with layer and cut plan), Entity Mapping, Field Mapping, and Workflow Mock Contract.
+- `docs/technical/tech-plan.md` includes Menu Plan, Page Plan (with layer and cut plan), Entity Mapping, Field Mapping, and Workflow Mock Contract.
 - Pages are classified as `core`, `supporting`, `foundation`, `optional-cut`, or `delete` with a recorded cut scope for `optional-cut` and `delete` pages.
 - Non-week-report apps do not retain visible weekly-report wording in pages, README, docs, or mock data.

@@ -27,7 +27,7 @@ Copy this prompt as the first instruction after entering the generated project a
   <language_policy>
     Infer the target document language from the user's requirement before writing any user-facing artifact.
     Use the user's native or dominant language when clear. If native language cannot be known, use the dominant natural language of the requirement. If the requirement is mixed, prefer the language used for the business scenario and acceptance constraints.
-    Write completed `docs/requirements.md`, `docs/solution-options.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-cases.md`, `docs/skill-trace.md`, `docs/test-report.md`, `README.md`, and UI copy in that target language, including headings and table labels.
+    Write completed `docs/requirements/requirements.md`, `docs/requirements/solution-options.md`, `docs/technical/tech-plan.md`, `docs/technical/workflow-integration.md`, `docs/technical/test-cases.md`, `docs/execution/skill-trace.md`, `docs/execution/test-report.md`, `README.md`, and UI copy in that target language, including headings and table labels.
     Keep code identifiers, file paths, API routes, HTTP methods, JSON keys, environment variables, CLI commands, and machine-readable error codes in English.
     If the target language is genuinely ambiguous and affects delivery, ask one concise blocking question before freezing requirements.
     Remove or translate English template scaffolding from completed human-facing documents.
@@ -47,11 +47,11 @@ Copy this prompt as the first instruction after entering the generated project a
     2. State the inferred target document language and the evidence used. If ambiguous, ask one blocking language question.
     3. Ask at most 3 blocking questions. If none are blocking, state assumptions and continue.
     4. Define one primary user loop and one optional secondary loop.
-    5. Generate a scoped requirements document in the target document language and save it to `docs/requirements.md`.
+    5. Generate a scoped requirements document in the target document language and save it to `docs/requirements/requirements.md`.
     6. Classify requirement route: simple requirement -> question-refiner; vague, complex, or product-shape unclear -> ce-brainstorm.
-    7. Start `docs/skill-trace.md` and update it as each skill is used or skipped. Record the input/evidence, output artifact, and skipped reason. Do not leave this as a generic recommendation list.
-    8. Generate `docs/solution-options.md` in the target document language with exactly 3 materially different technical options, a recommended option, concrete selection rationale, customization entry, and user selection field. Differences must affect architecture, storage, AI integration, implementation risk, or demo cost.
-    9. Freeze point: do not write `docs/tech-plan.md`, API/interface contracts, workflow contract, or implementation code until the selected option is recorded in `docs/solution-options.md`. If the user is unavailable and the requirement is otherwise clear, choose the recommended option, record `Selected by: Agent default`, and state the tradeoff in the final report.
+    7. Start `docs/execution/skill-trace.md` and update it as each skill is used or skipped. Record the input/evidence, output artifact, and skipped reason. Do not leave this as a generic recommendation list.
+    8. Generate `docs/requirements/solution-options.md` in the target document language with exactly 3 materially different technical options, a recommended option, concrete selection rationale, customization entry, and user selection field. Differences must affect architecture, storage, AI integration, implementation risk, or demo cost.
+    9. Freeze point: do not write `docs/technical/tech-plan.md`, API/interface contracts, workflow contract, or implementation code until the selected option is recorded in `docs/requirements/solution-options.md`. If the user is unavailable and the requirement is otherwise clear, choose the recommended option, record `Selected by: Agent default`, and state the tradeoff in the final report.
     10. Use this skill routing table:
        - Default product-quality path: ce-brainstorm or question-refiner -> grilling -> solution-stress-test -> domain-modeling -> tech-plan-generator / SDD-lite -> api-and-interface-design -> security-and-hardening -> shell-implementation -> tdd -> webapp-testing -> debugging-and-error-recovery -> code-review-and-quality.
        - Simple requirement: use question-refiner and hand off to grilling; skip full ce-brainstorm.
@@ -65,13 +65,13 @@ Copy this prompt as the first instruction after entering the generated project a
        - Any completed PC backend app: use webapp-testing.
        - Failures: use debugging-and-error-recovery.
        - Before handoff or final quality gate: use code-review-and-quality.
-    11. Generate a product-quality technical plan in the target document language with an SDD-lite single-page contract: Requirements Baseline Reference, Selected Solution Reference, Reference Patterns, Menu Plan, Page Plan, Entity Mapping, Field Mapping, Generated Files Plan, Workflow Mock Contract, Data Storage Decision, and Changed Decisions. Save the plan to `docs/tech-plan.md`. The Generated Files Plan must use Source `shell`, `pattern:<pattern-name>`, or `business-requirement`; never use a source label that means original example, legacy template, copied page, or reference implementation.
-    12. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/workflow-integration.md` in the target document language.
-    13. Write test cases to `docs/test-cases.md` in the target document language covering primary loop, workflow fallback, invalid input, browser path, API JSON, and readiness check.
-    14. Run `./bin/check-docs .` after `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-cases.md` are filled. Treat failures as document-quality issues to fix before implementation.
-    15. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `docs/template-patterns/` instead of copying the reference example.
+    11. Generate a product-quality technical plan in the target document language with an SDD-lite single-page contract: Requirements Baseline Reference, Selected Solution Reference, Reference Patterns, Menu Plan, Page Plan, Entity Mapping, Field Mapping, Generated Files Plan, Workflow Mock Contract, Data Storage Decision, and Changed Decisions. Save the plan to `docs/technical/tech-plan.md`. The Generated Files Plan must use Source `shell`, `pattern:<pattern-name>`, or `business-requirement`; never use a source label that means original example, legacy template, copied page, or reference implementation.
+    12. Write the workflow adapter contract, business endpoint, request/response JSON, mock fallback, invalid input, timeout, empty result, platform failure, mock-vs-real switching, and test examples to `docs/technical/workflow-integration.md` in the target document language.
+    13. Write test cases to `docs/technical/test-cases.md` in the target document language covering primary loop, workflow fallback, invalid input, browser path, API JSON, and readiness check.
+    14. Run `./kit/checkers/check-docs .` after `docs/requirements/requirements.md`, `docs/technical/tech-plan.md`, `docs/technical/workflow-integration.md`, and `docs/technical/test-cases.md` are filled. Treat failures as document-quality issues to fix before implementation.
+    15. Do not create a separate SDD document unless explicitly requested. Output the SDD-lite contract before implementation, then implement from `templates/flask-admin-shell/` plus `kit/template-patterns/` instead of copying the reference example.
     16. Implement the smallest complete maintainable PC backend app slice that satisfies the primary loop and leaves stable extension seams.
-    17. Verify the app locally with tests and browser checks; report exact commands, URL, business API response, and readiness result in `docs/test-report.md` in the target document language.
+    17. Verify the app locally with tests and browser checks; report exact commands, URL, business API response, and readiness result in `docs/execution/test-report.md` in the target document language.
     18. Update README in the target document language with run command, URL, core flow, adapter notes, known limits, selected solution, and the purpose of each docs/ artifact. Do not generate demo scripts, PPT, diagrams, or visual themes unless explicitly requested.
   </task>
 
@@ -97,9 +97,9 @@ Copy this prompt as the first instruction after entering the generated project a
   <success_criteria>
     - A user can open the app locally and complete the primary loop.
     - The AI workflow call path is visible in code and demoable through mock fallback.
-    - `docs/requirements.md`, `docs/solution-options.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, `docs/test-cases.md`, `docs/skill-trace.md`, and `docs/test-report.md` are present and consistent with code.
+    - `docs/requirements/requirements.md`, `docs/requirements/solution-options.md`, `docs/technical/tech-plan.md`, `docs/technical/workflow-integration.md`, `docs/technical/test-cases.md`, `docs/execution/skill-trace.md`, and `docs/execution/test-report.md` are present and consistent with code.
     - Requirements, selected solution, SDD-lite, API/workflow contracts, tests, skill trace, and README tell the same story.
-    - `./bin/check-docs .` passes before implementation starts or before a docs-only handoff.
+    - `./kit/checkers/check-docs .` passes before implementation starts or before a docs-only handoff.
     - The README contains run command, URL, accounts if any, core flow, adapter notes, known limits, and the purpose of each docs/ artifact.
     - The README and docs support a concise technical walkthrough of business value, structure, and live demo steps.
   </success_criteria>

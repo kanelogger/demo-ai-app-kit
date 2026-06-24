@@ -16,13 +16,13 @@ updates.
 
 Before writing code, read:
 
-1. `docs/requirements.md` — Requirements Baseline and Primary Loop.
-2. `docs/tech-plan.md` — Menu Plan, Page Plan, Entity Mapping, Field Mapping,
+1. `docs/requirements/requirements.md` — Requirements Baseline and Primary Loop.
+2. `docs/technical/tech-plan.md` — Menu Plan, Page Plan, Entity Mapping, Field Mapping,
    Generated Files Plan, Data Storage Decision.
-3. `docs/workflow-integration.md` — Business workflow endpoint, request/response
+3. `docs/technical/workflow-integration.md` — Business workflow endpoint, request/response
    envelope, error cases.
-4. `docs/test-cases.md` — Scenarios to verify.
-5. `docs/template-patterns/README.md` — Pattern registry and read order.
+4. `docs/technical/test-cases.md` — Scenarios to verify.
+5. `kit/template-patterns/README.md` — Pattern registry and read order.
 6. `templates/flask-admin-shell/` — The only allowed starting code.
 
 ## Workflow
@@ -33,8 +33,8 @@ Before writing code, read:
 4. Add the business workflow endpoint in `app.py` or a separate module.
 5. Keep mock data minimal and business-specific.
 6. Update the generated README with run command, URL, and demo account.
-7. Do not modify `docs/requirements.md`, `docs/tech-plan.md`,
-   `docs/workflow-integration.md`, or `docs/test-cases.md`.
+7. Do not modify `docs/requirements/requirements.md`, `docs/technical/tech-plan.md`,
+   `docs/technical/workflow-integration.md`, or `docs/technical/test-cases.md`.
 8. Run the app locally and verify at least one primary loop path.
 9. Run `./bin/check-demo .` and fix blocking issues.
 

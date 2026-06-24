@@ -90,14 +90,14 @@ copyDir(path.join(kitRoot, 'templates', 'flask-admin-shell'), targetDir);
 // 2. Copy standard project documentation skeletons.
 copyDir(path.join(kitRoot, 'templates', 'docs'), path.join(targetDir, 'docs'));
 
-// 3. Copy pattern registry for implementation reference.
-copyDir(path.join(kitRoot, 'docs', 'template-patterns'), path.join(targetDir, 'docs', 'template-patterns'));
+// 3. Copy kit initialization assets into one folder.
+copyDir(path.join(kitRoot, 'docs', 'template-patterns'), path.join(targetDir, 'kit', 'template-patterns'));
 
 // 4. Copy project-level agent instructions.
 copyFile(path.join(kitRoot, 'AGENTS.md'), path.join(targetDir, 'AGENTS.md'));
 
 // 5. Copy entry prompt.
-copyFile(path.join(kitRoot, 'prompts', 'opencode-entry.md'), path.join(targetDir, 'prompts', 'opencode-entry.md'));
+copyFile(path.join(kitRoot, 'prompts', 'opencode-entry.md'), path.join(targetDir, 'kit', 'prompts', 'opencode-entry.md'));
 
 // 6. Copy core skills; fail loud if a default-path skill is missing from the kit.
 for (const skill of coreSkills) {
@@ -106,14 +106,14 @@ for (const skill of coreSkills) {
     console.error(`Error: required skill is missing from the kit: ${skill}`);
     process.exit(1);
   }
-  copyDir(src, path.join(targetDir, 'skills', skill));
+  copyDir(src, path.join(targetDir, 'kit', 'skills', skill));
 }
 
 // 7. Copy local verification scripts.
 copyFile(path.join(kitRoot, 'bin', 'check-demo'), path.join(targetDir, 'bin', 'check-demo'));
 fs.chmodSync(path.join(targetDir, 'bin', 'check-demo'), 0o755);
-copyFile(path.join(kitRoot, 'bin', 'check-docs'), path.join(targetDir, 'bin', 'check-docs'));
-fs.chmodSync(path.join(targetDir, 'bin', 'check-docs'), 0o755);
+copyFile(path.join(kitRoot, 'bin', 'check-docs'), path.join(targetDir, 'kit', 'checkers', 'check-docs'));
+fs.chmodSync(path.join(targetDir, 'kit', 'checkers', 'check-docs'), 0o755);
 
 // 8. Generate a project README skeleton.
 const readme = `# ${projectName}
@@ -139,12 +139,12 @@ and adapts the app.
 \`\`\`text
 Input a simple app requirement
 -> Clarification (question-refiner / ce-brainstorm -> grilling)
--> docs/requirements.md
--> docs/solution-options.md (3 options + recommendation + user selection)
--> docs/tech-plan.md
--> docs/workflow-integration.md
--> docs/test-cases.md
--> docs/skill-trace.md
+-> docs/requirements/requirements.md
+-> docs/requirements/solution-options.md (3 options + recommendation + user selection)
+-> docs/technical/tech-plan.md
+-> docs/technical/workflow-integration.md
+-> docs/technical/test-cases.md
+-> docs/execution/skill-trace.md
 -> Implementation from shell + patterns (shell-implementation)
 -> Local verification (tdd, webapp-testing)
 -> Quality review (code-review-and-quality)
@@ -155,12 +155,12 @@ Input a simple app requirement
 
 - \`./bin/check-demo --skeleton .\` checks that the generated project has the
   correct files, no copied reference material, and a runnable shell.
-- \`./bin/check-docs .\` checks the pre-implementation document package:
-  \`docs/requirements.md\`, \`docs/tech-plan.md\`,
-  \`docs/workflow-integration.md\`, and \`docs/test-cases.md\`.
+- \`./kit/checkers/check-docs .\` checks the pre-implementation document package:
+  \`docs/requirements/requirements.md\`, \`docs/technical/tech-plan.md\`,
+  \`docs/technical/workflow-integration.md\`, and \`docs/technical/test-cases.md\`.
 - \`./bin/check-demo .\` checks full app readiness after the Agent has filled
   the docs, recorded the selected solution, implemented the primary loop, and
-  updated \`docs/skill-trace.md\`.
+  updated \`docs/execution/skill-trace.md\`.
 
 ## Run locally
 
@@ -189,16 +189,22 @@ PORT=5001 python3 app.py
 ├── workflow_adapter.py       # AI workflow adapter with stable envelope
 ├── requirements.txt          # Python dependencies
 ├── bin/check-demo            # Demo readiness check
-├── bin/check-docs            # Pre-implementation document quality check
+├── kit/                      # Initialization assets copied from demo-ai-app-kit
+│   ├── checkers/check-docs   # Pre-implementation document quality check
+│   ├── prompts/              # Agent entry prompt
+│   ├── skills/               # Product-quality workflow skills
+│   └── template-patterns/    # Neutral PC admin patterns
 ├── docs/                     # Product-quality workflow artifacts
-│   ├── requirements.md
-│   ├── solution-options.md
-│   ├── tech-plan.md
-│   ├── workflow-integration.md
-│   ├── test-cases.md
-│   ├── skill-trace.md
-│   └── test-report.md
-├── docs/template-patterns/   # Neutral PC admin patterns
+│   ├── requirements/
+│   │   ├── requirements.md
+│   │   └── solution-options.md
+│   ├── technical/
+│   │   ├── tech-plan.md
+│   │   ├── workflow-integration.md
+│   │   └── test-cases.md
+│   └── execution/
+│       ├── skill-trace.md
+│       └── test-report.md
 ├── templates/                # Jinja2 / HTML templates
 └── assets/                   # CSS, JS
 \`\`\`
@@ -245,13 +251,13 @@ The Agent fills these standard files during the product-quality workflow:
 
 | File | Purpose |
 |------|---------|
-| \`docs/requirements.md\` | Clarifications, assumptions, baseline, primary loop, acceptance checks, out of scope. |
-| \`docs/solution-options.md\` | Three selectable technical approaches, recommendation, user-selected option, and freeze gate. |
-| \`docs/tech-plan.md\` | Reference patterns, menu/page plan, entity/field mapping, generated files plan, storage decision. |
-| \`docs/workflow-integration.md\` | Business endpoint, request/response JSON, mock fallback, error cases. |
-| \`docs/test-cases.md\` | Primary loop, fallback, invalid input, browser, readiness checks. |
-| \`docs/skill-trace.md\` | Actual skills used, skipped skills with reasons, output inventory, and command evidence. |
-| \`docs/test-report.md\` | Local run result, fixes, sign-off. |
+| \`docs/requirements/requirements.md\` | Clarifications, assumptions, baseline, primary loop, acceptance checks, out of scope. |
+| \`docs/requirements/solution-options.md\` | Three selectable technical approaches, recommendation, user-selected option, and freeze gate. |
+| \`docs/technical/tech-plan.md\` | Reference patterns, menu/page plan, entity/field mapping, generated files plan, storage decision. |
+| \`docs/technical/workflow-integration.md\` | Business endpoint, request/response JSON, mock fallback, error cases. |
+| \`docs/technical/test-cases.md\` | Primary loop, fallback, invalid input, browser, readiness checks. |
+| \`docs/execution/skill-trace.md\` | Actual skills used, skipped skills with reasons, output inventory, and command evidence. |
+| \`docs/execution/test-report.md\` | Local run result, fixes, sign-off. |
 
 Keep these files in sync with code and README.
 

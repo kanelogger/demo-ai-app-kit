@@ -7,7 +7,7 @@ description: Plan Star Agent platform workflow integration for a local competiti
 
 ## Workflow
 
-1. Infer the target document language from the user's requirement or `docs/requirements.md`.
+1. Infer the target document language from the user's requirement or `docs/requirements/requirements.md`.
 2. Identify the user action that triggers AI.
 3. Define the workflow purpose in one sentence.
 4. Define request JSON from local app to workflow.

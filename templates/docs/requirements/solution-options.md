@@ -1,14 +1,14 @@
 # Solution Options
 
-> Generated from demo-ai-app-kit. Fill this in after `docs/requirements.md`
-> is frozen and before `docs/tech-plan.md` is written.
+> Generated from demo-ai-app-kit. Fill this in after `docs/requirements/requirements.md`
+> is frozen and before `docs/technical/tech-plan.md` is written.
 > Language policy: when completing this file, infer the user's native/dominant
 > language from the requirement and rewrite this document in that language.
 > Keep code identifiers, paths, commands, API routes, and JSON keys in English.
 
 ## Requirements Baseline Reference
 
-Copy the frozen baseline from `docs/requirements.md`:
+Copy the frozen baseline from `docs/requirements/requirements.md`:
 
 - Primary user:
 - Primary loop:
@@ -74,8 +74,8 @@ Implementation is blocked until this section is filled.
 
 ## Freeze Gate
 
-- [ ] `docs/requirements.md` is filled and has no unresolved Unknown fields.
+- [ ] `docs/requirements/requirements.md` is filled and has no unresolved Unknown fields.
 - [ ] Three materially different options are documented.
 - [ ] One option is recommended with a concrete tradeoff.
 - [ ] User selection is recorded above.
-- [ ] `docs/tech-plan.md` has not been written before this selection.
+- [ ] `docs/technical/tech-plan.md` has not been written before this selection.

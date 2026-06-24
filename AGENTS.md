@@ -53,7 +53,7 @@ Competition use is the first validation scenario, but the product quality target
 ## Operating Rules
 
 - Generated apps must be PC backend/admin projects. First-screen product shape should be dashboard, list, form, detail, audit, dispatch, triage, or other workbench surfaces, not marketing pages, chat-only pages, or pure reports.
-- Generated apps must start from `templates/flask-admin-shell/` plus `docs/template-patterns/`, not from the reference example.
+- Generated apps must start from `templates/flask-admin-shell/` plus `kit/template-patterns/`, not from the reference example.
 - `docs/reference/` and `examples/` are repository maintenance assets only; do not copy them into generated projects.
 - Do not hard-bind generated apps to the repository reference business domain unless the user explicitly asks for that exact domain.
 - Separate public reusable assets from private event notes. Do not copy local-only preparation details into generated public deliverables.
@@ -96,43 +96,43 @@ Requirement input
 
 Routing rules:
 
-- Simple requirement: use `skills/question-refiner`; skip full `skills/ce-brainstorm`.
-- Vague, complex, or product-shape-unclear requirement: use `skills/ce-brainstorm`.
-- Before freezing an important plan: use `skills/grilling`; it asks one Mom-Test-style blocking question at a time and classifies answers as behavior facts, constraints, rules, data facts, acceptance facts, attitudes, or unknown.
-- More than 3 business terms, or likely UI/API/workflow field drift: use `skills/domain-modeling`.
-- Frontend/backend APIs, workflow contracts, or mock fixtures: use `skills/api-and-interface-design`.
-- User input, authentication, storage, files, or external calls: use `skills/security-and-hardening`.
-- Implementing from the neutral shell and frozen docs: use `skills/shell-implementation`.
-- Behavior logic, adapters, or mock fixtures: use `skills/tdd`.
-- Any completed PC backend app: use `skills/webapp-testing`.
-- Build, test, runtime, or browser failures: use `skills/debugging-and-error-recovery`.
-- Before handoff, submission, or final quality gate: use `skills/code-review-and-quality`.
-- Before npm publish, version tagging, release handoff, or after package/generator/template boundary changes: use `skills/release-readiness`.
+- Simple requirement: use `kit/skills/question-refiner`; skip full `kit/skills/ce-brainstorm`.
+- Vague, complex, or product-shape-unclear requirement: use `kit/skills/ce-brainstorm`.
+- Before freezing an important plan: use `kit/skills/grilling`; it asks one Mom-Test-style blocking question at a time and classifies answers as behavior facts, constraints, rules, data facts, acceptance facts, attitudes, or unknown.
+- More than 3 business terms, or likely UI/API/workflow field drift: use `kit/skills/domain-modeling`.
+- Frontend/backend APIs, workflow contracts, or mock fixtures: use `kit/skills/api-and-interface-design`.
+- User input, authentication, storage, files, or external calls: use `kit/skills/security-and-hardening`.
+- Implementing from the neutral shell and frozen docs: use `kit/skills/shell-implementation`.
+- Behavior logic, adapters, or mock fixtures: use `kit/skills/tdd`.
+- Any completed PC backend app: use `kit/skills/webapp-testing`.
+- Build, test, runtime, or browser failures: use `kit/skills/debugging-and-error-recovery`.
+- Before handoff, submission, or final quality gate: use `kit/skills/code-review-and-quality`.
+- Before npm publish, version tagging, release handoff, or after package/generator/template boundary changes: use `kit/skills/release-readiness`.
 - Run `bin/check-demo` and a lightweight quality review after testing and before handoff.
-- Run `bin/check-docs .` after the implementation-ready documents are filled and before code implementation when the task is validating document quality or freezing the plan.
+- Run `kit/checkers/check-docs .` after the implementation-ready documents are filled and before code implementation when the task is validating document quality or freezing the plan.
 
 Skill trace rule:
 
-- Maintain `docs/skill-trace.md` in generated projects.
+- Maintain `docs/execution/skill-trace.md` in generated projects.
 - Record each used skill, its input/evidence, output artifact, and skipped skills with concrete reasons.
 - Treat an unfilled skill trace as a failed workflow, even if the code runs.
 
 Solution selection rule:
 
-- After `docs/requirements.md`, produce `docs/solution-options.md` with exactly 3 materially different options, a recommendation, a customization entry, and a selected option.
+- After `docs/requirements/requirements.md`, produce `docs/requirements/solution-options.md` with exactly 3 materially different options, a recommendation, a customization entry, and a selected option.
 - Implementation is frozen until the selected option is recorded.
 - If the user cannot answer and the requirement is otherwise clear, the Agent may choose the recommendation, record `Selected by: Agent default`, and state the tradeoff.
-- `docs/tech-plan.md`, API contracts, workflow contracts, and implementation must follow the selected option.
+- `docs/technical/tech-plan.md`, API contracts, workflow contracts, and implementation must follow the selected option.
 
 Explicit heavy workflow skills stay out of the default path unless the user or workflow clearly triggers them:
 
-- `skills/ce-code-review`: important version, PR-level, or final heavy review.
-- `skills/review`: standards/spec review when there is a clear spec and diff base.
-- `skills/ce-debug`: escalation after normal debugging fails.
-- `skills/ce-dogfood-beta`: final end-to-end dogfood.
-- `skills/mcp-builder`: MCP integration generation.
-- `skills/to-prd`, `skills/to-issues`, `skills/triage`: issue tracker product flow.
-- `skills/handoff`: multi-agent or multi-session transfer.
+- `kit/skills/ce-code-review`: important version, PR-level, or final heavy review.
+- `kit/skills/review`: standards/spec review when there is a clear spec and diff base.
+- `kit/skills/ce-debug`: escalation after normal debugging fails.
+- `kit/skills/ce-dogfood-beta`: final end-to-end dogfood.
+- `kit/skills/mcp-builder`: MCP integration generation.
+- `kit/skills/to-prd`, `kit/skills/to-issues`, `kit/skills/triage`: issue tracker product flow.
+- `kit/skills/handoff`: multi-agent or multi-session transfer.
 
 ## SDD-Lite Policy
 
@@ -140,7 +140,7 @@ Explicit heavy workflow skills stay out of the default path unless the user or w
 - Required blocks: `Primary Loop`, `Selected Solution Reference`, `Reference Patterns`, `Generated Files Plan`, `Field Mapping`, `Workflow Mock Contract`, `Data Storage Decision`, `Demo Acceptance Checks`.
 - Do not create a separate SDD document or use a heavyweight SDD flow unless the user explicitly asks.
 - During implementation, prefer a working demo and `bin/check-demo` over repeatedly maintaining planning documents.
-- `bin/check-docs .` is the pre-implementation document-quality gate for `docs/requirements.md`, `docs/tech-plan.md`, `docs/workflow-integration.md`, and `docs/test-cases.md`. It intentionally does not start the app, probe pages, or verify code behavior.
+- `kit/checkers/check-docs .` is the pre-implementation document-quality gate for `docs/requirements/requirements.md`, `docs/technical/tech-plan.md`, `docs/technical/workflow-integration.md`, and `docs/technical/test-cases.md`. It intentionally does not start the app, probe pages, or verify code behavior.
 - `bin/check-demo --skeleton .` is the structural gate for a fresh generated project; `bin/check-demo .` is the full app readiness gate after the Agent completes docs and implementation.
 
 ## Coding Rules
@@ -174,7 +174,7 @@ Keep comments load-bearing:
 - For generated or changed demo apps, prefer a real local run when feasible.
 - Always report exact commands run and whether they passed.
 - If a check could not be run, say so and explain why.
-- Use `bin/check-docs .` for docs-only validation before implementation or when implementation is explicitly out of scope.
+- Use `kit/checkers/check-docs .` for docs-only validation before implementation or when implementation is explicitly out of scope.
 - `bin/check-demo` is the baseline readiness check for this repository or a generated project.
 
 ## Clarification Workflow

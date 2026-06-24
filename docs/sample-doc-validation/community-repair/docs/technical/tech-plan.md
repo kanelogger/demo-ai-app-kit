@@ -92,8 +92,8 @@
 | `templates/repairs/new.html` | create | business-requirement | 主闭环表单页面。 |
 | `templates/repairs/index.html` | create | pattern:operation-flow-patterns | 报修台账列表。 |
 | `templates/repairs/detail.html` | create | pattern:page-component-patterns | 工单详情和派单确认。 |
-| `docs/workflow-integration.md` | modify | pattern:workflow-integration-pattern | 记录 API 契约和 fallback。 |
-| `docs/test-cases.md` | modify | business-requirement | 记录文档阶段和实现阶段测试。 |
+| `docs/technical/workflow-integration.md` | modify | pattern:workflow-integration-pattern | 记录 API 契约和 fallback。 |
+| `docs/technical/test-cases.md` | modify | business-requirement | 记录文档阶段和实现阶段测试。 |
 
 ## Workflow Mock Contract
 

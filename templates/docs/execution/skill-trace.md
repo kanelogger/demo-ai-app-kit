@@ -10,18 +10,18 @@
 
 | Step | Skill | Status | Input / Evidence | Output Artifact | Skipped Reason |
 |------|-------|--------|------------------|-----------------|----------------|
-| Requirements route | `question-refiner` or `ce-brainstorm` | pending | User requirement | `docs/requirements.md` | |
+| Requirements route | `question-refiner` or `ce-brainstorm` | pending | User requirement | `docs/requirements/requirements.md` | |
 | Plan challenge | `grilling` | pending | Requirements baseline | Blocking answers / assumptions | |
-| Feasibility check | `solution-stress-test` | pending | Candidate options | Risk notes in `docs/solution-options.md` | |
+| Feasibility check | `solution-stress-test` | pending | Candidate options | Risk notes in `docs/requirements/solution-options.md` | |
 | Domain terms | `domain-modeling` | pending | Core entities / states | Entity and field mapping | |
-| Tech plan | `tech-plan-generator` | pending | Selected solution | `docs/tech-plan.md` | |
+| Tech plan | `tech-plan-generator` | pending | Selected solution | `docs/technical/tech-plan.md` | |
 | API contract | `api-and-interface-design` | pending | Workflow/API needs | API and workflow contract | |
 | Security boundary | `security-and-hardening` | pending | User input / storage / external calls | Validation and fallback notes | |
 | Implementation | `shell-implementation` | pending | Frozen docs | Changed app files | |
 | Tests | `tdd` | pending | Adapter / business logic | Test cases and behavior checks | |
 | Browser verification | `webapp-testing` | pending | Running app URL | Browser check evidence | |
 | Debugging | `debugging-and-error-recovery` | skipped | Only if failures occur | Fix notes | No failure yet |
-| Quality review | `code-review-and-quality` | pending | Final diff and test output | Review notes in `docs/test-report.md` | |
+| Quality review | `code-review-and-quality` | pending | Final diff and test output | Review notes in `docs/execution/test-report.md` | |
 
 Allowed `Status`: `used`, `skipped`, `pending`.
 
@@ -35,12 +35,12 @@ Allowed `Status`: `used`, `skipped`, `pending`.
 
 | Artifact | Producer Skill | Verification |
 |----------|----------------|--------------|
-| `docs/requirements.md` | | |
-| `docs/solution-options.md` | | |
-| `docs/tech-plan.md` | | |
-| `docs/workflow-integration.md` | | |
-| `docs/test-cases.md` | | |
-| `docs/test-report.md` | | |
+| `docs/requirements/requirements.md` | | |
+| `docs/requirements/solution-options.md` | | |
+| `docs/technical/tech-plan.md` | | |
+| `docs/technical/workflow-integration.md` | | |
+| `docs/technical/test-cases.md` | | |
+| `docs/execution/test-report.md` | | |
 
 ## Deviations
 
