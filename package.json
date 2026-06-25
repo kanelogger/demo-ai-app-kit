@@ -1,0 +1,23 @@
+{
+  "name": "fullstack-admin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "全栈管理后台起点项目",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "start": "pnpm --filter backend start",
+    "clean": "pnpm -r exec rimraf dist node_modules && rimraf node_modules pnpm-lock.yaml"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.13.0",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@11.4.0"
+}
