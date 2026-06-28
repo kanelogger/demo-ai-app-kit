@@ -173,8 +173,24 @@ async function advanceCommand(args: string[]): Promise<void> {
 
   const root = process.cwd();
   const state = await readState(root);
-  const expected = state.allowedNextStages[0];
-  if (state.allowedNextStages.length !== 1 || expected !== target) {
+  if (!isStage(state.stage)) {
+    fail(`workflow-state.json has unknown stage "${String(state.stage)}".`, "Repair workflow-state.json from the fixed stage order before advancing.");
+  }
+
+  const expectedStages = NEXT_STAGE[state.stage];
+  if (!Array.isArray(state.allowedNextStages)) {
+    fail("workflow-state.json is corrupt: allowedNextStages must be an array.", "Repair workflow-state.json from the fixed stage order before advancing.");
+  }
+
+  if (!sameArray(state.allowedNextStages, expectedStages)) {
+    fail(
+      `workflow-state.json is corrupt: allowedNextStages must be ${JSON.stringify(expectedStages)} for stage "${state.stage}".`,
+      "Repair workflow-state.json from the fixed stage order before advancing; run `kit check` for details.",
+    );
+  }
+
+  const expected = expectedStages[0];
+  if (expected !== target) {
     fail(
       `Cannot advance from "${state.stage}" to "${target}".`,
       expected ? `Run \`kit stage advance ${expected} --by user --quote "..."\`.` : "This project is already at the terminal stage.",

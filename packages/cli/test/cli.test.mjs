@@ -150,6 +150,23 @@ test("stage advance rejects skipped stages and missing quote", async () => {
   }
 });
 
+test("stage advance rejects tampered allowedNextStages", async () => {
+  const { root, project } = await tempProject();
+  try {
+    const state = await readJson(join(project, "workflow-state.json"));
+    state.allowedNextStages = ["implementation-ready"];
+    await setState(project, state);
+    await write(project, "workflow/implementation-ready.md", "---\nstatus: ready\n---\n# Ready\n");
+
+    const skipped = run(["stage", "advance", "implementation-ready", "--by", "user", "--quote", "try skip"], { cwd: project });
+    assert.notEqual(skipped.status, 0);
+    assert.match(skipped.stderr, /allowedNextStages must be \["requirements-draft"\] for stage "initialized"/);
+    assert.match(skipped.stderr, /Repair:/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("stage advance validates target artifact frontmatter", async () => {
   const { root, project } = await tempProject();
   try {
