@@ -137,10 +137,11 @@ async function initCommand(args: string[]): Promise<void> {
   await mkdir(join(targetRoot, "tasks"), { recursive: true });
   await mkdir(join(targetRoot, "memory"), { recursive: true });
   await writeJson(join(targetRoot, "workflow-state.json"), INITIAL_STATE);
-  await writeFile(join(targetRoot, "scripts", "kit.mjs"), renderKitRunner(CLI_PATH), "utf8");
+  await copyFile(CLI_PATH, join(targetRoot, "scripts", "kit-runtime.mjs"));
+  await writeFile(join(targetRoot, "scripts", "kit.mjs"), renderKitRunner(), "utf8");
 
   console.log(`✅ Created ${projectName}`);
-  console.log(`Next: cd ${projectName} && pnpm kit:check`);
+  console.log(`Next: cd ${projectName} && node scripts/kit.mjs check`);
 }
 
 async function checkCommand(args: string[]): Promise<void> {
@@ -594,11 +595,12 @@ async function materializeEnvExamples(root: string): Promise<void> {
   }
 }
 
-function renderKitRunner(cliPath: string): string {
+function renderKitRunner(): string {
   return `#!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
-const cliPath = process.env.KIT_TEST_CLI || ${JSON.stringify(cliPath)};
+const cliPath = process.env.KIT_TEST_CLI || fileURLToPath(new URL("./kit-runtime.mjs", import.meta.url));
 const result = spawnSync(process.execPath, [cliPath, ...process.argv.slice(2)], {
   cwd: process.cwd(),
   stdio: "inherit",

@@ -120,6 +120,7 @@ test("init creates scaffold and initialized check passes", async () => {
     }
     assert.equal(existsSync(join(project, ".agents/skills/implement/SKILL.md")), true);
     assert.equal(existsSync(join(project, ".agents/skills/spec-driven-development/SKILL.md")), true);
+    assert.equal(existsSync(join(project, "scripts/kit-runtime.mjs")), true);
     assert.equal(existsSync(join(project, "workflow/requirements.md")), false);
     assert.equal(existsSync(join(project, "frontend/node_modules")), false);
     assert.equal(existsSync(join(project, "backend/node_modules")), false);
