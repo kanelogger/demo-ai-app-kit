@@ -1,0 +1,16 @@
+{
+  "name": "{{projectName}}",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PC 后台管理系统 — 由 kit-test 生成",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.13.0",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@11.4.0"
+}

@@ -1,0 +1,8 @@
+packages:
+  - "frontend"
+  - "backend"
+
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  esbuild: true

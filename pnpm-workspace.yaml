@@ -1,7 +1,10 @@
 packages:
-  - "frontend"
-  - "backend"
+  - "packages/*"
+catalog:
+  typescript: ^5.9.3
+  "@types/node": ^22.0.0
 allowBuilds:
   '@parcel/watcher': true
   core-js: true
   esbuild: true
+  zod: true
