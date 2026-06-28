@@ -737,7 +737,7 @@ function fail(message: string, repair: string): never {
 }
 
 function printHelp(): void {
-  console.log(`demo-ai-app-kit CLI
+  console.log(`ai-vibe-demo-kit CLI
 
 Commands:
   kit init <project-name>

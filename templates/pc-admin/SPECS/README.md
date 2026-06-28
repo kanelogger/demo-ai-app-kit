@@ -1,6 +1,6 @@
 # SPECS Contract
 
-Kit-Test maps the older SDD document list into this structure.
+ai-vibe-demo-kit maps the older SDD document list into this structure.
 
 ## SDD Mapping
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Compatibility wrapper. Kit-Test v1 stage validation lives in `kit check`.
+// Compatibility wrapper. ai-vibe-demo-kit v1 stage validation lives in `kit check`.
 import { spawnSync } from "node:child_process";
 
 const result = spawnSync(process.execPath, ["scripts/kit.mjs", "check", ...process.argv.slice(2)], {

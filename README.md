@@ -1,8 +1,8 @@
-# demo-ai-app-kit
+# ai-vibe-demo-kit
 
 Agent-friendly PC admin project scaffold.
 
-`demo-ai-app-kit` creates a full-stack admin workspace with:
+`ai-vibe-demo-kit` creates a full-stack admin workspace with:
 
 - a Vue admin frontend template;
 - a Fastify backend template;
@@ -15,7 +15,7 @@ Agent-friendly PC admin project scaffold.
 Create a project without installing globally:
 
 ```sh
-npx demo-ai-app-kit init my-admin
+npx ai-vibe-demo-kit init my-admin
 ```
 
 Then run the generated project checks:
@@ -28,7 +28,7 @@ node scripts/kit.mjs check
 You can also install the package globally:
 
 ```sh
-npm install -g demo-ai-app-kit
+npm install -g ai-vibe-demo-kit
 kit init my-admin
 ```
 
