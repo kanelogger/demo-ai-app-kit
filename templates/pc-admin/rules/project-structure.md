@@ -59,7 +59,9 @@ src/
 ```text
 SPECS/
 ├── API.md                       # 唯一前后端共享 API 契约
+├── DATABASE.md                  # 数据库设计文档
 ├── README.md                    # SPECS 结构与映射规则
+├── requirements/                # 按模块拆分的需求文档（01-13）
 └── sample-feature-walkthrough.md  # 示例：从需求到实现的全流程
 ```
 
