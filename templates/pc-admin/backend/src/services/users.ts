@@ -1,4 +1,5 @@
 import { pool } from "../db/mysql";
+import { AppError } from "../utils/errors";
 import { hashPassword } from "../utils/password";
 import getFormatDate from "../utils/date";
 
@@ -146,6 +147,80 @@ export async function getUserProfile(
 
   const roles = await getUserRoles(userId);
   return toProfile(user, roles);
+}
+
+function stringValue(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  const text = String(value).trim();
+  return text.length > 0 ? text : null;
+}
+
+function bodyOf(input: unknown): Record<string, unknown> {
+  return input && typeof input === "object" ? (input as Record<string, unknown>) : {};
+}
+
+export async function updateCurrentProfile(
+  userId: number,
+  input: unknown
+): Promise<UserProfile> {
+  const body = bodyOf(input);
+  const nickname = stringValue(body.nickname);
+  if (!nickname) throw new AppError("VALIDATION_ERROR", "中文姓名不能为空");
+
+  const [result] = await pool.execute(
+    `UPDATE users
+     SET display_name = ?, phone = ?, email = ?, avatar_url = ?, updated_by = ?
+     WHERE id = ? AND deleted = 0`,
+    [
+      nickname,
+      stringValue(body.phone),
+      stringValue(body.email),
+      stringValue(body.avatar),
+      userId,
+      userId,
+    ]
+  );
+  if ((result as { affectedRows?: number }).affectedRows === 0) {
+    throw new AppError("NOT_FOUND", "当前用户不存在");
+  }
+
+  const profile = await getUserProfile(userId);
+  if (!profile) throw new AppError("NOT_FOUND", "当前用户不存在");
+  return profile;
+}
+
+export async function changeCurrentPassword(
+  userId: number,
+  input: unknown
+): Promise<{ message: string }> {
+  const body = bodyOf(input);
+  const oldPassword = stringValue(body.oldPassword);
+  const newPassword = stringValue(body.newPassword);
+  const confirmPassword = stringValue(body.confirmPassword);
+
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    throw new AppError("VALIDATION_ERROR", "密码不能为空");
+  }
+  if (newPassword !== confirmPassword) {
+    throw new AppError("PASSWORD_CONFIRM_MISMATCH", "两次输入的新密码不一致");
+  }
+  if (oldPassword === newPassword) {
+    throw new AppError("PASSWORD_UNCHANGED", "新密码不能与原密码相同");
+  }
+
+  const user = await getUserById(userId);
+  if (!user) throw new AppError("NOT_FOUND", "当前用户不存在");
+  if (hashPassword(oldPassword) !== user.password_hash) {
+    throw new AppError("INVALID_OLD_PASSWORD", "原密码错误");
+  }
+
+  await pool.execute(
+    `UPDATE users SET password_hash = ?, updated_by = ?, updated_at = NOW()
+     WHERE id = ? AND deleted = 0`,
+    [hashPassword(newPassword), userId, userId]
+  );
+
+  return { message: "密码修改成功" };
 }
 
 export async function updateLastLoginAt(userId: number): Promise<void> {

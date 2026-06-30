@@ -358,6 +358,35 @@ export type SystemConfigValue = {
   valueType: string;
 };
 
+export type UserProfile = {
+  id: number;
+  userCode: string;
+  username: string;
+  nickname: string;
+  phone: string | null;
+  email: string | null;
+  avatar: string | null;
+  deptId: number | null;
+  deptName: string | null;
+  postId: number | null;
+  postName: string | null;
+  status: number;
+  roles: RoleSummary[];
+};
+
+export type ProfilePayload = {
+  nickname: string;
+  phone?: string;
+  email?: string;
+  avatar?: string;
+};
+
+export type ChangePasswordPayload = {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 export const getMenu = (id: number) => {
   return http.request<ApiResult<MenuDetail>>("get", `/menus/${id}`);
 };
@@ -597,5 +626,21 @@ export const getSystemConfigValue = (configCode: string) => {
   return http.request<ApiResult<SystemConfigValue>>(
     "get",
     `/system-configs/by-code/${configCode}/value`
+  );
+};
+
+export const getProfile = () => {
+  return http.request<ApiResult<UserProfile>>("get", "/profile");
+};
+
+export const updateProfile = (data: ProfilePayload) => {
+  return http.request<ApiResult<UserProfile>>("patch", "/profile", { data });
+};
+
+export const changeProfilePassword = (data: ChangePasswordPayload) => {
+  return http.request<ApiResult<{ message: string }>>(
+    "post",
+    "/profile/change-password",
+    { data }
   );
 };
