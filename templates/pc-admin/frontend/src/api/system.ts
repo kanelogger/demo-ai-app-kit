@@ -1,0 +1,126 @@
+import { http } from "@/utils/http";
+
+export type ApiResult<T> = {
+  success: boolean;
+  data: T;
+  error?: {
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+};
+
+export type Pagination = {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+};
+
+export type PageResult<T> = {
+  items: T[];
+  pagination: Pagination;
+};
+
+export type OptionItem = {
+  id: number;
+  label: string;
+  value: number;
+  status: number;
+};
+
+export type RoleSummary = {
+  id: number;
+  roleCode: string;
+  roleName: string;
+};
+
+export type UserListItem = {
+  id: number;
+  userCode: string;
+  username: string;
+  nickname: string;
+  phone: string | null;
+  email: string | null;
+  deptId: number | null;
+  deptName: string | null;
+  postId: number | null;
+  postName: string | null;
+  status: number;
+  roles: RoleSummary[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserQuery = {
+  userCode?: string;
+  username?: string;
+  nickname?: string;
+  phone?: string;
+  deptId?: number | "";
+  postId?: number | "";
+  status?: number | "";
+  page?: number;
+  pageSize?: number;
+};
+
+export type UserPayload = {
+  userCode: string;
+  username: string;
+  password?: string;
+  nickname: string;
+  phone?: string;
+  email?: string;
+  deptId: number | null;
+  postId: number | null;
+  status: number;
+  roleIds: number[];
+};
+
+export const getUsers = (params: UserQuery) => {
+  return http.request<ApiResult<PageResult<UserListItem>>>("get", "/users", {
+    params
+  });
+};
+
+export const createUser = (data: UserPayload) => {
+  return http.request<ApiResult<UserListItem>>("post", "/users", { data });
+};
+
+export const updateUser = (id: number, data: UserPayload) => {
+  return http.request<ApiResult<UserListItem>>("patch", `/users/${id}`, {
+    data
+  });
+};
+
+export const updateUserStatus = (id: number, status: number) => {
+  return http.request<ApiResult<UserListItem>>(
+    "patch",
+    `/users/${id}/status`,
+    { data: { status } }
+  );
+};
+
+export const resetUserPassword = (id: number, newPassword: string) => {
+  return http.request<ApiResult<{ message: string }>>(
+    "post",
+    `/users/${id}/reset-password`,
+    { data: { newPassword } }
+  );
+};
+
+export const deleteUser = (id: number) => {
+  return http.request<ApiResult<{ message: string }>>("delete", `/users/${id}`);
+};
+
+export const getDepartmentOptions = () => {
+  return http.request<ApiResult<OptionItem[]>>("get", "/departments/options");
+};
+
+export const getPostOptions = () => {
+  return http.request<ApiResult<OptionItem[]>>("get", "/posts/options");
+};
+
+export const getRoleOptions = () => {
+  return http.request<ApiResult<OptionItem[]>>("get", "/roles/options");
+};

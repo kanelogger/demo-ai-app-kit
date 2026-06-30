@@ -5,6 +5,7 @@ import { requireAuth } from "./utils/jwt";
 import { sendError } from "./utils/response";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
+import userManagementRoutes from "./routes/user-management";
 import asyncRoutes from "./routes/async-routes";
 import Logger from "./loaders/logger";
 
@@ -15,7 +16,7 @@ export function buildApp() {
 
   app.register(cors, {
     origin: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   });
@@ -23,6 +24,7 @@ export function buildApp() {
   app.addHook("onRequest", requireAuth);
 
   app.register(authRoutes);
+  app.register(userManagementRoutes);
   app.register(userRoutes);
   app.register(asyncRoutes);
 
