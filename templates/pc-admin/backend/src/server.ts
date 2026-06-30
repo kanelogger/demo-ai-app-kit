@@ -1,11 +1,11 @@
 import { buildApp } from "./app";
 import config from "./config";
-import { initSchema } from "./db/mysql";
+import { assertMysqlConnection } from "./db/mysql";
 import Logger from "./loaders/logger";
 
 async function start() {
   try {
-    await initSchema();
+    await assertMysqlConnection();
 
     const app = buildApp();
     await app.listen({ port: config.port, host: "0.0.0.0" });

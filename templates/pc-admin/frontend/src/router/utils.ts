@@ -23,6 +23,7 @@ import { type menuType, routerArrays } from "@/layout/types";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 const IFrame = () => import("@/layout/frame.vue");
+const SprintPlaceholder = () => import("@/views/system/placeholder.vue");
 // https://cn.vitejs.dev/guide/features.html#glob-import
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
@@ -325,7 +326,8 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
       const index = v?.component
         ? modulesRoutesKeys.findIndex(ev => ev.includes(v.component as any))
         : modulesRoutesKeys.findIndex(ev => ev.includes(v.path));
-      v.component = modulesRoutes[modulesRoutesKeys[index]];
+      v.component =
+        index >= 0 ? modulesRoutes[modulesRoutesKeys[index]] : SprintPlaceholder;
     }
     if (v?.children && v.children.length) {
       addAsyncRoutes(v.children);

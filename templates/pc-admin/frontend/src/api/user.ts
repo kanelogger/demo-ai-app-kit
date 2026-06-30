@@ -3,8 +3,10 @@ import { http } from "@/utils/http";
 export type UserResult = {
   success: boolean;
   data: {
+    /** 用户 ID */
+    userId: number;
     /** 头像 */
-    avatar: string;
+    avatar: string | null;
     /** 用户名 */
     username: string;
     /** 昵称 */
@@ -17,8 +19,8 @@ export type UserResult = {
     accessToken: string;
     /** 用于调用刷新`accessToken`的接口时所需的`token` */
     refreshToken: string;
-    /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-    expires: Date;
+    /** `accessToken`的过期时间（ISO 8601） */
+    expires: string;
   };
 };
 
@@ -29,8 +31,8 @@ export type RefreshTokenResult = {
     accessToken: string;
     /** 用于调用刷新`accessToken`的接口时所需的`token` */
     refreshToken: string;
-    /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
-    expires: Date;
+    /** `accessToken`的过期时间（ISO 8601） */
+    expires: string;
   };
 };
 

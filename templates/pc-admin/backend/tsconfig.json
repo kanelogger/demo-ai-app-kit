@@ -4,6 +4,7 @@
     "module": "commonjs",
     "pretty": true,
     "sourceMap": true,
+    "rootDir": "src",
     "outDir": "dist",
     "allowSyntheticDefaultImports": true
   },

@@ -1,85 +1,88 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { createMathExpr } from "svg-captcha";
-import { findUserByUsername, createUser } from "../services/users";
-import { verifyPassword } from "../utils/password";
-import { signToken } from "../utils/jwt";
-import { Message } from "../utils/enums";
+import { AppError } from "../utils/errors";
+import { sendSuccess } from "../utils/response";
+import { login, refreshAccessToken } from "../services/auth";
+import { getUserProfile } from "../services/users";
+import { getMenuRoutesByUserId } from "../services/menus";
 
 interface LoginBody {
   username: string;
   password: string;
-}
-
-interface RegisterBody {
-  username: string;
-  password: string;
+  rememberMe?: boolean;
 }
 
 interface RefreshBody {
   refreshToken?: string;
 }
 
-let generateVerify = 0;
-const accessExpiresIn = 60000; // 1 分钟，方便演示
-
 export default async function authRoutes(app: FastifyInstance): Promise<void> {
-  app.post("/login", async (request: FastifyRequest<{ Body: LoginBody }>, reply: FastifyReply) => {
-    const { username, password } = request.body;
-    const user = await findUserByUsername(username);
+  app.post(
+    "/login",
+    async (
+      request: FastifyRequest<{ Body: LoginBody }>,
+      reply: FastifyReply
+    ) => {
+      const { username, password } = request.body || {};
+      if (!username || !password) {
+        throw new AppError("BAD_REQUEST", "用户名和密码不能为空");
+      }
+
+      const result = await login(
+        { username, password },
+        {
+          ip: request.ip,
+          userAgent: request.headers["user-agent"],
+        }
+      );
+
+      return reply.send(sendSuccess(result));
+    }
+  );
+
+  app.post(
+    "/refresh-token",
+    async (
+      request: FastifyRequest<{ Body: RefreshBody }>,
+      reply: FastifyReply
+    ) => {
+      const { refreshToken } = request.body || {};
+      if (!refreshToken) {
+        throw new AppError("UNAUTHORIZED", "缺少刷新令牌");
+      }
+
+      const result = await refreshAccessToken(refreshToken);
+      return reply.send(sendSuccess(result));
+    }
+  );
+
+  app.post("/logout", async (_request: FastifyRequest, reply: FastifyReply) => {
+    return reply.send(sendSuccess({ message: "退出成功" }));
+  });
+
+  app.get("/auth/me", async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user?.userId;
+    if (!userId) {
+      throw new AppError("UNAUTHORIZED", "未登录");
+    }
+
+    const [user, menus] = await Promise.all([
+      getUserProfile(userId),
+      getMenuRoutesByUserId(userId),
+    ]);
 
     if (!user) {
-      return reply.send({ success: false, data: { message: Message[1] } });
+      throw new AppError("NOT_FOUND", "当前用户不存在");
     }
 
-    if (!verifyPassword(password, user.password)) {
-      return reply.send({ success: false, data: { message: Message[3] } });
-    }
-
-    const accessToken = signToken({ accountId: user.id }, accessExpiresIn);
-    const roles = username === "admin" ? ["admin"] : ["common"];
-
-    return reply.send({
-      success: true,
-      data: {
-        message: Message[2],
-        username,
-        roles,
-        accessToken,
-        refreshToken: "eyJhbGciOiJIUzUxMiJ9.adminRefresh",
-        expires: Date.now() + accessExpiresIn,
-        adminBackend: "这个标识是admin-backend真实后端返回的接口，只是为了演示",
-      },
-    });
-  });
-
-  app.post("/register", async (request: FastifyRequest<{ Body: RegisterBody }>, reply: FastifyReply) => {
-    const { username, password } = request.body;
-
-    if (password.length < 6) {
-      return reply.send({ success: false, data: { message: Message[4] } });
-    }
-
-    const existing = await findUserByUsername(username);
-    if (existing) {
-      return reply.send({ success: false, data: { message: Message[5] } });
-    }
-
-    await createUser(username, password);
-    return reply.send({ success: true, data: { message: Message[6] } });
-  });
-
-  app.post("/refresh-token", async (request: FastifyRequest<{ Body: RefreshBody }>, reply: FastifyReply) => {
-    const { refreshToken } = request.body || {};
-    const accessToken = signToken({ accountId: "admin" }, "1h");
-
-    return reply.send({
-      success: true,
-      data: {
-        accessToken,
-        refreshToken: refreshToken || "eyJhbGciOiJIUzUxMiJ9.adminRefresh",
-        expires: Date.now() + 60 * 60 * 1000,
-      },
-    });
+    return reply.send(
+      sendSuccess({
+        user,
+        roles: user.roles,
+        menus,
+        permissions: [],
+      })
+    );
   });
 
   app.get("/captcha", async (_request: FastifyRequest, reply: FastifyReply) => {
@@ -88,10 +91,9 @@ export default async function authRoutes(app: FastifyInstance): Promise<void> {
       mathMax: 4,
       mathOperator: "+",
     });
-    generateVerify = Number(create.text);
 
     return reply
       .header("Content-Type", "application/json; charset=utf-8")
-      .send({ success: true, data: { text: create.text, svg: create.data } });
+      .send(sendSuccess({ text: create.text, svg: create.data }));
   });
 }

@@ -1,15 +1,30 @@
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from "fastify";
 import * as jwt from "jsonwebtoken";
 import config from "../config";
+import { sendError } from "./response";
 
 export interface JwtPayload {
-  accountId: string | number;
+  userId: number;
+  username: string;
+  type: "access" | "refresh";
 }
 
-export const WHITELIST = ["/login", "/register", "/refresh-token", "/captcha", "/get-async-routes"];
+export const WHITELIST = ["/login", "/refresh-token", "/captcha"];
 
-export function signToken(payload: object, expiresIn: string | number = "1h"): string {
-  return jwt.sign(payload, config.jwtSecret, { expiresIn });
+export function signAccessToken(payload: Omit<JwtPayload, "type">): string {
+  return jwt.sign(
+    { ...payload, type: "access" },
+    config.jwtSecret,
+    { expiresIn: `${config.accessTokenTtlMinutes}m` }
+  );
+}
+
+export function signRefreshToken(payload: Omit<JwtPayload, "type">): string {
+  return jwt.sign(
+    { ...payload, type: "refresh" },
+    config.jwtSecret,
+    { expiresIn: `${config.refreshTokenTtlDays}d` }
+  );
 }
 
 export function verifyToken(token: string): JwtPayload {
@@ -21,22 +36,32 @@ export function requireAuth(
   reply: FastifyReply,
   done: HookHandlerDoneFunction
 ): void {
-  if (WHITELIST.includes(request.url.split("?")[0])) {
+  const path = request.url.split("?")[0];
+  if (WHITELIST.includes(path)) {
     return done();
   }
 
   const authHeader = request.headers.authorization || "";
   if (!authHeader.startsWith("Bearer ")) {
-    reply.code(401).send({ success: false, data: { message: "未授权" } });
+    reply.code(401).send(sendError("UNAUTHORIZED", "缺少访问令牌"));
     return;
   }
 
   const token = authHeader.slice("Bearer ".length);
   try {
-    request.user = verifyToken(token);
+    const payload = verifyToken(token);
+    if (payload.type !== "access") {
+      reply.code(401).send(sendError("UNAUTHORIZED", "令牌类型无效"));
+      return;
+    }
+    request.user = payload;
     done();
   } catch (error) {
-    reply.code(401).send({ success: false, data: { message: "token 无效" } });
+    const message =
+      error instanceof jwt.TokenExpiredError
+        ? "访问令牌已过期"
+        : "访问令牌无效";
+    reply.code(401).send(sendError("UNAUTHORIZED", message));
   }
 }
 
